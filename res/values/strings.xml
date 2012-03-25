@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, TweeZeeActivity!</string>
+    <string name="app_name">TweeZee</string>
+    <string name="fetching_request_token">Contacting Twitter...</string>
+	<string name="fetching_access_token">Checking Twitter access...</string>
+	<string name="ok">OK</string>
+	<string name="sign_in_again_later">I\'ll do it later</string>
+	<string name="auth_not_completed">The signing-in process isn\'t completed yet. If you see the confirmation page from Twitter then please wait a few more seconds and it will finish automatically.\n\nWould you like to cancel signing in?</string>
+	<string name="cancel_auth">Cancel signing in</string>
+	<string name="dont_cancel_auth">Don\'t cancel</string>
+	<string name="auth_network_error">Could not contact Twitter. Please try again.</string>
+	<string name="updates">None</string>
+</resources>
