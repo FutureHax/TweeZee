@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="/home/r2doesinc/Downloads/signpost-core-1.2.1.2.jar"/>
 	<classpathentry kind="lib" path="/home/r2doesinc/Downloads/signpost-commonshttp4-1.2.1.2.jar"/>
 	<classpathentry kind="lib" path="/home/r2doesinc/Dropbox/Private/eclipse/twitter4j-core-android-2.2.5.jar"/>
+	<classpathentry kind="lib" path="/home/r2doesinc/bin/extras/android/support/v4/android-support-v4.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

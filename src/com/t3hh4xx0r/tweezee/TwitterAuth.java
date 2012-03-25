@@ -116,7 +116,10 @@ public class TwitterAuth extends Activity {
                                                             HttpParameters p = provider.getResponseParameters();
                                                             
                                                             final String username = p.getFirst("screen_name");
-                                                            
+                                               	  			UDBAdapter db = new UDBAdapter(getBaseContext());
+                                               	  			db.open();
+                                            	  			db.insertUser(username, p.getFirst("user_id"), consumer.getToken(), consumer.getTokenSecret());                                                         
+                                            	  			db.close();
                                                             editor.putString("username"+ac,
                                                                     username);
                                                             editor.putString("user_id"+ac,

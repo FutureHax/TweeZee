@@ -2,6 +2,7 @@ package com.t3hh4xx0r.tweezee;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -42,6 +43,7 @@ public class SpinAdapter extends ArrayAdapter<User>{
         //label.setTextColor(Color.BLACK);
         // Then you can get the current item using the values array (Users array) and the current position
         // You can NOW reference each method you has created in your bean object (User class)
+        Log.d("ADAPTER", Integer.toString(position+1));
         label.setText(values[position].getName());
         label.setTextSize(30);
 
