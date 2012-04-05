@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/relativeLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+       <ImageView
+           	android:id="@+id/imageView1"
+           	android:layout_width="fill_parent"
+           	android:layout_height="wrap_content"
+           	android:scaleType="fitXY"
+           	android:layout_above="@+id/relativeLayout2"
+           	android:src="@drawable/test" />
+      		        
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/pinstripe_rev"
+            android:layout_alignParentBottom="true">
+           
+            <Button
+            	android:id="@+id/entry_b"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@android:color/transparent"
+                android:layout_alignParentBottom="true"/>            
+
+            <ImageView
+                android:id="@+id/entry_image"                
+                android:layout_width="50dp"
+                android:layout_height="fill_parent"
+                android:padding="5dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:src="@drawable/new_entry" />
+
+            <TextView
+                android:id="@+id/entry_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/entry_image"
+                android:text="Add New Entry"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+	</RelativeLayout>
+</RelativeLayout>                       

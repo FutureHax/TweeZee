@@ -16,6 +16,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,8 +31,6 @@ public class TwitterAuth extends Activity {
 
         	public static final String PREFS = "TwitterOAUTH";
         	static SharedPreferences prefs;
-        	public static int ac = 0;
-
             public static CommonsHttpOAuthProvider getOAuthProvider() {
                     return new CommonsHttpOAuthProvider(
                             "https://api.twitter.com/oauth/request_token",
@@ -116,25 +115,31 @@ public class TwitterAuth extends Activity {
                                                             HttpParameters p = provider.getResponseParameters();
                                                             
                                                             final String username = p.getFirst("screen_name");
-                                               	  			UDBAdapter db = new UDBAdapter(getBaseContext());
+                                               	  			DBAdapter db = new DBAdapter(getBaseContext());
+                                               	  			boolean contains = false;
                                                	  			db.open();
-                                            	  			db.insertUser(username, p.getFirst("user_id"), consumer.getToken(), consumer.getTokenSecret());                                                         
-                                            	  			db.close();
-                                                            editor.putString("username"+ac,
-                                                                    username);
-                                                            editor.putString("user_id"+ac,
-                                                                    p.getFirst("user_id"));                                                            
-                                                            editor.putString("oauth_token_secret"+ac,
+                                               	  			Cursor c = db.getAllUsers();
+                                               	  			try {
+                                               	  				while (c.moveToNext()) {
+                                               	  					if (c.getString(c.getColumnIndex("username")).equals(username)) {
+                                               	  						contains = true;
+                                               	  					}
+                                               	  				}
+                                               	  			} catch (Exception e) {}
+                                               	  			if (!contains) {                                               	  				
+                                               	  				db.insertUser(username, p.getFirst("user_id"), consumer.getToken(), consumer.getTokenSecret());                                                         
+                                               	  			}
+                                               	  			c.close();
+                                               	  			db.close();     
+                                               	  			
+                                                            editor.putString("oauth_token_secret",
                                                                     consumer.getTokenSecret());
-                                                            editor.putString("oauth_token"+ac,
+                                                            editor.putString("oauth_token",
                                                                     consumer.getToken());
-
-
                                                             editor.remove("password");
                                                             
                                                             editor.commit();
-                                                            ac++;
-                                                            Log.d("AUTHSERVICE", Integer.toString(ac));
+                                                            
                                                             finish(new ActivityTask.Finisher<TwitterAuth>() {
                                                                     @Override
                                                                     public void finish(TwitterAuth activity) {

@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -35,7 +36,8 @@ public class BetterPopupWindow {
 	private View root;
 	private Drawable background = null;
 	private final WindowManager windowManager;
-	static ArrayList<String> customUrls;
+	String message;
+	int place;
 
 
 
@@ -48,7 +50,6 @@ public class BetterPopupWindow {
 	public BetterPopupWindow(View anchor) {
 		this.anchor = anchor;
 		this.window = new PopupWindow(anchor.getContext());
-        customUrls = new ArrayList<String>();
 
 
 		// when a touch even happens outside of the window
@@ -213,15 +214,17 @@ public class BetterPopupWindow {
 	
 	public static class DemoPopupWindow extends BetterPopupWindow implements OnClickListener {
 		int pos;
-		public DemoPopupWindow(View anchor, int position) {
+		public DemoPopupWindow(View anchor, int position, String mes, int p) {
                   super(anchor);
                   pos = position;
+                  message = mes;
+                  place = p;
         }
 
         @Override
         protected void onCreate() {
 
-                  this.anchor.getContext();
+                this.anchor.getContext();
 				LayoutInflater inflater =
                                   (LayoutInflater) this.anchor.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -244,10 +247,18 @@ public class BetterPopupWindow {
         
   		@Override
   		public void onClick(View v) {
-   
-  	            if(v.getId() == R.id.delete) { 
- 
-	              }
+  	    	if(v.getId() == R.id.delete) {  
+			     DBAdapter db = new DBAdapter(this.anchor.getContext());
+		       	 db.open();
+		       	 String[] m = new String[] {message};
+		       	 db.deleteEntry(m);
+		       	 db.close();
+		       	 this.dismiss();
+		         Intent mi = new Intent(v.getContext(), MainActivity.class);
+		         Bundle b = new Bundle();
+		         b.putInt("pos", place);
+		         this.anchor.getContext().startActivity(mi);
+	        }
   	           
   		}
 	

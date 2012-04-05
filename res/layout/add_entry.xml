@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent" >
+	
+    <RelativeLayout
+ 	    android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/dialog_full_holo_dark"
+        android:layout_alignParentTop="true" >
+
+        <ImageView
+            android:id="@+id/userP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+ 	        android:padding="5dp"
+            android:src="@drawable/acct_sel" />
+
+       <TextView
+           android:id="@+id/userN"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignBottom="@+id/userP"
+           android:layout_toRightOf="@+id/userP"
+           android:padding="5dp"
+           android:text="Name"
+           android:textAppearance="?android:attr/textAppearanceLarge"
+           android:textColor="@color/ics" />
+
+	</RelativeLayout>
+	        
+	    <EditText
+	        android:id="@+id/editText1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/header"
+	        android:hint="Message">	
+	    </EditText>
+	    
+	   <ImageView
+           	android:id="@+id/iv1"
+           	android:layout_width="fill_parent"
+           	android:layout_height="wrap_content"
+           	android:scaleType="fitXY"
+           	android:layout_below="@+id/editText1"
+           	android:src="@drawable/test" />
+	           
+	    <EditText
+	        android:id="@+id/editText2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:inputType="number"
+	        android:hint="Number of sends"
+	        android:layout_below="@+id/iv1"/>
+	        
+	   <ImageView
+           	android:id="@+id/iv2"
+           	android:layout_width="fill_parent"
+           	android:layout_height="wrap_content"
+           	android:scaleType="fitXY"
+           	android:layout_below="@+id/editText2"
+           	android:src="@drawable/test" />
+	   
+	    <EditText
+	        android:id="@+id/editText3"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:inputType="number"
+	        android:hint="How long between"
+	        android:layout_below="@+id/iv2"/>
+	    
+	   <ImageView
+           	android:id="@+id/iv3"
+           	android:layout_width="fill_parent"
+           	android:layout_height="wrap_content"
+           	android:scaleType="fitXY"
+           	android:layout_below="@+id/editText3"
+           	android:src="@drawable/test" />
+	   
+	   <TextView
+	       android:id="@+id/textView1"
+	       android:layout_width="wrap_content"
+	       android:layout_height="wrap_content"
+	       android:layout_alignParentLeft="true"
+	       android:layout_below="@+id/iv3"
+	       android:text="Day Picker"
+	       android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	   <ImageView
+           	android:id="@+id/iv4"
+           	android:layout_width="fill_parent"
+           	android:layout_height="wrap_content"
+           	android:scaleType="fitXY"
+           	android:layout_below="@+id/textView1"
+           	android:src="@drawable/test" />
+	   	   	    
+	   <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        style="?android:attr/buttonBarStyle"
+        android:layout_alignParentBottom="true" >
+        
+	   <Button android:id="@+id/save_b"
+            style="?android:attr/buttonBarButtonStyle"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+            android:text="Save"
+            android:layout_weight="1"/>
+
+	   <Button android:id="@+id/cancel_b"
+            style="?android:attr/buttonBarButtonStyle"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:layout_weight="1"/>	   
+	   	</LinearLayout>
+
+	</RelativeLayout>

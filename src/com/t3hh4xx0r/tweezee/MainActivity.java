@@ -1,31 +1,33 @@
 package com.t3hh4xx0r.tweezee;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-import twitter4j.ProfileImage;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.viewpagerindicator.TitlePageIndicator;
 import com.viewpagerindicator.TitleProvider;
@@ -33,29 +35,46 @@ import com.viewpagerindicator.TitleProvider;
 public class MainActivity extends FragmentActivity {
 	
     static User[] users;
-    
     public static int user;
 
+    ViewPager pager;
+	ArrayList<String> entryArray;
+	Button mAddEntry;
+	UserFragment uF;
+	Handler handy;
+	int place;
+    
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.main);
-
+		
         try {
 			new SimpleEula(this).show();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		} 
-
-        ViewPager pager = (ViewPager) findViewById(android.R.id.list);
+        
+        try {
+            Bundle extras = getIntent().getExtras();
+            place = extras.getInt("pos");
+        } catch (Exception e) {
+        	place = 999;
+        }
+        pager = (ViewPager) findViewById(android.R.id.list);
         pager.setAdapter(new ExamplePagerAdapter(getSupportFragmentManager()));
-
-        pager.setCurrentItem(0);
         TitlePageIndicator indicator = (TitlePageIndicator)findViewById(R.id.indicator);
-        indicator.setViewPager(pager, 0);
+
+        if (place != 999) {
+        	pager.setCurrentItem(place);
+        	indicator.setViewPager(pager, place);
+        } else {
+        	pager.setCurrentItem(0);
+        	indicator.setViewPager(pager, 0);
+        }
         indicator.setOnPageChangeListener(new OnPageChangeListener() {
-        	 @Override
-        	 public void onPageSelected(int position) {
-        	 }
+        	@Override
+        	public void onPageSelected(int position) {  
+        	}
 
 			@Override
 			public void onPageScrollStateChanged(int arg0) {				
@@ -65,13 +84,11 @@ public class MainActivity extends FragmentActivity {
 			public void onPageScrolled(int arg0, float arg1, int arg2) {				
 			}
         });
-        
 		getUsers();        
     }
 	
 	public void getUsers() {
-
-	       final UDBAdapter db = new UDBAdapter(this);
+	        DBAdapter db = new DBAdapter(this);
        		db.open();
        		Cursor c = db.getAllUsers();
        		user = c.getCount();
@@ -88,23 +105,28 @@ public class MainActivity extends FragmentActivity {
        		} catch (Exception e) {
        			e.printStackTrace();
        		}
-   	    
+       		c.close();
        		db.close();
-	}
+	}	
 	
-//	public void setProfilePic(String name){
-//        Twitter twitter = new TwitterFactory().getInstance();
-//        try {
-//            ProfileImage image = twitter.getProfileImage(name, ProfileImage.NORMAL);
-//            String src = image.getURL();
-//        	Drawable i = ImageOperations(this, src ,name);
-//
-//        	iV.setImageDrawable(i);
-//        } catch (TwitterException e) {
-//			e.printStackTrace();
-//			iV.setImageResource(R.drawable.acct_sel);
-//		}
-//	}
+	   public ArrayList<String> updateUserFrag (int p) {		   
+		     entryArray = new ArrayList<String>();
+	         StringBuilder sb = new StringBuilder();
+		     DBAdapter db = new DBAdapter(this);
+	       	 db.open();
+	       	 Cursor c = db.getAllEntries();
+	       	 try {
+	       		while (c.moveToNext()) {
+	       			if (c.getString(0).equals(users[p].getName())) {
+	  					sb.append(c.getString(1));
+	  					entryArray.add(c.getString(1));
+	       			}
+	       		}
+	       	 } catch (Exception e) {}
+	       	 c.close();
+	       	 db.close();
+			return entryArray;	       	 
+	   }
 	
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater menuinflate = new MenuInflater(this);
@@ -124,6 +146,11 @@ public class MainActivity extends FragmentActivity {
 	            si.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(si);
 	        break;
+	        case R.id.manage_acct:
+	            Intent mi = new Intent(this, AccountManager.class);
+	            mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	            startActivity(mi);
+	        break;	        
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
@@ -135,33 +162,13 @@ public class MainActivity extends FragmentActivity {
 		super.onResume();
 		getUsers();
 	}
-	
-    private Drawable ImageOperations(Context ctx, String url, String saveFilename) {
-		try {
-			InputStream is = (InputStream) this.fetch(url);
-			Drawable d = Drawable.createFromStream(is, "src");
-			return d;
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			return null;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-    
-	public Object fetch(String address) throws MalformedURLException,IOException {
-		URL url = new URL(address);
-		Object content = url.getContent();
-		return content;
-	}
-	
+
 	   public class ExamplePagerAdapter extends FragmentPagerAdapter implements TitleProvider{
 
-		    public ExamplePagerAdapter(FragmentManager fm) {
+			public ExamplePagerAdapter(FragmentManager fm) {
 		        super(fm);
 		    }
-		
+			
 		    @Override
 		    public int getCount() {
 		        return user;
@@ -169,15 +176,14 @@ public class MainActivity extends FragmentActivity {
 		
 		    @Override
 		    public Fragment getItem(int position) {
-		        Fragment fragment = new UserFragment();
-		
-		        Bundle args = new Bundle();
-		        args.putInt("p", position);
-		        fragment.setArguments(args);
-		
+		    	Fragment fragment = new UserFragment();	
+		    	Bundle b = new Bundle(); 
+		    	b.putInt("p", position); 
+		    	b.putStringArrayList("e", updateUserFrag(position));
+		    	fragment.setArguments(b);
 		        return fragment;
 		    }
-
+		    
 			@Override
 			public String getTitle(int pos) {
 				return "@"+users[pos].getName();

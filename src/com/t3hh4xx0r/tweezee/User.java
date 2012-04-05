@@ -1,5 +1,7 @@
 package com.t3hh4xx0r.tweezee;
 
+import java.util.ArrayList;
+
 public class User {
 	
 	    private String _userid;
@@ -11,9 +13,9 @@ public class User {
 	        this._userid = "";
 	        this._username = "";
 	        this._token = "";
-	        this._secret = "";
+	        this._secret = "";	
 	    }
-
+	    
 	    public void setId(String id){
 	        this._userid = id;
 	    }

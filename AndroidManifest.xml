@@ -6,6 +6,7 @@
 
     <uses-sdk android:minSdkVersion="8" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     
     <application
         android:icon="@drawable/ic_launcher"
@@ -25,7 +26,28 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        <activity
+       <activity
+            android:name="AccountManager"
+            android:label="OAUTH" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+       <activity
+            android:name="EntryAdd"
+            android:label="OAUTH" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+       <activity
+            android:name="DayPicker"
+            android:label="OAUTH" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+       <activity
             android:name="MainActivity"
             android:label="OAUTH" >
             <intent-filter>
