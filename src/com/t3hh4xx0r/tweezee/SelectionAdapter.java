@@ -44,7 +44,7 @@ public class SelectionAdapter extends BaseAdapter {
 		  holder = new ViewHolder();
 		  holder.file = (TextView) convertView.findViewById(R.id.file);
 		  holder.statusBox = (ImageView) convertView.findViewById(R.id.status_box);
-
+		  
 		  convertView.setTag(holder);   	   	  
 		  convertView.setOnClickListener(new OnClickListener() {
 			  public void onClick(View v) {

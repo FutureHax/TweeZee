@@ -2,14 +2,11 @@ package com.t3hh4xx0r.tweezee;
 
 import java.util.ArrayList;
 
-import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 
-import twitter4j.IDs;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
-import twitter4j.User;
 import twitter4j.auth.AccessToken;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -38,12 +35,17 @@ public class MentionsActivity extends Activity {
 	Button allB;
 	ArrayList<SelectionResults> results;
 	SelectionAdapter a;
+	static SharedPreferences prefs;
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.results);
-        
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		if (SelectionAdapter.selections != null && !SelectionAdapter.selections.isEmpty()) {
+			SelectionAdapter.selections.clear();
+		}
         Bundle extras = getIntent().getExtras();
         userN = extras.getString("user");
         userID = extras.getLong("id");
@@ -53,10 +55,12 @@ public class MentionsActivity extends Activity {
         allB = (Button) findViewById(R.id.all_button);
         allB.setOnClickListener(new OnClickListener() {
 			  public void onClick(View v) {
-			    String[] mentions = SelectionAdapter.selections.toArray(new String[SelectionAdapter.selections.size()]);
-			    Log.d("MENTIONS", mentions.toString());
+				  String[] mentions = SelectionAdapter.selections.toArray(new String[SelectionAdapter.selections.size()]);
+				  	for (int i=0;i<mentions.length;i++) {
+				  		Log.d("MENTIONS", mentions[i]);
+				  	}
 			  }
-		  });
+		});
         
         results = new ArrayList<SelectionResults>();
         a = new SelectionAdapter(MentionsActivity.this, results);
@@ -149,7 +153,6 @@ public class MentionsActivity extends Activity {
     }
     
 	public void checkService() {
-		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (prefs.getBoolean("notifyAvailable", false)) {
       		Intent intent = new Intent(getBaseContext(), Receiver.class);
@@ -169,7 +172,6 @@ public class MentionsActivity extends Activity {
 
         StringBuilder sB;
         StringBuilder sBI;
-        boolean New = false;
 
         @Override
         protected void onPreExecute() {

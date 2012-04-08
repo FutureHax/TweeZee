@@ -43,6 +43,8 @@ public class MainActivity extends FragmentActivity {
 	UserFragment uF;
 	Handler handy;
 	int place;
+	private final static int SIGN_IN = 0;
+
     
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -60,6 +62,7 @@ public class MainActivity extends FragmentActivity {
         } catch (Exception e) {
         	place = 999;
         }
+        
         pager = (ViewPager) findViewById(android.R.id.list);
         pager.setAdapter(new ExamplePagerAdapter(getSupportFragmentManager()));
         TitlePageIndicator indicator = (TitlePageIndicator)findViewById(R.id.indicator);
@@ -133,6 +136,7 @@ public class MainActivity extends FragmentActivity {
 		menuinflate.inflate(R.menu.main_menu, menu);
 		return true;
 	}	
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
@@ -144,7 +148,7 @@ public class MainActivity extends FragmentActivity {
 	        case R.id.sign_in:
 	            Intent si = new Intent(this, TwitterAuth.class);
 	            si.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	            startActivity(si);
+	            startActivityForResult(si, SIGN_IN);
 	        break;
 	        case R.id.manage_acct:
 	            Intent mi = new Intent(this, AccountManager.class);
@@ -158,9 +162,16 @@ public class MainActivity extends FragmentActivity {
 	}	
 	
 	@Override
-	public void onResume() {
-		super.onResume();
-		getUsers();
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+	    switch (requestCode) {
+	    case SIGN_IN:
+            Intent mi = new Intent(this, MainActivity.class);
+            startActivity(mi);
+	        break;
+	    default:
+	        break;
+	    }
 	}
 
 	   public class ExamplePagerAdapter extends FragmentPagerAdapter implements TitleProvider{

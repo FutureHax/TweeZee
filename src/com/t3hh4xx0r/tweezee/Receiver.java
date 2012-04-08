@@ -22,17 +22,22 @@ public class Receiver extends BroadcastReceiver {
 	
 	@Override
 	public void onReceive(Context c, Intent i) {
-		Toast.makeText(c, "Checking API", 9999999).show();
-		
-        twitter = new TwitterFactory().getInstance();
-        AccessToken t = new AccessToken(MainActivity.users[0].getToken(), MainActivity.users[0].getSecret());
-        twitter.setOAuthConsumer(OAUTH.CONSUMER_KEY, OAUTH.CONSUMER_SECRET);
-        twitter.setOAuthAccessToken(t);
-        
-		try {
-			IDs f = twitter.getFriendsIDs(MainActivity.users[0].getName(), -1);
-			alert(c);
-		} catch (TwitterException e) {}
+		if (MentionsActivity.prefs.getBoolean("notifyAvailable", true)) {
+			Toast.makeText(c, "Checking API", 9999999).show();
+			
+	        twitter = new TwitterFactory().getInstance();
+	        AccessToken t = new AccessToken(MainActivity.users[0].getToken(), MainActivity.users[0].getSecret());
+	        twitter.setOAuthConsumer(OAUTH.CONSUMER_KEY, OAUTH.CONSUMER_SECRET);
+	        twitter.setOAuthAccessToken(t);
+	        
+			try {
+				 twitter.getFriendsIDs(MainActivity.users[0].getName(), -1);
+				 Editor e = MentionsActivity.prefs.edit();
+				 e.putBoolean("notifyAvailable", false);
+				 e.commit();
+				 alert(c);		
+			} catch (TwitterException e) {}
+		}
 	}
 	
 	public void alert(Context ctx) {
@@ -57,9 +62,6 @@ public class Receiver extends BroadcastReceiver {
   	     final int HELLO_ID = 1;
 
 		 mNotificationManager.notify(HELLO_ID, notification);	
- 		 final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-		 Editor e = prefs.edit();
-		 e.putBoolean("notifyAvailable", false);
-		 e.commit();
+
 	}
 }
