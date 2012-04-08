@@ -257,6 +257,7 @@ public class BetterPopupWindow {
 		         Intent mi = new Intent(v.getContext(), MainActivity.class);
 		         Bundle b = new Bundle();
 		         b.putInt("pos", place);
+		         mi.putExtras(b);
 		         this.anchor.getContext().startActivity(mi);
 	        }
   	           

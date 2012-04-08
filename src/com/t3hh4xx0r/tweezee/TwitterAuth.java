@@ -58,7 +58,7 @@ public class TwitterAuth extends Activity {
                     
                     setContentView(R.layout.auth);
                     
-                    final String callback = "https://auth.nanotweeter.com/success";
+                    final String callback = "https://shitballs.com";
                     final OAuthProvider provider = getOAuthProvider();
                     final OAuthConsumer consumer = getOAuthConsumer(this);
                     

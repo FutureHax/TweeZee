@@ -14,6 +14,8 @@ public class DBAdapter {
     public static final String KEY_USERNAME = "username";
     public static final String KEY_TOKEN = "oauth_token";
     public static final String KEY_SECRET = "oauth_token_secret";
+    public static final String KEY_FRIENDS = "friends";
+    public static final String KEY_FRIEND_IDS = "friend_ids";
     
     public static final String KEY_AMOUNT = "send_amount";
     public static final String KEY_WAIT = "send_wait";
@@ -27,7 +29,7 @@ public class DBAdapter {
 
     private static final String CREATE_USERS =
             "create table users (_id integer primary key autoincrement, "
-            + "username text not null, user_id text not null, oauth_token text not null, oauth_token_secret text not null);";
+            + "username text not null, user_id text not null, oauth_token text not null, oauth_token_secret text not null, friends text not null, friend_ids text not null);";
         
     private static final String CREATE_ENTRIES =
             "create table entries (_id integer primary key autoincrement, "
@@ -101,6 +103,8 @@ public class DBAdapter {
         initialValues.put(KEY_USERID, id);
         initialValues.put(KEY_TOKEN, token);
         initialValues.put(KEY_SECRET, secret);
+        initialValues.put(KEY_FRIENDS, "");
+        initialValues.put(KEY_FRIEND_IDS, "");
         
         return db.insert(USER_TABLE, null, initialValues);
     }    
@@ -129,7 +133,9 @@ public class DBAdapter {
                 KEY_USERNAME,
                 KEY_USERID,
                 KEY_TOKEN,
-                KEY_SECRET}, 
+                KEY_SECRET,
+                KEY_FRIENDS,
+                KEY_FRIEND_IDS}, 
                 null, 
                 null, 
                 null, 
@@ -139,8 +145,7 @@ public class DBAdapter {
 		return mCursor;
     }
 
-    public boolean deleteEntry(String[] message) 
-    {
+    public boolean deleteEntry(String[] message) {
     	
         Cursor mCursor = db.query(true, ENTRY_TABLE, new String[] {
         		KEY_ROWID
@@ -158,5 +163,17 @@ public class DBAdapter {
                 
         return db.delete(ENTRY_TABLE, KEY_ROWID + 
         		"=" + mCursor.getString(0), null) > 0;        		
-    }
+    }	
+    
+	   public void addFriends(String user, String friends) {
+	        ContentValues args = new ContentValues();
+	        args.put(KEY_FRIENDS, friends);
+	        this.db.update(USER_TABLE, args, "username = ?", new String[] {user});
+	    }
+
+	   public void addFriendIds(String user, String ids) {
+	        ContentValues args = new ContentValues();
+	        args.put(KEY_FRIEND_IDS, ids);
+	        this.db.update(USER_TABLE, args, "username = ?", new String[] {user});
+	    }
 }

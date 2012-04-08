@@ -39,13 +39,14 @@ public class EntryAdd extends Activity {
 	EditText et2;
 	EditText et3;
 	TextView tV;
+	TextView tV2;
 	TextView name;
 	ImageView pic;
 	int p;
 	ArrayList<String> entryArray;
 	String[] values;
 	Resources res;
-
+	long userID;
 
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -56,6 +57,7 @@ public class EntryAdd extends Activity {
         Bundle extras = getIntent().getExtras();
         p = extras.getInt("pos");
 		String usern = MainActivity.users[p].getName(); 
+		userID = Long.parseLong(MainActivity.users[p].getId());
 
 	    String[] weekdays = new DateFormatSymbols().getWeekdays();
 	    values = new String[] {
@@ -91,8 +93,14 @@ public class EntryAdd extends Activity {
 		name = (TextView)findViewById(R.id.userN);
 		name.setText("@"+usern);
 		pic = (ImageView)findViewById(R.id.userP);
-		pic.setImageDrawable(setProfilePic(usern));
-		tV = (TextView)findViewById(R.id.textView1);
+		tV2 = (TextView)findViewById(R.id.mentionsTv);
+		tV2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {				
+	            startActivity(new Intent(v.getContext(), MentionsActivity.class).putExtra("pos", p).putExtra("id", userID).putExtra("user", name.getText().toString().replace("@", "")));
+			}
+		});
+		tV = (TextView)findViewById(R.id.dayTv);
 		tV.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -112,10 +120,24 @@ public class EntryAdd extends Activity {
 				      .show();
 			}
 		});
-		et1 = (EditText)findViewById(R.id.editText1);
-		et2 = (EditText)findViewById(R.id.editText2);
-		et3 = (EditText)findViewById(R.id.editText3);
-
+		et1 = (EditText)findViewById(R.id.editMessage);
+		et2 = (EditText)findViewById(R.id.editAmount);
+		et3 = (EditText)findViewById(R.id.editInterval);
+		
+		Thread thread = new Thread() {
+			Drawable p;
+		    @Override
+		    public void run() {
+		    	 p = setProfilePic(name.getText().toString().replace("@", ""));		    			    
+		         runOnUiThread(new Runnable() {
+		               @Override
+		               public void run() {
+		   		        pic.setImageDrawable(p);
+		               }
+		           });		    			    		    	
+		    }
+		};
+		thread.start();
 	}
 	
 	public Drawable setProfilePic(String name){

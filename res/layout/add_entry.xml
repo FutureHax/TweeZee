@@ -1,121 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent" >
-	
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
     <RelativeLayout
- 	    android:id="@+id/header"
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
         android:background="@drawable/dialog_full_holo_dark"
-        android:layout_alignParentTop="true" >
+        android:orientation="horizontal" >
 
         <ImageView
             android:id="@+id/userP"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
- 	        android:padding="5dp"
+            android:padding="5dp"
             android:src="@drawable/acct_sel" />
 
-       <TextView
-           android:id="@+id/userN"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_alignBottom="@+id/userP"
-           android:layout_toRightOf="@+id/userP"
-           android:padding="5dp"
-           android:text="Name"
-           android:textAppearance="?android:attr/textAppearanceLarge"
-           android:textColor="@color/ics" />
+        <TextView
+            android:id="@+id/userN"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/userP"
+            android:layout_toRightOf="@+id/userP"
+            android:padding="5dp"
+            android:text="Name"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/ics" />
+    </RelativeLayout>
 
-	</RelativeLayout>
-	        
-	    <EditText
-	        android:id="@+id/editText1"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_below="@+id/header"
-	        android:hint="Message">	
-	    </EditText>
-	    
-	   <ImageView
-           	android:id="@+id/iv1"
-           	android:layout_width="fill_parent"
-           	android:layout_height="wrap_content"
-           	android:scaleType="fitXY"
-           	android:layout_below="@+id/editText1"
-           	android:src="@drawable/test" />
-	           
-	    <EditText
-	        android:id="@+id/editText2"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:inputType="number"
-	        android:hint="Number of sends"
-	        android:layout_below="@+id/iv1"/>
-	        
-	   <ImageView
-           	android:id="@+id/iv2"
-           	android:layout_width="fill_parent"
-           	android:layout_height="wrap_content"
-           	android:scaleType="fitXY"
-           	android:layout_below="@+id/editText2"
-           	android:src="@drawable/test" />
-	   
-	    <EditText
-	        android:id="@+id/editText3"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:inputType="number"
-	        android:hint="How long between"
-	        android:layout_below="@+id/iv2"/>
-	    
-	   <ImageView
-           	android:id="@+id/iv3"
-           	android:layout_width="fill_parent"
-           	android:layout_height="wrap_content"
-           	android:scaleType="fitXY"
-           	android:layout_below="@+id/editText3"
-           	android:src="@drawable/test" />
-	   
-	   <TextView
-	       android:id="@+id/textView1"
-	       android:layout_width="wrap_content"
-	       android:layout_height="wrap_content"
-	       android:layout_alignParentLeft="true"
-	       android:layout_below="@+id/iv3"
-	       android:text="Day Picker"
-	       android:textAppearance="?android:attr/textAppearanceLarge" />
+    <EditText
+        android:id="@+id/editMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/header"
+        android:hint="Message" >
+    </EditText>
 
-	   <ImageView
-           	android:id="@+id/iv4"
-           	android:layout_width="fill_parent"
-           	android:layout_height="wrap_content"
-           	android:scaleType="fitXY"
-           	android:layout_below="@+id/textView1"
-           	android:src="@drawable/test" />
-	   	   	    
-	   <LinearLayout
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        style="?android:attr/buttonBarStyle"
-        android:layout_alignParentBottom="true" >
-        
-	   <Button android:id="@+id/save_b"
-            style="?android:attr/buttonBarButtonStyle"
-	        android:layout_width="0dp"
-	        android:layout_height="wrap_content"
-            android:text="Save"
-            android:layout_weight="1"/>
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal" >
 
-	   <Button android:id="@+id/cancel_b"
+        <Button
+            android:id="@+id/save_b"
             style="?android:attr/buttonBarButtonStyle"
-	        android:layout_width="0dp"
-	        android:layout_height="wrap_content"
-            android:text="Cancel"
-            android:layout_weight="1"/>	   
-	   	</LinearLayout>
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Save" />
 
-	</RelativeLayout>
+        <Button
+            android:id="@+id/cancel_b"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cancel" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/div5"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/editMessage"
+        android:layout_alignParentLeft="true"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />
+
+    <TextView
+        android:id="@+id/mentionsTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editMessage"
+        android:paddingLeft="3dp"
+        android:paddingTop="3dp"
+        android:text="Add Mentions"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <ImageView
+        android:id="@+id/div4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/mentionsTv"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />
+
+    <TextView
+        android:id="@+id/dayTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/div4"
+        android:paddingLeft="3dp"
+        android:paddingTop="3dp"
+        android:text="Day Picker"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <ImageView
+        android:id="@+id/div2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/dayTv"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />
+
+    <EditText
+        android:id="@+id/editInterval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/div2"
+        android:hint="How long between"
+        android:inputType="number"
+        android:paddingTop="3dp" />
+
+    <ImageView
+        android:id="@+id/div3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editInterval"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />
+
+    <EditText
+        android:id="@+id/editAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/div3"
+        android:hint="Number of sends"
+        android:inputType="number"
+        android:paddingTop="3dp" />
+
+    <ImageView
+        android:id="@+id/div1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editAmount"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />
+
+</RelativeLayout>
