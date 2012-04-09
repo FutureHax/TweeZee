@@ -72,6 +72,8 @@ public class MainActivity extends FragmentActivity {
         	place = 999;
         }
         
+		getUsers();        
+        
         pager = (ViewPager) findViewById(android.R.id.list);
         pager.setAdapter(new ExamplePagerAdapter(getSupportFragmentManager()));
         TitlePageIndicator indicator = (TitlePageIndicator)findViewById(R.id.indicator);
@@ -97,7 +99,6 @@ public class MainActivity extends FragmentActivity {
 			public void onPageScrolled(int arg0, float arg1, int arg2) {				
 			}
         });
-		getUsers();        
     }
 	
 	public void getUsers() {
@@ -106,14 +107,15 @@ public class MainActivity extends FragmentActivity {
        		Cursor c = db.getAllUsers();
        		user = c.getCount();
        		users = new User[c.getCount()];
+       		int i=0;
        		try {
        			while (c.moveToNext()) {
-       				int _id = Integer.parseInt(c.getString(c.getColumnIndex("_id")));
-       	       		users[_id-1] = new User();
-		        	users[_id-1].setId(c.getString(c.getColumnIndex("user_id")));	
-		        	users[_id-1].setName(c.getString(c.getColumnIndex("username")));	
-		        	users[_id-1].setToken(c.getString(c.getColumnIndex("oauth_token")));	
-		        	users[_id-1].setSecret(c.getString(c.getColumnIndex("oauth_token_secret")));	
+       				i++;
+       	       		users[i-1] = new User();
+		        	users[i-1].setId(c.getString(c.getColumnIndex("user_id")));	
+		        	users[i-1].setName(c.getString(c.getColumnIndex("username")));	
+		        	users[i-1].setToken(c.getString(c.getColumnIndex("oauth_token")));	
+		        	users[i-1].setSecret(c.getString(c.getColumnIndex("oauth_token_secret")));	
        			}
        		} catch (Exception e) {
        			e.printStackTrace();
@@ -173,7 +175,11 @@ public class MainActivity extends FragmentActivity {
 	    }
 		return false;
 	}	
-	
+	@Override
+	public void onResume() {
+		super.onResume();
+		getUsers();        
+	}
 	private void apiCheck() {
 		Twitter t = new TwitterFactory().getInstance();
         AccessToken token = new AccessToken(users[p].getToken(), users[p].getSecret());

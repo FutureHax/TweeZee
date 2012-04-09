@@ -4,9 +4,12 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,9 +54,14 @@ public class UserFragment extends ListFragment {
 	        listView.setOnItemLongClickListener(new OnItemLongClickListener() {
 	        	@Override
 	        	public boolean onItemLongClick(AdapterView<?> a, View v, int position, long id) {
-	            	vibe.vibrate(50);
+	        		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+	        		Editor e = prefs.edit();
+	        		e.putBoolean("account", false);
+	        		e.commit();	            	
+	        		
+	        		vibe.vibrate(50);
 	            	String message = entryArray.get(position); 
-	            	BetterPopupWindow dw = new BetterPopupWindow.DemoPopupWindow(v, position, message, pos);
+	            	BetterPopupWindow dw = new BetterPopupWindow.DemoPopupWindow(v, message, pos);
 	    			dw.showLikeQuickAction(0, 30);
 	        		return false;
 	        	}

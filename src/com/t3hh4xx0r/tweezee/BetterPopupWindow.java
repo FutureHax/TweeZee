@@ -1,6 +1,6 @@
 package com.t3hh4xx0r.tweezee;
 
-import java.util.ArrayList;
+import org.apache.commons.lang3.ArrayUtils;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -9,25 +9,24 @@ import twitter4j.auth.AccessToken;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.TextView;
 
 /**
  * This class does most of the work of wrapping the {@link PopupWindow} so it's simpler to use.
@@ -43,7 +42,6 @@ public class BetterPopupWindow {
 	private final WindowManager windowManager;
 	String message;
 	int place;
-
 
 
 	/**
@@ -218,16 +216,15 @@ public class BetterPopupWindow {
 	}
 	
 	public static class DemoPopupWindow extends BetterPopupWindow implements OnClickListener {
-		int pos;
-		public DemoPopupWindow(View anchor, int position, String mes, int p) {
+		public DemoPopupWindow(View anchor, String mes, int p) {
                   super(anchor);
-                  pos = position;
                   message = mes;
                   place = p;
         }
 
         @Override
         protected void onCreate() {
+    		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.anchor.getContext());
 
                 this.anchor.getContext();
 				LayoutInflater inflater =
@@ -243,6 +240,11 @@ public class BetterPopupWindow {
                               LinearLayout lL = (LinearLayout) v;
                               for(int j = 0, jcount = lL.getChildCount() ; j < jcount ; j++) {
                               	View item = lL.getChildAt(j);
+                              	if (prefs.getBoolean("account", false)) {
+                              		if(item.getId() == R.id.send) {
+                              			item.setVisibility(View.GONE);                              	
+                              		}
+                              	}
                               	item.setOnClickListener(this);
                               }
                           }
@@ -252,18 +254,36 @@ public class BetterPopupWindow {
         
   		@Override
   		public void onClick(View v) {
-  	    	if(v.getId() == R.id.delete) {  
-			     DBAdapter db = new DBAdapter(this.anchor.getContext());
-		       	 db.open();
-		       	 String[] m = new String[] {message};
-		       	 db.deleteEntry(m);
-		       	 db.close();
-		       	 this.dismiss();
-		         Intent mi = new Intent(v.getContext(), MainActivity.class);
-		         Bundle b = new Bundle();
-		         b.putInt("pos", place);
-		         mi.putExtras(b);
-		         this.anchor.getContext().startActivity(mi);
+  			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.anchor.getContext());
+
+  			if(v.getId() == R.id.delete) {  
+              	if (!prefs.getBoolean("account", false)) {
+				     DBAdapter db = new DBAdapter(this.anchor.getContext());
+			       	 db.open();
+			       	 String[] m = new String[] {message};
+			       	 db.deleteEntry(m);
+			       	 db.close();
+			       	 this.dismiss();
+			         Intent mi = new Intent(v.getContext(), MainActivity.class);
+			         Bundle b = new Bundle();
+			         b.putInt("pos", place);
+			         mi.putExtras(b);
+			         this.anchor.getContext().startActivity(mi);
+  	    	    } else {
+				     DBAdapter db = new DBAdapter(this.anchor.getContext());
+			       	 db.open();
+			       	 String[] m = new String[] {message};
+			       	 db.deleteUser(m);
+			         MainActivity.users = ArrayUtils.remove(MainActivity.users, place); 
+			       	 db.close();
+			       	 this.dismiss();
+			         Intent mi = new Intent(v.getContext(), AccountManager.class);
+			         mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			         Bundle b = new Bundle();
+			         b.putInt("pos", place);
+			         mi.putExtras(b);
+			         this.anchor.getContext().startActivity(mi);			         
+  	    	    }
 	        } 
   	    	
   	    	if(v.getId() == R.id.send) {  

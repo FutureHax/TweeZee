@@ -207,12 +207,6 @@ public class EntryAdd extends Activity {
         return d;
 
 	}
-    
-	public Object fetch(String address) throws MalformedURLException,IOException {
-		URL url = new URL(address);
-		Object content = url.getContent();
-		return content;
-	}
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

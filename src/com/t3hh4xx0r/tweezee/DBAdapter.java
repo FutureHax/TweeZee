@@ -165,7 +165,27 @@ public class DBAdapter {
         		"=" + mCursor.getString(0), null) > 0;        		
     }	
     
-	   public void addFriends(String user, String friends) {
+   public boolean deleteUser(String[] user) {
+    	
+        Cursor mCursor = db.query(true, USER_TABLE, new String[] {
+        		KEY_ROWID
+        		}, 
+        		"username=?", 
+        		user,
+        		null, 
+        		null, 
+        		null, 
+        		null);
+
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+                
+        return db.delete(USER_TABLE, KEY_ROWID + 
+        		"=" + mCursor.getString(0), null) > 0;        		
+    }	
+   
+   public void addFriends(String user, String friends) {
 	        ContentValues args = new ContentValues();
 	        args.put(KEY_FRIENDS, friends);
 	        this.db.update(USER_TABLE, args, "username = ?", new String[] {user});
@@ -176,4 +196,5 @@ public class DBAdapter {
 	        args.put(KEY_FRIEND_IDS, ids);
 	        this.db.update(USER_TABLE, args, "username = ?", new String[] {user});
 	    }
+	   
 }
