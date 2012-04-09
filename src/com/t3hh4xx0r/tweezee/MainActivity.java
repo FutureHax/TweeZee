@@ -2,40 +2,27 @@ package com.t3hh4xx0r.tweezee;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.viewpagerindicator.TitlePageIndicator;
 import com.viewpagerindicator.TitleProvider;
@@ -47,7 +34,6 @@ public class MainActivity extends FragmentActivity {
 
     ViewPager pager;
 	ArrayList<String> entryArray;
-	Button mAddEntry;
 	UserFragment uF;
 	Handler handy;
 	int place;
@@ -72,7 +58,7 @@ public class MainActivity extends FragmentActivity {
         	place = 999;
         }
         
-		getUsers();        
+		getUsers(this);        
         
         pager = (ViewPager) findViewById(android.R.id.list);
         pager.setAdapter(new ExamplePagerAdapter(getSupportFragmentManager()));
@@ -101,8 +87,8 @@ public class MainActivity extends FragmentActivity {
         });
     }
 	
-	public void getUsers() {
-	        DBAdapter db = new DBAdapter(this);
+	public void getUsers(Context ctx) {
+	        DBAdapter db = new DBAdapter(ctx);
        		db.open();
        		Cursor c = db.getAllUsers();
        		user = c.getCount();
@@ -169,17 +155,24 @@ public class MainActivity extends FragmentActivity {
 	        break;	        
 	        case R.id.limit:
 	        	apiCheck();
-	        break;	        
+	        break;	   
+	        case android.R.id.home:
+	            Intent hi = new Intent(this, MainActivity.class);
+	            hi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	            startActivity(hi);
+	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
 		return false;
 	}	
+	
 	@Override
 	public void onResume() {
 		super.onResume();
-		getUsers();        
+		getUsers(this);        
 	}
+	
 	private void apiCheck() {
 		Twitter t = new TwitterFactory().getInstance();
         AccessToken token = new AccessToken(users[p].getToken(), users[p].getSecret());

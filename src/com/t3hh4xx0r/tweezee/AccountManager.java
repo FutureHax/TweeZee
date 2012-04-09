@@ -8,10 +8,10 @@ import java.util.Vector;
 import twitter4j.ProfileImage;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
-
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
@@ -19,19 +19,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class AccountManager extends ListActivity {
 	ImageView pic;
@@ -40,6 +40,8 @@ public class AccountManager extends ListActivity {
 	private Vector<RowData> data;
 	RowData rd;
 	ArrayList<String> names;
+	Button mAddEntry;
+
 	
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -54,12 +56,36 @@ public class AccountManager extends ListActivity {
 			names.add(MainActivity.users[i].getName());
 		}
 		
+        mAddEntry = (Button) findViewById(R.id.entry_b);
+        mAddEntry.setOnClickListener(new OnClickListener() {
+        	@Override
+        	public void onClick(View v) {
+	            Intent si = new Intent(v.getContext(), TwitterAuth.class);
+	            si.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	            startActivityForResult(si, 0);
+        	}
+        });	
+        
 		CustomAdapter adapter = new	 CustomAdapter(this, R.layout.row, R.id.name, data);
 		setListAdapter(adapter);
 		getListView().setTextFilterEnabled(true);
-		
+						
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+	    switch (requestCode) {
+	    case 0:
+	    	MainActivity mA = new MainActivity();
+	    	mA.getUsers(this);
+            Intent mi = new Intent(this, AccountManager.class);
+            startActivity(mi);
+	        break;
+	    default:
+	        break;
+	    }
+	}
 	public void onListItemClick(ListView lv, View v, int p, long id) {
 		String msg = names.get(p);	
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -144,7 +170,6 @@ public class AccountManager extends ListActivity {
 	           ProfileImage image = twitter.getProfileImage(name, ProfileImage.BIGGER);
 	           URL src = new URL(image.getURL());
 
-	           Log.d("URL", image.getURL());
 	           Bitmap bm = BitmapFactory.decodeStream(src.openConnection().getInputStream());
 	           bm = Bitmap.createScaledBitmap(bm, 300, 300, true); 
 	           d = new BitmapDrawable(bm);
@@ -153,5 +178,18 @@ public class AccountManager extends ListActivity {
 				d = r.getDrawable(R.drawable.acct_sel);
 			}
 	        return d;
-	}	  
+	}	 
+	  
+		@Override
+		public boolean onOptionsItemSelected(MenuItem item) {
+		    switch (item.getItemId()) {
+	        case android.R.id.home:
+	            Intent intent = new Intent(this, MainActivity.class);
+	            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	            startActivity(intent);
+	            return true;
+	            default:
+		            return super.onOptionsItemSelected(item);
+		    }
+		}
 }

@@ -30,7 +30,6 @@ public class UserFragment extends ListFragment {
 	  int pos; 
 	  ArrayList<String> entryArray;
 	  ArrayAdapter<String> a;
-	  private final static int REQUEST_ADD = 0;
 	  ListView listView;
 	  
 	  @Override
@@ -74,7 +73,7 @@ public class UserFragment extends ListFragment {
 	                b.putInt("pos", pos);
 		            Intent mi = new Intent(v.getContext(), EntryAdd.class);
 		            mi.putExtras(b);
-			        startActivityForResult(mi, REQUEST_ADD);	
+			        startActivity(mi);	
 	        	}
 	        });	   
 		    pos = getArguments().getInt("p");
