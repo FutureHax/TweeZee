@@ -28,6 +28,29 @@
             android:text="Name"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/ics" />
+
+        <TextView
+            android:id="@+id/countTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/userP"
+            android:layout_alignParentRight="true"
+            android:paddingBottom="5dp"
+            android:paddingRight="5dp"
+            android:text="/140"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/ics" />
+
+        <TextView
+            android:id="@+id/myCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/userP"
+			android:layout_toLeftOf="@+id/countTotal"
+            android:paddingBottom="5dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/ics" />
+
     </RelativeLayout>
 
     <EditText
@@ -79,10 +102,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/editMessage"
-        android:paddingLeft="3dp"
+        android:paddingLeft="10dp"
         android:paddingTop="3dp"
         android:text="Add Mentions"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ImageView
         android:id="@+id/div4"
@@ -100,10 +123,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/div4"
-        android:paddingLeft="3dp"
+        android:paddingLeft="10dp"
         android:paddingTop="3dp"
         android:text="Day Picker"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ImageView
         android:id="@+id/div2"

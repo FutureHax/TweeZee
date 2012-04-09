@@ -36,6 +36,7 @@ public class MentionsActivity extends Activity {
 	ArrayList<SelectionResults> results;
 	SelectionAdapter a;
 	static SharedPreferences prefs;
+	public static int count = 0;
 	
     /** Called when the activity is first created. */
     @Override
@@ -43,9 +44,6 @@ public class MentionsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.results);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		if (SelectionAdapter.selections != null && !SelectionAdapter.selections.isEmpty()) {
-			SelectionAdapter.selections.clear();
-		}
         Bundle extras = getIntent().getExtras();
         userN = extras.getString("user");
         userID = extras.getLong("id");
@@ -55,10 +53,14 @@ public class MentionsActivity extends Activity {
         allB = (Button) findViewById(R.id.all_button);
         allB.setOnClickListener(new OnClickListener() {
 			  public void onClick(View v) {
+				  count = 0;
 				  String[] mentions = SelectionAdapter.selections.toArray(new String[SelectionAdapter.selections.size()]);
 				  	for (int i=0;i<mentions.length;i++) {
-				  		Log.d("MENTIONS", mentions[i]);
+				  		for (int j=0;j<mentions[i].length();j++) {
+				  			count++;
+				  		}
 				  	}
+				  	finish();
 			  }
 		});
         

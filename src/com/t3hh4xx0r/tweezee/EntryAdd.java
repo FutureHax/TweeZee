@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -27,9 +28,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 
 public class EntryAdd extends Activity {
 
@@ -39,10 +44,13 @@ public class EntryAdd extends Activity {
 	EditText et2;
 	EditText et3;
 	TextView tV;
+	TextView myCount;
 	TextView tV2;
 	TextView name;
 	ImageView pic;
 	int p;
+	int mLength = 0;
+	int totalC = 0;
 	ArrayList<String> entryArray;
 	String[] values;
 	Resources res;
@@ -69,7 +77,7 @@ public class EntryAdd extends Activity {
 	            weekdays[Calendar.SATURDAY],
 	            weekdays[Calendar.SUNDAY],
 	    };
-	    
+	 
 		save = (Button)findViewById(R.id.save_b);
 		save.setOnClickListener(new OnClickListener() {
 			public void onClick (View v) {
@@ -97,9 +105,11 @@ public class EntryAdd extends Activity {
 		tV2.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {				
-	            startActivity(new Intent(v.getContext(), MentionsActivity.class).putExtra("pos", p).putExtra("id", userID).putExtra("user", name.getText().toString().replace("@", "")));
+	            startActivityForResult(new Intent(v.getContext(), MentionsActivity.class).putExtra("pos", p).putExtra("id", userID).putExtra("user", name.getText().toString().replace("@", "")), 0);
 			}
 		});
+		myCount = (TextView)findViewById(R.id.myCount);
+		myCount.setText("0");
 		tV = (TextView)findViewById(R.id.dayTv);
 		tV.setOnClickListener(new OnClickListener() {
 			@Override
@@ -112,7 +122,7 @@ public class EntryAdd extends Activity {
 				    	  public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 				    		  
 				    	  }
-					})
+				      })
 				      .setPositiveButton("OK",new DialogInterface.OnClickListener() {
 				    	  public void onClick(DialogInterface dialog, int whichButton){
 				    	  }
@@ -121,6 +131,26 @@ public class EntryAdd extends Activity {
 			}
 		});
 		et1 = (EditText)findViewById(R.id.editMessage);
+	    et1.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void afterTextChanged(Editable arg0) {}
+
+			@Override
+			public void beforeTextChanged(CharSequence arg0, int arg1,
+					int arg2, int arg3) {}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				totalC = mLength + s.length();
+				myCount.setText(String.valueOf(totalC));
+				if (totalC>140) {
+					myCount.setTextColor(Color.RED);
+				} else {
+					myCount.setTextColor(getResources().getColor(R.color.ics));
+				}
+			}	    	
+	    });
 		et2 = (EditText)findViewById(R.id.editAmount);
 		et3 = (EditText)findViewById(R.id.editInterval);
 		
@@ -139,7 +169,7 @@ public class EntryAdd extends Activity {
 		};
 		thread.start();
 	}
-	
+
 	public Drawable setProfilePic(String name){
 		Drawable d;
 		try {
@@ -162,6 +192,24 @@ public class EntryAdd extends Activity {
 		URL url = new URL(address);
 		Object content = url.getContent();
 		return content;
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    switch (requestCode) {
+	    case 0:
+	    	mLength = MentionsActivity.count;
+	    	totalC = mLength+et1.getText().length();
+			myCount.setText(String.valueOf(totalC));
+			if (totalC>140) {
+				myCount.setTextColor(Color.RED);
+			} else {
+				myCount.setTextColor(getResources().getColor(R.color.ics));
+			}
+	        break;
+	    default:
+	        break;
+	    }
 	}
 	
 }
