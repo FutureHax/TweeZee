@@ -37,6 +37,7 @@ public class MentionsActivity extends Activity {
 	SelectionAdapter a;
 	static SharedPreferences prefs;
 	public static int count = 0;
+	static ArrayList<String> users;
 	
     /** Called when the activity is first created. */
     @Override
@@ -54,17 +55,23 @@ public class MentionsActivity extends Activity {
         allB.setOnClickListener(new OnClickListener() {
 			  public void onClick(View v) {
 				  count = 0;
+				  users.clear();
 				  String[] mentions = SelectionAdapter.selections.toArray(new String[SelectionAdapter.selections.size()]);
 				  	for (int i=0;i<mentions.length;i++) {
 				  		for (int j=0;j<mentions[i].length();j++) {
 				  			count++;
 				  		}
+				  		if (i!=mentions.length-1) {
+				  			count++;
+				  		}
+				  		users.add("@"+mentions[i]);
 				  	}
 				  	finish();
 			  }
 		});
         
         results = new ArrayList<SelectionResults>();
+        users = new ArrayList<String>();
         a = new SelectionAdapter(MentionsActivity.this, results);
         lv1.setAdapter(a);
         

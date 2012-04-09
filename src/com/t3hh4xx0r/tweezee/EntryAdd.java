@@ -55,6 +55,7 @@ public class EntryAdd extends Activity {
 	String[] values;
 	Resources res;
 	long userID;
+	String users;
 
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -83,9 +84,13 @@ public class EntryAdd extends Activity {
 			public void onClick (View v) {
 				if (totalC<140) {
 					if (et1.getText().toString().length() != 0 && et2.getText().toString().length() != 0 && et3.getText().toString().length() != 0) {
-						final DBAdapter db = new DBAdapter(v.getContext());
+					   final DBAdapter db = new DBAdapter(v.getContext());
 			       	   db.open();
-			       	   db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), "sun");
+			       	   if (users != null) {
+			       		   db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString()+" "+users, et2.getText().toString(), et3.getText().toString(), "sun");
+			       	   } else {
+			       		   db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), "sun");			       		   
+			       	   }
 			       	   db.close();
 			       	   finish();
 					} else {
@@ -103,8 +108,7 @@ public class EntryAdd extends Activity {
                             }
                     })
                     .setCancelable(false)
-                    .create().show();
-					
+                    .create().show();					
 				}
 			}
 		});
@@ -214,6 +218,7 @@ public class EntryAdd extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    switch (requestCode) {
 	    case 0:
+	    	StringBuilder s = new StringBuilder();
 	    	mLength = MentionsActivity.count;
 	    	totalC = mLength+et1.getText().length();
 			myCount.setText(String.valueOf(totalC));
@@ -222,6 +227,12 @@ public class EntryAdd extends Activity {
 			} else {
 				myCount.setTextColor(getResources().getColor(R.color.ics));
 			}
+			
+			for (int i=0;i<MentionsActivity.users.size();i++) {
+				s.append(MentionsActivity.users.get(i));
+				s.append(" ");
+			}
+			users = s.toString();
 	        break;
 	    default:
 	        break;

@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.os.Vibrator;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -16,11 +14,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 
 public class UserFragment extends ListFragment {
 	  Context ctx;
@@ -39,7 +37,8 @@ public class UserFragment extends ListFragment {
 		        v.invalidate();
 		    }
 		    entryArray = new ArrayList<String>();
-	        final Vibrator vibe = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE) ;
+			
+			final Vibrator vibe = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE) ;
 
 		    v = inflater.inflate(R.layout.user_fragment, container, false);
 	        listView = (ListView) v.findViewById(android.R.id.list);
@@ -73,41 +72,32 @@ public class UserFragment extends ListFragment {
 		    pos = getArguments().getInt("p");
 		    entryArray = getArguments().getStringArrayList("e");
 		    return v;
-	   }	 
+	}	 
 		
-		@Override
-		public void onStart() {
-			super.onStart();
-			a = new ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, entryArray);
-			setListAdapter(a);
-		}
+	@Override
+	public void onStart() {
+		super.onStart();
+		populateList();
+	}
 	
-		@Override
-		public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		    switch (requestCode) {
-		    case REQUEST_ADD:
-	
-		        if(resultCode != -1) {
-			         StringBuilder sb = new StringBuilder();
-				     DBAdapter db = new DBAdapter(ctx);
-			       	 db.open();
-			       	 Cursor c = db.getAllEntries();
-			       	 try {
-			       		while (c.moveToNext()) {
-			       			if (c.getString(0).equals(MainActivity.users[pos].getName()) && !entryArray.contains(c.getString(1))) {
-			  					sb.append(c.getString(1));
-			  					entryArray.add(c.getString(1));
-			       			}
-			       		}
-			       	 } catch (Exception e) {}
-			       	 c.close();
-			       	 db.close();
-			       	 
-			       	 a.notifyDataSetChanged();
-		        } 
-	
-		    default:
-		        break;
-		    }
-		}
+	private void populateList() {
+		a = new ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, entryArray);
+		setListAdapter(a);
+
+    	StringBuilder sb = new StringBuilder();
+		DBAdapter db = new DBAdapter(ctx);
+	    db.open();
+	    Cursor c = db.getAllEntries();
+	    	try {
+	       		while (c.moveToNext()) {
+	       			if (c.getString(0).equals(MainActivity.users[pos].getName()) && !entryArray.contains(c.getString(1))) {
+	  					sb.append(c.getString(1));
+	  					entryArray.add(c.getString(1));
+	       			}
+	       		}
+	       	 } catch (Exception e) {}
+	   c.close();
+	   db.close();			       	 
+	   a.notifyDataSetChanged();			
+	}
 }
