@@ -81,14 +81,30 @@ public class EntryAdd extends Activity {
 		save = (Button)findViewById(R.id.save_b);
 		save.setOnClickListener(new OnClickListener() {
 			public void onClick (View v) {
-				if (et1.getText().toString().length() != 0 && et2.getText().toString().length() != 0 && et3.getText().toString().length() != 0) {
-			       final DBAdapter db = new DBAdapter(v.getContext());
-		       	   db.open();
-		       	   db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), "sun");
-		       	   db.close();
-		       	   finish();
+				if (totalC<140) {
+					if (et1.getText().toString().length() != 0 && et2.getText().toString().length() != 0 && et3.getText().toString().length() != 0) {
+						final DBAdapter db = new DBAdapter(v.getContext());
+			       	   db.open();
+			       	   db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), "sun");
+			       	   db.close();
+			       	   finish();
+					} else {
+						Toast.makeText(v.getContext(), "Do not leave any fields blank.", 99999).show();
+					}
 				} else {
-					Toast.makeText(v.getContext(), "Do not leave any fields blank.", 99999).show();
+					new AlertDialog.Builder(v.getContext())
+					.setTitle("Yikes!")
+                    .setMessage("The Twitter character limit is 140.\nYou are "+Integer.toString(totalC-140)+" over the limit.")
+                    .setPositiveButton("Whoops!",
+                            new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            	dialog.dismiss();
+                            }
+                    })
+                    .setCancelable(false)
+                    .create().show();
+					
 				}
 			}
 		});
