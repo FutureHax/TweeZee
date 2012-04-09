@@ -182,9 +182,9 @@ public class EntryAdd extends Activity {
 		         runOnUiThread(new Runnable() {
 		               @Override
 		               public void run() {
-		   		        pic.setImageDrawable(p);
+		            	   pic.setImageDrawable(p);
 		               }
-		           });		    			    		    	
+		         });		    			    		    	
 		    }
 		};
 		thread.start();

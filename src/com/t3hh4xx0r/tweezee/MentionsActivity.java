@@ -164,7 +164,7 @@ public class MentionsActivity extends Activity {
 	public void checkService() {
 
         if (prefs.getBoolean("notifyAvailable", false)) {
-      		Intent intent = new Intent(getBaseContext(), Receiver.class);
+      		Intent intent = new Intent(getBaseContext(), Receiver.class).putExtra("pos", pos);
     		PendingIntent pendingIntent = PendingIntent.getBroadcast(
     				getBaseContext().getApplicationContext(), 234324243, intent, 0);
     		AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);

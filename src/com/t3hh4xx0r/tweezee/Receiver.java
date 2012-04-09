@@ -1,6 +1,5 @@
 package com.t3hh4xx0r.tweezee;
 
-import twitter4j.IDs;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -11,31 +10,32 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.Toast;
 
 public class Receiver extends BroadcastReceiver {
 	Twitter twitter;
+	int p;
 	
 	@Override
 	public void onReceive(Context c, Intent i) {
 		if (MentionsActivity.prefs.getBoolean("notifyAvailable", true)) {
 			Toast.makeText(c, "Checking API", 9999999).show();
 			
+			p = i.getIntExtra("pos", 0);
+			
 	        twitter = new TwitterFactory().getInstance();
-	        AccessToken t = new AccessToken(MainActivity.users[0].getToken(), MainActivity.users[0].getSecret());
+	        AccessToken t = new AccessToken(MainActivity.users[p].getToken(), MainActivity.users[p].getSecret());
 	        twitter.setOAuthConsumer(OAUTH.CONSUMER_KEY, OAUTH.CONSUMER_SECRET);
 	        twitter.setOAuthAccessToken(t);
 	        
 			try {
-				 twitter.getFriendsIDs(MainActivity.users[0].getName(), -1);
-				 Editor e = MentionsActivity.prefs.edit();
-				 e.putBoolean("notifyAvailable", false);
-				 e.commit();
-				 alert(c);		
+				 if (twitter.getRateLimitStatus().getRemainingHits() > 0) {
+					 Editor e = MentionsActivity.prefs.edit();
+					 e.putBoolean("notifyAvailable", false);
+					 e.commit();
+					 alert(c);		
+				 }
 			} catch (TwitterException e) {}
 		}
 	}

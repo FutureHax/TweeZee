@@ -42,5 +42,23 @@
            		android:paddingBottom="5dp"
            		android:paddingLeft="15dp"
            		android:text="Delete" />
+    
+       		<ImageView
+           		android:id="@+id/imageView2"
+           		android:layout_width="fill_parent"
+           		android:layout_height="wrap_content"
+           		android:scaleType="fitXY"
+           		android:src="@drawable/test" />
+       		
+       		<TextView
+           		android:id="@+id/send"
+           		android:layout_width="wrap_content"
+           		android:layout_height="wrap_content"
+           		android:layout_weight="1"
+           		android:minWidth="80dp"
+           		android:paddingTop="5dp"
+           		android:paddingBottom="5dp"
+           		android:paddingLeft="15dp"
+           		android:text="Send now" />       		
     </LinearLayout>
 </LinearLayout>

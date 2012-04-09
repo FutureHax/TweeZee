@@ -5,9 +5,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +51,7 @@ public class MainActivity extends FragmentActivity {
 	UserFragment uF;
 	Handler handy;
 	int place;
+	int p = 0;
 	private final static int SIGN_IN = 0;
 
     
@@ -77,6 +86,7 @@ public class MainActivity extends FragmentActivity {
         indicator.setOnPageChangeListener(new OnPageChangeListener() {
         	@Override
         	public void onPageSelected(int position) {  
+        		p = position;
         	}
 
 			@Override
@@ -155,12 +165,46 @@ public class MainActivity extends FragmentActivity {
 	            mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(mi);
 	        break;	        
+	        case R.id.limit:
+	        	apiCheck();
+	        break;	        
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
 		return false;
 	}	
 	
+	private void apiCheck() {
+		Twitter t = new TwitterFactory().getInstance();
+        AccessToken token = new AccessToken(users[p].getToken(), users[p].getSecret());
+        t.setOAuthConsumer(OAUTH.CONSUMER_KEY, OAUTH.CONSUMER_SECRET);
+        t.setOAuthAccessToken(token);
+        
+		int left = 0;
+		int total = 0;
+		int mins = 0;
+		
+		try {
+			left = t.getRateLimitStatus().getRemainingHits();
+			total = t.getRateLimitStatus().getHourlyLimit();
+			mins = t.getRateLimitStatus().getSecondsUntilReset()/60;
+		} catch (TwitterException e) {
+			e.printStackTrace();
+		}
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	    builder.setTitle("TweeZee API limit");
+	    builder.setIcon(R.drawable.ic_launcher);
+	    builder.setMessage("You currently have "+Integer.toString(left)+" of "+Integer.toString(total)+".\nThis limit will refresh in "+Integer.toString(mins)+" minutes")
+			   .setCancelable(false)
+			   .setPositiveButton("Cool beans man.", new DialogInterface.OnClickListener() {
+			       public void onClick(DialogInterface dialog, int id) {
+			    	   dialog.dismiss();
+			       }
+			   });
+			AlertDialog alert = builder.create();
+			alert.show();		
+	}
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 

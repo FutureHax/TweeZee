@@ -2,6 +2,11 @@ package com.t3hh4xx0r.tweezee;
 
 import java.util.ArrayList;
 
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -259,9 +264,20 @@ public class BetterPopupWindow {
 		         b.putInt("pos", place);
 		         mi.putExtras(b);
 		         this.anchor.getContext().startActivity(mi);
+	        } 
+  	    	
+  	    	if(v.getId() == R.id.send) {  
+			     Twitter t = new TwitterFactory().getInstance();
+			     AccessToken token = new AccessToken(MainActivity.users[place].getToken(), MainActivity.users[place].getSecret());
+			     t.setOAuthConsumer(OAUTH.CONSUMER_KEY, OAUTH.CONSUMER_SECRET);
+			     t.setOAuthAccessToken(token);
+			     try {
+					t.updateStatus(message);
+				} catch (TwitterException e) {
+					e.printStackTrace();
+				}
+		       	 this.dismiss();
 	        }
-  	           
-  		}
-	
+  		}	
     }
 }
