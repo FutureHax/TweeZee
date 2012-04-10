@@ -54,12 +54,14 @@ public class MentionsActivity extends Activity {
         userID = extras.getLong("id");
         pos = extras.getInt("pos");
         mentions = extras.getString("users", null);
-        mentions = new String(mentions.replaceAll("@", ""));
-        String[] mMentions = mentions.split(" ");
-        mentionsA = new ArrayList<String>();
-        mentionsA.clear();
-        for (int i=0;i<mMentions.length;i++) {
-        	mentionsA.add(mMentions[i]);
+        if (mentions != null) {
+        	mentions = new String(mentions.replaceAll("@", ""));
+        	String[] mMentions = mentions.split(" ");
+        	mentionsA = new ArrayList<String>();
+        	mentionsA.clear();
+        	for (int i=0;i<mMentions.length;i++) {
+        		mentionsA.add(mMentions[i]);
+        	}
         }
         lv1 = (ListView) findViewById(android.R.id.list);
         allB = (Button) findViewById(R.id.all_button);

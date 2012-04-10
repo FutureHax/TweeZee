@@ -10,16 +10,21 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 public class Receiver extends BroadcastReceiver {
 	Twitter twitter;
 	int p;
+	SharedPreferences prefs;
 	
 	@Override
 	public void onReceive(Context c, Intent i) {
-		if (MentionsActivity.prefs.getBoolean("notifyAvailable", true)) {
+		prefs = PreferenceManager.getDefaultSharedPreferences(c);
+
+		if (prefs.getBoolean("notifyAvailable", true)) {
 			Toast.makeText(c, "Checking API", 9999999).show();
 			
 			p = i.getIntExtra("pos", 0);
@@ -31,7 +36,7 @@ public class Receiver extends BroadcastReceiver {
 	        
 			try {
 				 if (twitter.getRateLimitStatus().getRemainingHits() > 0) {
-					 Editor e = MentionsActivity.prefs.edit();
+					 Editor e = prefs.edit();
 					 e.putBoolean("notifyAvailable", false);
 					 e.commit();
 					 alert(c);		

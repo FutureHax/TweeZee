@@ -265,6 +265,7 @@ public class BetterPopupWindow {
 			       	 db.close();
 			       	 this.dismiss();
 			         Intent mi = new Intent(v.getContext(), MainActivity.class);
+			         mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			         Bundle b = new Bundle();
 			         b.putInt("pos", place);
 			         mi.putExtras(b);

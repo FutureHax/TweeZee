@@ -72,9 +72,11 @@ public class SelectionAdapter extends BaseAdapter {
 	  } else {
 		  holder.statusBox.setBackgroundResource(R.drawable.btn_check_off_focused_holo_dark); 
 	  }
-	  if (MentionsActivity.mentionsA.contains(holder.file.getText().toString())) {
-		  selections.add(holder.file.getText().toString());
-		  holder.statusBox.setBackgroundResource(R.drawable.btn_check_on_focused_holo_dark);
+	  if (MentionsActivity.mentionsA != null) {
+		  if (MentionsActivity.mentionsA.contains(holder.file.getText().toString())) {
+			  selections.add(holder.file.getText().toString());
+			  holder.statusBox.setBackgroundResource(R.drawable.btn_check_on_focused_holo_dark);
+		  }
 	  }
 	  return convertView;
 	 }
