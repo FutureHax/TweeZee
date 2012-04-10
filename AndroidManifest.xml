@@ -28,7 +28,7 @@
         </activity>
        <activity
             android:name="AccountManager"
-            android:label="AccountManager" >
+            android:label="Account Manager" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>

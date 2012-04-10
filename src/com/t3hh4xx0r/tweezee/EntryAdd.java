@@ -1,7 +1,5 @@
 package com.t3hh4xx0r.tweezee;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
@@ -10,7 +8,6 @@ import java.util.Calendar;
 import twitter4j.ProfileImage;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -23,19 +20,17 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
 
 public class EntryAdd extends Activity {
 
@@ -52,11 +47,13 @@ public class EntryAdd extends Activity {
 	int p;
 	int mLength = 0;
 	int totalC = 0;
+	int incomingT = 0;
 	ArrayList<String> entryArray;
 	String[] values;
 	Resources res;
 	long userID;
 	String users;
+	Bundle extras;
 
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -64,10 +61,11 @@ public class EntryAdd extends Activity {
 		
 	    res = getResources();
 	    entryArray = new ArrayList<String>();
-        Bundle extras = getIntent().getExtras();
+        extras = getIntent().getExtras();
         p = extras.getInt("pos");
 		String usern = MainActivity.users[p].getName(); 
 		userID = Long.parseLong(MainActivity.users[p].getId());
+		SelectionAdapter.selections.clear();
 
 	    String[] weekdays = new DateFormatSymbols().getWeekdays();
 	    values = new String[] {
@@ -87,13 +85,22 @@ public class EntryAdd extends Activity {
 					if (et1.getText().toString().length() != 0 && et2.getText().toString().length() != 0 && et3.getText().toString().length() != 0) {
 					   final DBAdapter db = new DBAdapter(v.getContext());
 			       	   db.open();
-			       	   if (users != null) {
-			       		   db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString()+" "+users, et2.getText().toString(), et3.getText().toString(), "sun");
-			       	   } else {
-			       		   db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), "sun");			       		   
-			       	   }
+			           if (!extras.getBoolean("editing", false)) {
+				       	   if (users != null) {
+				       		   db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), "sun", users);
+				       	   } else {
+				       		   db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), "sun", "");			       		   
+				       	   }
+				       	   finish();
+			           } else {
+				       	   if (users != null) {
+				       		   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et2.getText().toString(), et3.getText().toString());
+				       	   } else {
+				       		   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), "", extras.getString("message"), et2.getText().toString(), et3.getText().toString());			       		   
+				       	   }
+				       	   finish();   
+			           }
 			       	   db.close();
-			       	   finish();
 					} else {
 						Toast.makeText(v.getContext(), "Do not leave any fields blank.", 99999).show();
 					}
@@ -125,11 +132,31 @@ public class EntryAdd extends Activity {
 		tV2 = (TextView)findViewById(R.id.mentionsTv);
 		tV2.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v) {				
-	            startActivityForResult(new Intent(v.getContext(), MentionsActivity.class).putExtra("pos", p).putExtra("id", userID).putExtra("user", name.getText().toString().replace("@", "")), 0);
+			public void onClick(View v) {	
+				if (extras.getBoolean("editing", false)) {
+					Intent i = new Intent(v.getContext(), MentionsActivity.class);
+					Bundle b = new Bundle();
+					b.putInt("pos", p);
+					b.putLong("id", userID);
+					b.putString("user", name.getText().toString().replace("@", ""));
+					b.putString("users", extras.getString("mentions"));
+					i.putExtras(b);
+					startActivityForResult(i, 0);					
+				} else {
+					Intent i = new Intent(v.getContext(), MentionsActivity.class);
+					Bundle b = new Bundle();
+					b.putInt("pos", p);
+					b.putLong("id", userID);
+					b.putString("user", name.getText().toString().replace("@", ""));
+					i.putExtras(b);
+					startActivityForResult(i, 0);
+				}
 			}
 		});
 		myCount = (TextView)findViewById(R.id.myCount);
+		if (extras.getBoolean("editing", false)) {
+			incomingT = extras.getString("mentions").replaceAll("@", "").length();
+		}
 		myCount.setText("0");
 		tV = (TextView)findViewById(R.id.dayTv);
 		tV.setOnClickListener(new OnClickListener() {
@@ -163,7 +190,7 @@ public class EntryAdd extends Activity {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				totalC = mLength + s.length();
+				totalC = mLength + s.length() + incomingT;
 				myCount.setText(String.valueOf(totalC));
 				if (totalC>140) {
 					myCount.setTextColor(Color.RED);
@@ -172,9 +199,17 @@ public class EntryAdd extends Activity {
 				}
 			}	    	
 	    });
+        if (extras.getBoolean("editing", false)) {
+        	et1.setText(extras.getString("message"));
+        }
 		et2 = (EditText)findViewById(R.id.editAmount);
-		et3 = (EditText)findViewById(R.id.editInterval);
-		
+        if (extras.getBoolean("editing", false)) {
+        	et2.setText(extras.getString("sends"));
+        }
+        et3 = (EditText)findViewById(R.id.editInterval);
+        if (extras.getBoolean("editing", false)) {
+        	et3.setText(extras.getString("interval"));
+        }		
 		Thread thread = new Thread() {
 			Drawable p;
 		    @Override

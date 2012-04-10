@@ -11,5 +11,5 @@
 	<string name="cancel_auth">Cancel signing in</string>
 	<string name="dont_cancel_auth">Don\'t cancel</string>
 	<string name="auth_network_error">Could not contact Twitter. Please try again.</string>
-	<string name="updates">None</string>
+	<string name="updates">This isn\'t even an alpha build. This is basically just tha app skeleton at this point. The service to send the tweets is not currently written. You can save a tweet and send it by long pressing it and selecting the \"send now\" option, but other than that, this is just the skeleton.\n\nI need people to test it out, make sure that I didn't overlook anything stupid, that there are no repeated FCs, etc, etc.</string>
 </resources>

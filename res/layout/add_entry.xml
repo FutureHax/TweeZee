@@ -144,7 +144,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/div2"
-        android:hint="How long between"
+        android:hint="Interval (in minutes) between sends."
         android:inputType="number"
         android:paddingTop="3dp" />
 
@@ -164,7 +164,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/div3"
-        android:hint="Number of sends"
+        android:hint="Number of sends per day."
         android:inputType="number"
         android:paddingTop="3dp" />
 

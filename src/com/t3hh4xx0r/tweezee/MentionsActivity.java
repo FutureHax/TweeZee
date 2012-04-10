@@ -26,9 +26,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class MentionsActivity extends Activity {
 	String userN;
+	String mentions;
 	Long userID;
 	int pos;
 	Twitter twitter;
@@ -39,6 +41,7 @@ public class MentionsActivity extends Activity {
 	static SharedPreferences prefs;
 	public static int count = 0;
 	static ArrayList<String> users;
+	static ArrayList<String> mentionsA;
 	
     /** Called when the activity is first created. */
     @Override
@@ -50,7 +53,14 @@ public class MentionsActivity extends Activity {
         userN = extras.getString("user");
         userID = extras.getLong("id");
         pos = extras.getInt("pos");
-        
+        mentions = extras.getString("users", null);
+        mentions = new String(mentions.replaceAll("@", ""));
+        String[] mMentions = mentions.split(" ");
+        mentionsA = new ArrayList<String>();
+        mentionsA.clear();
+        for (int i=0;i<mMentions.length;i++) {
+        	mentionsA.add(mMentions[i]);
+        }
         lv1 = (ListView) findViewById(android.R.id.list);
         allB = (Button) findViewById(R.id.all_button);
         allB.setOnClickListener(new OnClickListener() {
@@ -60,8 +70,8 @@ public class MentionsActivity extends Activity {
 				  String[] mentions = SelectionAdapter.selections.toArray(new String[SelectionAdapter.selections.size()]);
 				  	for (int i=0;i<mentions.length;i++) {
 				  		for (int j=0;j<mentions[i].length();j++) {
-				  			count++;
-				  		}
+					  		count++;
+						}
 				  		if (i!=mentions.length-1) {
 				  			count++;
 				  		}

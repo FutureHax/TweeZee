@@ -4,6 +4,7 @@ package com.t3hh4xx0r.tweezee;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,7 +46,7 @@ public class SelectionAdapter extends BaseAdapter {
 		  holder.file = (TextView) convertView.findViewById(R.id.file);
 		  holder.statusBox = (ImageView) convertView.findViewById(R.id.status_box);
 		  
-		  convertView.setTag(holder);   	   	  
+		  convertView.setTag(holder);   	
 		  convertView.setOnClickListener(new OnClickListener() {
 			  public void onClick(View v) {
 				  if (selections.contains(holder.file.getText().toString())) {
@@ -70,6 +71,10 @@ public class SelectionAdapter extends BaseAdapter {
 		  holder.statusBox.setBackgroundResource(R.drawable.btn_check_on_focused_holo_dark);
 	  } else {
 		  holder.statusBox.setBackgroundResource(R.drawable.btn_check_off_focused_holo_dark); 
+	  }
+	  if (MentionsActivity.mentionsA.contains(holder.file.getText().toString())) {
+		  selections.add(holder.file.getText().toString());
+		  holder.statusBox.setBackgroundResource(R.drawable.btn_check_on_focused_holo_dark);
 	  }
 	  return convertView;
 	 }

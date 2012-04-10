@@ -112,15 +112,16 @@ public class MainActivity extends FragmentActivity {
 	
 	   public ArrayList<String> updateUserFrag (int p) {		   
 		     entryArray = new ArrayList<String>();
-	         StringBuilder sb = new StringBuilder();
 		     DBAdapter db = new DBAdapter(this);
 	       	 db.open();
 	       	 Cursor c = db.getAllEntries();
 	       	 try {
 	       		while (c.moveToNext()) {
-	       			if (c.getString(0).equals(users[p].getName())) {
+	   	         StringBuilder sb = new StringBuilder();
+	       			if (c.getString(0).equals(users[p].getName())) {	       			
 	  					sb.append(c.getString(1));
-	  					entryArray.add(c.getString(1));
+	  					sb.append(" "+c.getString(c.getColumnIndex("mentions")));
+	  					entryArray.add(sb.toString());
 	       			}
 	       		}
 	       	 } catch (Exception e) {}

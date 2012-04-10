@@ -21,6 +21,7 @@ public class DBAdapter {
     public static final String KEY_WAIT = "send_wait";
     public static final String KEY_DAY = "send_day";
     public static final String KEY_MESSAGE = "message";
+    public static final String KEY_MENTIONS = "mentions";
     
     private static final String DATABASE_NAME = "tweezee.db";
     private static final String USER_TABLE = "users";
@@ -33,7 +34,7 @@ public class DBAdapter {
         
     private static final String CREATE_ENTRIES =
             "create table entries (_id integer primary key autoincrement, "
-                    + "username text not null, message text not null, send_amount text not null, send_wait text not null, send_day text not null);";
+                    + "username text not null, message text not null, mentions text not null, send_amount text not null, send_wait text not null, send_day text not null);";
          
     
     private final Context context; 
@@ -84,7 +85,7 @@ public class DBAdapter {
     	DBHelper.close();
     }
     
-    public long insertEntry(String name, String message, String amount, String wait, String day) 
+    public long insertEntry(String name, String message, String amount, String wait, String day, String mentions) 
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_USERNAME, name);
@@ -92,6 +93,7 @@ public class DBAdapter {
         initialValues.put(KEY_AMOUNT, amount);
         initialValues.put(KEY_WAIT, wait);
         initialValues.put(KEY_DAY, day);
+        initialValues.put(KEY_MENTIONS, mentions);
         
         return db.insert(ENTRY_TABLE, null, initialValues);
     }
@@ -116,7 +118,8 @@ public class DBAdapter {
                 KEY_MESSAGE,
                 KEY_AMOUNT,
                 KEY_WAIT,
-                KEY_DAY}, 
+                KEY_DAY,
+                KEY_MENTIONS}, 
                 null,
                 null, 
                 null, 
@@ -182,19 +185,27 @@ public class DBAdapter {
         }
                 
         return db.delete(USER_TABLE, KEY_ROWID + 
-        		"=" + mCursor.getString(0), null) > 0;        		
+        		"=" + mCursor.getString(0), null) > 0;  
     }	
    
-   public void addFriends(String user, String friends) {
+    public void addFriends(String user, String friends) {
 	        ContentValues args = new ContentValues();
 	        args.put(KEY_FRIENDS, friends);
 	        this.db.update(USER_TABLE, args, "username = ?", new String[] {user});
-	    }
+    }
 
-	   public void addFriendIds(String user, String ids) {
-	        ContentValues args = new ContentValues();
-	        args.put(KEY_FRIEND_IDS, ids);
-	        this.db.update(USER_TABLE, args, "username = ?", new String[] {user});
-	    }
-	   
+	public void addFriendIds(String user, String ids) {
+		ContentValues args = new ContentValues();
+	    args.put(KEY_FRIEND_IDS, ids);
+	    this.db.update(USER_TABLE, args, "username = ?", new String[] {user});
+	}
+
+	public void updateEntry(String user, String message, String mentions, String og, String wait, String amount) {
+		ContentValues args = new ContentValues();
+	    args.put(KEY_MESSAGE, message);
+	    args.put(KEY_MENTIONS, mentions);
+	    args.put(KEY_AMOUNT, amount);
+	    args.put(KEY_WAIT, wait);
+	    this.db.update(ENTRY_TABLE, args, ("message = ? AND username = ?"), new String[] {og, user});
+	}	
 }
