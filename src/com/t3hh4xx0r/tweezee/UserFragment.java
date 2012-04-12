@@ -94,10 +94,12 @@ public class UserFragment extends ListFragment {
 			ArrayList<String> mMentions = new ArrayList<String>();
 			ArrayList<String> mIntervals = new ArrayList<String>();
 			ArrayList<String> mSends = new ArrayList<String>();
+			ArrayList<String> mDays = new ArrayList<String>();
 			String m = null;
 			String e = null;
 			String i = null;
 			String s = null;
+			String d = null;
 			DBAdapter db = new DBAdapter(ctx);
 		    db.open();
 		    Cursor c = db.getAllEntries();
@@ -108,6 +110,7 @@ public class UserFragment extends ListFragment {
 		       				mMentions.add(c.getString(c.getColumnIndex("mentions")));
 		       				mIntervals.add(c.getString(c.getColumnIndex("send_wait")));
 		       				mSends.add(c.getString(c.getColumnIndex("send_amount")));
+		       				mDays.add(c.getString(c.getColumnIndex("send_day")));
 		       			}
 		       		}
 		       	 } catch (Exception e1) {}
@@ -117,6 +120,7 @@ public class UserFragment extends ListFragment {
 		    m = mMentions.get(p);
 		    i = mIntervals.get(p);
 		    s = mSends.get(p);
+		    d = mDays.get(p);
             Bundle b = new Bundle();
             b.putBoolean("editing", true);
             b.putInt("pos", pos);
@@ -124,6 +128,7 @@ public class UserFragment extends ListFragment {
             b.putString("sends", s);
             b.putString("interval", i);
             b.putString("mentions", m);
+            b.putString("days", d);
             Intent mi = new Intent(v.getContext(), EntryAdd.class);
             mi.putExtras(b);
             entryArray.remove(p);

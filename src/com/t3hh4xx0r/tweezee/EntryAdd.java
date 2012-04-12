@@ -5,11 +5,14 @@ import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import twitter4j.ProfileImage;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.content.Intent;
@@ -49,16 +52,21 @@ public class EntryAdd extends Activity {
 	int totalC = 0;
 	int incomingT = 0;
 	ArrayList<String> entryArray;
-	String[] values;
+	String[] daysOfWeek;
 	Resources res;
 	long userID;
 	String users;
 	Bundle extras;
+	StringBuilder selectedDays;
+	String myDaysBooleans;
+	boolean[] selectedDaysOfWeek;
+	ArrayList<Boolean> selected;
 
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.add_entry);
 		
+
 	    res = getResources();
 	    entryArray = new ArrayList<String>();
         extras = getIntent().getExtras();
@@ -68,7 +76,7 @@ public class EntryAdd extends Activity {
 		SelectionAdapter.selections.clear();
 
 	    String[] weekdays = new DateFormatSymbols().getWeekdays();
-	    values = new String[] {
+	    daysOfWeek = new String[] {
 	            weekdays[Calendar.MONDAY],
 	            weekdays[Calendar.TUESDAY],
 	            weekdays[Calendar.WEDNESDAY],
@@ -77,26 +85,36 @@ public class EntryAdd extends Activity {
 	            weekdays[Calendar.SATURDAY],
 	            weekdays[Calendar.SUNDAY],
 	    };
+		selected = new ArrayList<Boolean>();
+		selected.clear();
+		for (int i=0;i<daysOfWeek.length;i++) {
+			selected.add(false);
+		}
 	 
 		save = (Button)findViewById(R.id.save_b);
 		save.setOnClickListener(new OnClickListener() {
 			public void onClick (View v) {
+				if (selectedDays != null) {
+					myDaysBooleans = selectedDays.toString();
+				} else {
+					myDaysBooleans = "true,true,true,true,true,true,true,";
+				}
 				if (totalC<140) {
 					if (et1.getText().toString().length() != 0 && et2.getText().toString().length() != 0 && et3.getText().toString().length() != 0) {
 					   final DBAdapter db = new DBAdapter(v.getContext());
 			       	   db.open();
 			           if (!extras.getBoolean("editing", false)) {
 				       	   if (users != null) {
-				       		   db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), "sun", users);
+				       		   db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), myDaysBooleans, users);
 				       	   } else {
-				       		   db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), "sun", "");			       		   
+				       		   db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), myDaysBooleans, "");			       		   
 				       	   }
 				       	   finish();
 			           } else {
 				       	   if (users != null) {
-				       		   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et2.getText().toString(), et3.getText().toString());
+				       		   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et2.getText().toString(), et3.getText().toString(), myDaysBooleans);
 				       	   } else {
-				       		   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), "", extras.getString("message"), et2.getText().toString(), et3.getText().toString());			       		   
+				       		   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), "", extras.getString("message"), et2.getText().toString(), et3.getText().toString(), myDaysBooleans);			       		   
 				       	   }
 				       	   finish();   
 			           }
@@ -162,17 +180,27 @@ public class EntryAdd extends Activity {
 		tV.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-		        boolean[] array = {false, false, false, false, false, false, false};	    
-				   new AlertDialog.Builder(v.getContext())
+				selectedDays = new StringBuilder();
+				new AlertDialog.Builder(v.getContext())
 				      .setTitle("Days of week")
 				      .setCancelable(true)
-				      .setMultiChoiceItems(values, array, new OnMultiChoiceClickListener() {
+				      .setMultiChoiceItems(daysOfWeek, selectedDaysOfWeek, new OnMultiChoiceClickListener() {
 				    	  public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-				    		  
+				    		  if (isChecked) {
+				    			  ArrayUtils.add(selectedDaysOfWeek, which, true);
+				    		  }
 				    	  }
 				      })
 				      .setPositiveButton("OK",new DialogInterface.OnClickListener() {
-				    	  public void onClick(DialogInterface dialog, int whichButton){
+				    	  public void onClick(DialogInterface dialog, int whichButton){		
+				    		  for (int i=0;i<selectedDaysOfWeek.length;i++) {
+				    			  if (selectedDaysOfWeek[i]) {
+				    				  selectedDays.append("true,");
+				    			  } else {
+				    				  selectedDays.append("false,");
+				    			  }
+				    		  }
+				    		  dialog.dismiss();
 				    	  }
 				      })
 				      .show();
@@ -201,6 +229,26 @@ public class EntryAdd extends Activity {
 	    });
         if (extras.getBoolean("editing", false)) {
         	et1.setText(extras.getString("message"));
+        	String[] days = extras.getString("days").split(",");
+        	selectedDaysOfWeek = new boolean[] {
+        			Boolean.parseBoolean(days[0]),
+        			Boolean.parseBoolean(days[1]),
+        			Boolean.parseBoolean(days[2]),
+        			Boolean.parseBoolean(days[3]),
+        			Boolean.parseBoolean(days[4]),
+        			Boolean.parseBoolean(days[5]),
+        			Boolean.parseBoolean(days[6]),
+        	};
+        } else {
+    	    selectedDaysOfWeek = new boolean[] {
+    	            false,
+    	            false,
+    	            false,
+    	            false,
+    	            false,
+    	            false,
+    	            false,
+    	    };
         }
 		et2 = (EditText)findViewById(R.id.editAmount);
         if (extras.getBoolean("editing", false)) {
