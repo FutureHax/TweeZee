@@ -45,6 +45,8 @@ public class EntryAdd extends Activity {
 	TextView tV;
 	TextView myCount;
 	TextView tV2;
+	TextView mPreview;
+	TextView dPreview;
 	TextView name;
 	ImageView pic;
 	int p;
@@ -97,28 +99,30 @@ public class EntryAdd extends Activity {
 				if (selectedDays != null) {
 					myDaysBooleans = selectedDays.toString();
 				} else {
-					myDaysBooleans = "true,true,true,true,true,true,true,";
+					if (extras.getString("days") != null) {
+						myDaysBooleans = extras.getString("days");
+					} else {
+						myDaysBooleans = "false,false,false,false,false,false,false,";
+					}
+				}
+				if (users == null) {
+					if (extras.getString("mentions") == null) {
+						users = "";
+					} else {
+						users = extras.getString("mentions");
+					}
 				}
 				if (totalC<140) {
 					if (et1.getText().toString().length() != 0 && et2.getText().toString().length() != 0 && et3.getText().toString().length() != 0) {
 					   final DBAdapter db = new DBAdapter(v.getContext());
 			       	   db.open();
 			           if (!extras.getBoolean("editing", false)) {
-				       	   if (users != null) {
-				       		   db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), myDaysBooleans, users);
-				       	   } else {
-				       		   db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), myDaysBooleans, "");			       		   
-				       	   }
-				       	   finish();
+				       		db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), myDaysBooleans, users);
 			           } else {
-				       	   if (users != null) {
-				       		   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et2.getText().toString(), et3.getText().toString(), myDaysBooleans);
-				       	   } else {
-				       		   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), "", extras.getString("message"), et2.getText().toString(), et3.getText().toString(), myDaysBooleans);			       		   
-				       	   }
-				       	   finish();   
+			        	   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et2.getText().toString(), et3.getText().toString(), myDaysBooleans);
 			           }
 			       	   db.close();
+			           finish();
 					} else {
 						Toast.makeText(v.getContext(), "Do not leave any fields blank.", 99999).show();
 					}
@@ -147,6 +151,9 @@ public class EntryAdd extends Activity {
 		name = (TextView)findViewById(R.id.userN);
 		name.setText("@"+usern);
 		pic = (ImageView)findViewById(R.id.userP);
+		mPreview = (TextView)findViewById(R.id.mentions_pre);
+		dPreview = (TextView)findViewById(R.id.day_pre);
+		tV2 = (TextView)findViewById(R.id.mentionsTv);
 		tV2 = (TextView)findViewById(R.id.mentionsTv);
 		tV2.setOnClickListener(new OnClickListener() {
 			@Override
@@ -193,12 +200,19 @@ public class EntryAdd extends Activity {
 				      })
 				      .setPositiveButton("OK",new DialogInterface.OnClickListener() {
 				    	  public void onClick(DialogInterface dialog, int whichButton){		
+				    		  StringBuilder dPre = new StringBuilder();
 				    		  for (int i=0;i<selectedDaysOfWeek.length;i++) {
 				    			  if (selectedDaysOfWeek[i]) {
 				    				  selectedDays.append("true,");
+			    	        		  dPre.append(daysOfWeek[i]+",");
 				    			  } else {
 				    				  selectedDays.append("false,");
 				    			  }
+				    		  }
+				    		  if (dPre.toString().length()>2) {
+				    			  dPreview.setText(dPre.toString());
+				    		  } else {
+				    			  dPreview.setText("No days selected.");
 				    		  }
 				    		  dialog.dismiss();
 				    	  }
@@ -239,6 +253,18 @@ public class EntryAdd extends Activity {
         			Boolean.parseBoolean(days[5]),
         			Boolean.parseBoolean(days[6]),
         	};
+        	StringBuilder dPre = new StringBuilder();
+        	for (int i=0;i<selectedDaysOfWeek.length;i++) {
+        		if (selectedDaysOfWeek[i]) {
+        			dPre.append(daysOfWeek[i]+", ");
+        		}
+        	}
+        	if (extras.getString("mentions").replaceAll("-", ", ").length()>2) {
+        		mPreview.setText(extras.getString("mentions").replaceAll("-", ", ")); 
+        	}
+        	if (dPre.toString().length()>6) {
+        		dPreview.setText(dPre.toString());
+        	}
         } else {
     	    selectedDaysOfWeek = new boolean[] {
     	            false,
@@ -311,6 +337,11 @@ public class EntryAdd extends Activity {
 				s.append(" ");
 			}
 			users = s.toString();
+			if (users.length()>2) {
+	    		mPreview.setText(users);
+			} else {
+	    		mPreview.setText("No mentions");
+			}
 	        break;
 	    default:
 	        break;
