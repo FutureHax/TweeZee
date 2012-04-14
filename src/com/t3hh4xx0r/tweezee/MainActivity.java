@@ -45,17 +45,18 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(icicle);
 		setContentView(R.layout.main);
 		
-        try {
-			new SimpleEula(this).show();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		} 
-        
         DBAdapter db = new DBAdapter(this);
    		db.open();
    		if (!db.isLoggedIn()) {
             startActivity(new Intent(this, Splash.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
    		}
+   		db.close();
+   		
+   		try {
+			new SimpleEula(this).show();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		} 
    		
         try {
             Bundle extras = getIntent().getExtras();
