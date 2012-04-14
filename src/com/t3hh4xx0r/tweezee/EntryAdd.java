@@ -12,7 +12,6 @@ import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.content.Intent;

@@ -51,6 +51,12 @@ public class MainActivity extends FragmentActivity {
 			e1.printStackTrace();
 		} 
         
+        DBAdapter db = new DBAdapter(this);
+   		db.open();
+   		if (!db.isLoggedIn()) {
+            startActivity(new Intent(this, Splash.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+   		}
+   		
         try {
             Bundle extras = getIntent().getExtras();
             place = extras.getInt("pos");

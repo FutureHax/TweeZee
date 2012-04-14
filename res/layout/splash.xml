@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ics">
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+		android:background="@drawable/pinstripe">
+
+        <RelativeLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+			android:background="@drawable/splash_mask">		
+			
+	        <ImageView
+		        android:id="@+id/logo"
+		        android:layout_width="100dp"
+		        android:layout_height="100dp"
+		        android:layout_centerHorizontal="true"
+		        android:layout_centerVertical="true"
+		        android:src="@drawable/splash_logo" />
+
+	        <TextView
+	            android:id="@+id/sign_in"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_centerInParent="true"
+	            android:layout_below="@+id/logo"
+	            android:drawableLeft="@drawable/add_acct"
+	            android:text="Sign in to continue"
+	            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    	</RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.t3hh4xx0r.tweezee"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="2"
+    android:versionName="1.0.1" >
 
     <uses-sdk android:minSdkVersion="8" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -61,7 +61,13 @@
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
-        </activity>        
+       </activity>
+       <activity android:screenOrientation="portrait"
+            android:name=".Splash" >
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>        
+       </activity>        
         <receiver android:name=".Receiver" />        
 	</application>
 </manifest>

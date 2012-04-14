@@ -208,5 +208,21 @@ public class DBAdapter {
 	    args.put(KEY_WAIT, wait);
 	    args.put(KEY_DAY, days);
 	    this.db.update(ENTRY_TABLE, args, ("message = ? AND username = ?"), new String[] {og, user});
-	}	
+	}
+	
+	public boolean isLoggedIn() {
+		Cursor cur = db.rawQuery("SELECT COUNT(*) FROM USERS", null);
+		if (cur != null) {
+		    cur.moveToFirst();
+		    if (cur.getInt (0) == 0) {
+		    	cur.close();
+		    	return false;
+		    } else{
+		    	cur.close();
+		    	return true;
+		    }
+		} else {
+			return false;
+		}			
+	}
 }
