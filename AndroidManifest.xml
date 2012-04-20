@@ -68,6 +68,9 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>        
        </activity>        
-        <receiver android:name=".Receiver" />        
+       <receiver android:name=".Receiver" />        
+       <service
+			android:name=".TweezeeService" >
+		</service>   
 	</application>
 </manifest>

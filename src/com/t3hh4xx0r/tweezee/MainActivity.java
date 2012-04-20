@@ -58,6 +58,8 @@ public class MainActivity extends FragmentActivity {
 			e1.printStackTrace();
 		} 
    		
+   		startService(new Intent(this, TweezeeService.class));
+   		
         try {
             Bundle extras = getIntent().getExtras();
             place = extras.getInt("pos");
