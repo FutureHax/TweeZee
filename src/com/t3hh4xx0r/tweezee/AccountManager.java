@@ -9,12 +9,15 @@ import twitter4j.ProfileImage;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -32,6 +35,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class AccountManager extends ListActivity {
 	ImageView pic;
@@ -60,9 +64,36 @@ public class AccountManager extends ListActivity {
         mAddEntry.setOnClickListener(new OnClickListener() {
         	@Override
         	public void onClick(View v) {
-	            Intent si = new Intent(v.getContext(), TwitterAuth.class);
-	            si.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	            startActivityForResult(si, 0);
+        		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(v.getContext());
+
+			    DBAdapter db = new DBAdapter(v.getContext());
+		       	db.open();
+		       	Cursor c = db.getAllUsers();
+		       	int count = c.getCount();
+		       	c.close();
+		       	db.close();
+		       	if (count>0 && !prefs.getBoolean("isReg", false)) {
+		           	AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+		      		builder.setTitle("Upgrade to premium to enable multiple account support!");
+		      		builder.setMessage("The free version is limited to only one account.\nPlease upgrade to access premium features.")
+		      		   .setCancelable(false)
+		      		   .setPositiveButton("Let\'s check it out!", new DialogInterface.OnClickListener() {
+		      		       public void onClick(DialogInterface dialog, int id) {
+		      		    	   Toast.makeText(getBaseContext(), "Premium version is currently not available. Sorry!", Toast.LENGTH_LONG).show();
+		      		       }
+		      		   })
+		      		.setNegativeButton("Not today", new DialogInterface.OnClickListener() {
+		      		       public void onClick(DialogInterface dialog, int id) {
+		      		    	   dialog.dismiss();
+		      		       }
+		      		   });
+		      		AlertDialog alert = builder.create();
+		      		alert.show();
+		       	} else {
+		       		Intent si = new Intent(v.getContext(), TwitterAuth.class);
+		       		si.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		       		startActivityForResult(si, 0);
+		       	}
         	}
         });	
         

@@ -11,9 +11,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -23,6 +26,7 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.viewpagerindicator.TitlePageIndicator;
 import com.viewpagerindicator.TitleProvider;
@@ -40,11 +44,37 @@ public class MainActivity extends FragmentActivity {
 	int p = 0;
 	private final static int SIGN_IN = 0;
 
+	public static SharedPreferences prefs;
+
     
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.main);
 		
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        
+        if (!prefs.getBoolean("lReg", false) && prefs.getBoolean("isReg", false)) {
+            editor.putBoolean("lReg", true);
+            editor.commit();
+            
+        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      		builder.setTitle("Thanks for purchasing!");
+      		builder.setMessage("Enjoy the premium features.")
+      		   .setCancelable(false)
+      		   .setPositiveButton("Can\'t wait to check em out!", new DialogInterface.OnClickListener() {
+      		       public void onClick(DialogInterface dialog, int id) {
+      		    	   dialog.dismiss();
+      		       }
+      		   });
+      		AlertDialog alert = builder.create();
+      		alert.show();
+        }
+        if (!prefs.getBoolean("isReg", false)) {
+    	   Intent intent = new Intent("com.t3hh4xx0r.tweezee.REGISTER");
+    	   this.sendBroadcast(intent, Manifest.permission.REGISTER);	
+    	}
+        
         DBAdapter db = new DBAdapter(this);
    		db.open();
    		if (!db.isLoggedIn()) {
@@ -148,15 +178,49 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
+	    	case R.id.feedback:
+	    		Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+	    		sendIntent.setClassName("com.google.android.gm", "com.google.android.gm.ComposeActivityGmail");
+	    		sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { "r2doesinc@gmail.com" });
+	    		sendIntent.setData(Uri.parse("r2doesinc@gmail.com"));
+	    		sendIntent.putExtra(Intent.EXTRA_SUBJECT, "TweeZee Feedback");
+	    		sendIntent.setType("plain/text");
+	    		startActivity(sendIntent);
+	    	break;
 	        case R.id.settings:
 	            Intent s = new Intent(this, SettingsMenu.class);
 	            s.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(s);
 	        break;
 	        case R.id.sign_in:
-	            Intent si = new Intent(this, TwitterAuth.class);
-	            si.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	            startActivityForResult(si, SIGN_IN);
+			    DBAdapter db = new DBAdapter(this);
+		       	db.open();
+		       	Cursor c = db.getAllUsers();
+		       	int count = c.getCount();
+		       	c.close();
+		       	db.close();
+		       	if (count>0 && !prefs.getBoolean("isReg", false)) {
+		           	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		      		builder.setTitle("Upgrade to premium to enable multiple account support!");
+		      		builder.setMessage("The free version is limited to only one account.\nPlease upgrade to access premium features.")
+		      		   .setCancelable(false)
+		      		   .setPositiveButton("Let\'s check it out!", new DialogInterface.OnClickListener() {
+		      		       public void onClick(DialogInterface dialog, int id) {
+		      		    	   Toast.makeText(getBaseContext(), "Premium version is currently not available. Sorry!", Toast.LENGTH_LONG).show();
+		      		       }
+		      		   })
+		      		.setNegativeButton("Not today", new DialogInterface.OnClickListener() {
+		      		       public void onClick(DialogInterface dialog, int id) {
+		      		    	   dialog.dismiss();
+		      		       }
+		      		   });
+		      		AlertDialog alert = builder.create();
+		      		alert.show();
+		       	} else {
+		            Intent si = new Intent(this, TwitterAuth.class);
+		            si.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		            startActivityForResult(si, SIGN_IN);
+		       	}
 	        break;
 	        case R.id.manage_acct:
 	            Intent mi = new Intent(this, AccountManager.class);

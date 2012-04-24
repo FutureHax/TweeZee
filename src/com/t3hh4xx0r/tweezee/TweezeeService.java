@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 public class TweezeeService extends Service {
   
@@ -20,6 +21,7 @@ public class TweezeeService extends Service {
 	
 	public void onDestroyed(){
 	    super.onDestroy();
+	    Toast.makeText(getBaseContext(), "SERVICE STOPPED", 99999).show();
 	    try {
 	    	startService();
 	    } catch (Exception e) {}

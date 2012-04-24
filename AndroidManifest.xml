@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.t3hh4xx0r.tweezee"
-    android:versionCode="2"
-    android:versionName="1.0.1" >
+    android:versionCode="3"
+    android:versionName="1.0.2" >
 
     <uses-sdk android:minSdkVersion="8" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <permission 
+     android:label="Recieve registration broadcasts" 
+     android:name="com.t3hh4xx0r.tweezee.REGISTER" 
+     android:protectionLevel="signature" />
+    <uses-permission android:name="com.t3hh4xx0r.tweezee.REGISTER" />
+    <permission 
+     android:label="Send registration broadcasts" 
+     android:name="com.t3hh4xx0r.tweezeepremium.REGISTERED" 
+     android:protectionLevel="signature" />
+    <uses-permission android:name="com.t3hh4xx0r.tweezeepremium.REGISTERED" />
     
     <application
         android:icon="@drawable/ic_launcher"
@@ -69,7 +80,17 @@
             </intent-filter>        
        </activity>        
        <receiver android:name=".Receiver" />        
-       <service
+        <receiver android:name=".BootReceiver">
+		  <intent-filter android:priority="2147483647"> 
+            <action android:name="android.intent.action.BOOT_COMPLETED"/>
+  		  </intent-filter> 
+		</receiver>        
+        <receiver android:name=".RegistrationService">
+            <intent-filter>
+                <action android:name="com.t3hh4xx0r.tweezeepremium.REGISTERED" />
+            </intent-filter>
+        </receiver>   		
+        <service
 			android:name=".TweezeeService" >
 		</service>   
 	</application>

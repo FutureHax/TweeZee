@@ -2,7 +2,9 @@ package com.t3hh4xx0r.tweezee;
 
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +23,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class UserFragment extends ListFragment {
 	  Context ctx;
@@ -75,11 +79,44 @@ public class UserFragment extends ListFragment {
 	        mAddEntry.setOnClickListener(new OnClickListener() {
 	        	@Override
 	        	public void onClick(View v) {
-	                Bundle b = new Bundle();
-	                b.putInt("pos", pos);
-		            Intent mi = new Intent(v.getContext(), EntryAdd.class);
-		            mi.putExtras(b);
-			        startActivity(mi);	
+	    			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(v.getContext());
+	    		    DBAdapter db = new DBAdapter(v.getContext());
+	    	       	db.open();
+	    	       	Cursor c = db.getAllEntries();
+	    	       	int count = 0;
+	    	       	try {
+    		       		while (c.moveToNext()) {
+    		       			if (c.getString(0).equals(MainActivity.users[pos].getName())) {
+    		       				count++;
+    		       			}
+    		       		}
+    		       	} catch (Exception e1) {}
+	    	       	c.close();
+	    	       	db.close();
+	    	       	if (count>2 && !prefs.getBoolean("isReg", false)) {
+	    	           	AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+	    	      		builder.setTitle("Upgrade to premium today!");
+	    	      		builder.setMessage("The free version is limited to only three saved messages.\nPlease upgrade to access premium features.")
+	    	      		   .setCancelable(false)
+	    	      		   .setPositiveButton("Let\'s check it out!", new DialogInterface.OnClickListener() {
+	    	      		       public void onClick(DialogInterface dialog, int id) {
+	    	      		    	   Toast.makeText(ctx, "Premium version is currently not available. Sorry!", Toast.LENGTH_LONG).show();
+	    	      		       }
+	    	      		   })
+	    	      		.setNegativeButton("Not today", new DialogInterface.OnClickListener() {
+	    	      		       public void onClick(DialogInterface dialog, int id) {
+	    	      		    	   dialog.dismiss();
+	    	      		       }
+	    	      		   });
+	    	      		AlertDialog alert = builder.create();
+	    	      		alert.show();
+	    	       	} else {
+		                Bundle b = new Bundle();
+		                b.putInt("pos", pos);
+			            Intent mi = new Intent(v.getContext(), EntryAdd.class);
+			            mi.putExtras(b);
+				        startActivity(mi);
+	    	       	}
 	        	}
 	        });	   
 		    pos = getArguments().getInt("p");
