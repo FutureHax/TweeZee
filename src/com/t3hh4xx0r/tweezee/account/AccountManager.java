@@ -1,9 +1,18 @@
-package com.t3hh4xx0r.tweezee;
+package com.t3hh4xx0r.tweezee.account;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+
+import com.t3hh4xx0r.tweezee.MainActivity;
+import com.t3hh4xx0r.tweezee.R;
+import com.t3hh4xx0r.tweezee.R.drawable;
+import com.t3hh4xx0r.tweezee.R.id;
+import com.t3hh4xx0r.tweezee.R.layout;
+import com.t3hh4xx0r.tweezee.auth.TwitterAuth;
+import com.t3hh4xx0r.tweezee.models.BetterPopupWindow;
+import com.t3hh4xx0r.tweezee.models.BetterPopupWindow.DemoPopupWindow;
 
 import twitter4j.ProfileImage;
 import twitter4j.Twitter;

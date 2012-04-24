@@ -1,6 +1,9 @@
-package com.t3hh4xx0r.tweezee;
+package com.t3hh4xx0r.tweezee.models;
 import java.io.IOException;
 import java.io.InputStream;
+
+import com.t3hh4xx0r.tweezee.R;
+import com.t3hh4xx0r.tweezee.R.string;
 
 import android.app.Activity;
 import android.app.AlertDialog;

@@ -7,6 +7,9 @@ import java.util.Calendar;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import com.t3hh4xx0r.tweezee.models.DBAdapter;
+import com.t3hh4xx0r.tweezee.models.SelectionAdapter;
+
 import twitter4j.ProfileImage;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;

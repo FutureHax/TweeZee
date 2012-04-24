@@ -13,7 +13,7 @@
         android:theme="@android:style/Theme.Holo"        
         android:label="TweeZee" >
         <activity
-            android:name="TwitterAuth"
+            android:name=".auth.TwitterAuth"
             android:label="TweeZee" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
        <activity
-            android:name="AccountManager"
+            android:name=".account.AccountManager"
             android:label="Account Manager" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -68,9 +68,9 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>        
        </activity>        
-       <receiver android:name="Receiver" />        
+       <receiver android:name=".services.Receiver" />        
        <service
-			android:name="TweezeeService" >
+			android:name=".services.TweezeeService" >
 		</service>   
 	</application>
 </manifest>

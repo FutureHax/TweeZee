@@ -1,7 +1,13 @@
-package com.t3hh4xx0r.tweezee;
+package com.t3hh4xx0r.tweezee.models;
 
 
 import java.util.ArrayList;
+
+import com.t3hh4xx0r.tweezee.MentionsActivity;
+import com.t3hh4xx0r.tweezee.R;
+import com.t3hh4xx0r.tweezee.R.drawable;
+import com.t3hh4xx0r.tweezee.R.id;
+import com.t3hh4xx0r.tweezee.R.layout;
 
 import android.content.Context;
 import android.util.Log;
@@ -15,7 +21,7 @@ import android.widget.TextView;
 
 public class SelectionAdapter extends BaseAdapter {
 	ArrayList<SelectionResults> selectionList;
-    static ArrayList<String> selections = new ArrayList<String>();
+    public static ArrayList<String> selections = new ArrayList<String>();
 	
 	 private LayoutInflater mInflater;
 	 Context ctx;	 

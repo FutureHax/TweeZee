@@ -1,4 +1,4 @@
-package com.t3hh4xx0r.tweezee;
+package com.t3hh4xx0r.tweezee.models;
 
 import android.graphics.drawable.Drawable;
 

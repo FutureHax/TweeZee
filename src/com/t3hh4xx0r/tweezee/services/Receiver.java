@@ -1,4 +1,9 @@
-package com.t3hh4xx0r.tweezee;
+package com.t3hh4xx0r.tweezee.services;
+
+import com.t3hh4xx0r.tweezee.MainActivity;
+import com.t3hh4xx0r.tweezee.R;
+import com.t3hh4xx0r.tweezee.R.drawable;
+import com.t3hh4xx0r.tweezee.auth.OAUTH;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;

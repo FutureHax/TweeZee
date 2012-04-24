@@ -1,4 +1,4 @@
-package com.t3hh4xx0r.tweezee;
+package com.t3hh4xx0r.tweezee.services;
 
 import android.app.Service;
 import android.content.Intent;

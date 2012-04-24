@@ -3,6 +3,11 @@ package com.t3hh4xx0r.tweezee;
 import java.util.ArrayList;
 
 import com.google.common.primitives.Longs;
+import com.t3hh4xx0r.tweezee.auth.OAUTH;
+import com.t3hh4xx0r.tweezee.models.DBAdapter;
+import com.t3hh4xx0r.tweezee.models.SelectionAdapter;
+import com.t3hh4xx0r.tweezee.models.SelectionResults;
+import com.t3hh4xx0r.tweezee.services.Receiver;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -41,7 +46,7 @@ public class MentionsActivity extends Activity {
 	static SharedPreferences prefs;
 	public static int count = 0;
 	static ArrayList<String> users;
-	static ArrayList<String> mentionsA;
+	public static ArrayList<String> mentionsA;
 	
     /** Called when the activity is first created. */
     @Override

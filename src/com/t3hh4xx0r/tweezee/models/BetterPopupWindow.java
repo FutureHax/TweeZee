@@ -1,6 +1,14 @@
-package com.t3hh4xx0r.tweezee;
+package com.t3hh4xx0r.tweezee.models;
 
 import org.apache.commons.lang3.ArrayUtils;
+
+import com.t3hh4xx0r.tweezee.MainActivity;
+import com.t3hh4xx0r.tweezee.R;
+import com.t3hh4xx0r.tweezee.R.id;
+import com.t3hh4xx0r.tweezee.R.layout;
+import com.t3hh4xx0r.tweezee.R.style;
+import com.t3hh4xx0r.tweezee.account.AccountManager;
+import com.t3hh4xx0r.tweezee.auth.OAUTH;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;

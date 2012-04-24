@@ -1,5 +1,7 @@
 package com.t3hh4xx0r.tweezee;
 
+import com.t3hh4xx0r.tweezee.auth.TwitterAuth;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

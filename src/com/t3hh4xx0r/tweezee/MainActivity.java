@@ -24,13 +24,21 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.t3hh4xx0r.tweezee.account.AccountManager;
+import com.t3hh4xx0r.tweezee.auth.OAUTH;
+import com.t3hh4xx0r.tweezee.auth.TwitterAuth;
+import com.t3hh4xx0r.tweezee.models.DBAdapter;
+import com.t3hh4xx0r.tweezee.models.SimpleEula;
+import com.t3hh4xx0r.tweezee.models.User;
+import com.t3hh4xx0r.tweezee.models.UserFragment;
+import com.t3hh4xx0r.tweezee.services.TweezeeService;
 import com.t3hh4xx0r.tweezee.settings.SettingsMenu;
 import com.viewpagerindicator.TitlePageIndicator;
 import com.viewpagerindicator.TitleProvider;
 
 public class MainActivity extends FragmentActivity {
 	
-    static User[] users;
+    public static User[] users;
     public static int user;
 
     ViewPager pager;

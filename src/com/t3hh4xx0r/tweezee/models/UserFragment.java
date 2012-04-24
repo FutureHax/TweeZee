@@ -1,6 +1,12 @@
-package com.t3hh4xx0r.tweezee;
+package com.t3hh4xx0r.tweezee.models;
 
 import java.util.ArrayList;
+
+import com.t3hh4xx0r.tweezee.EntryAdd;
+import com.t3hh4xx0r.tweezee.MainActivity;
+import com.t3hh4xx0r.tweezee.R;
+import com.t3hh4xx0r.tweezee.R.id;
+import com.t3hh4xx0r.tweezee.R.layout;
 
 import android.content.Context;
 import android.content.Intent;

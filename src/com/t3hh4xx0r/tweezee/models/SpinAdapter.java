@@ -1,4 +1,5 @@
-package com.t3hh4xx0r.tweezee;
+package com.t3hh4xx0r.tweezee.models;
+
 
 import android.content.Context;
 import android.graphics.Color;

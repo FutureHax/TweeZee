@@ -1,4 +1,12 @@
-package com.t3hh4xx0r.tweezee;
+package com.t3hh4xx0r.tweezee.auth;
+
+import com.t3hh4xx0r.tweezee.ActivityTask;
+import com.t3hh4xx0r.tweezee.R;
+import com.t3hh4xx0r.tweezee.ActivityTask.Finisher;
+import com.t3hh4xx0r.tweezee.R.id;
+import com.t3hh4xx0r.tweezee.R.layout;
+import com.t3hh4xx0r.tweezee.R.string;
+import com.t3hh4xx0r.tweezee.models.DBAdapter;
 
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.OAuthProvider;
