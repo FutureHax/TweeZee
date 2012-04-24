@@ -4,7 +4,7 @@
     android:versionCode="2"
     android:versionName="1.0.1" >
 
-    <uses-sdk android:minSdkVersion="8" />
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="15" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
     
@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
        <activity
-            android:name="SettingsMenu"
+            android:name="settings.SettingsMenu"
             android:label="Settings" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -57,20 +57,20 @@
         </activity>
         <activity android:screenOrientation="portrait"
             android:label="Mentions"
-            android:name=".MentionsActivity" >
+            android:name="MentionsActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
        </activity>
        <activity android:screenOrientation="portrait"
-            android:name=".Splash" >
+            android:name="Splash" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>        
        </activity>        
-       <receiver android:name=".Receiver" />        
+       <receiver android:name="Receiver" />        
        <service
-			android:name=".TweezeeService" >
+			android:name="TweezeeService" >
 		</service>   
 	</application>
 </manifest>
