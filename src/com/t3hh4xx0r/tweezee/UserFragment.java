@@ -175,6 +175,12 @@ public class UserFragment extends ListFragment {
 		populateList();
 	}
 	
+	@Override
+	public void onResume() {
+		super.onResume();
+		populateList();
+	}	
+	
 	private void populateList() {
 		a = new ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, entryArray);
 		setListAdapter(a);

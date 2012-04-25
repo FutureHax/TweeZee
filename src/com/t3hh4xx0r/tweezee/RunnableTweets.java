@@ -1,5 +1,9 @@
 package com.t3hh4xx0r.tweezee;
 
+import java.util.Calendar;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -13,6 +17,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 public class RunnableTweets implements Runnable {
 
@@ -46,15 +51,42 @@ public class RunnableTweets implements Runnable {
 		     AccessToken tToken = new AccessToken(token, secret);
 		     t.setOAuthConsumer(OAUTH.CONSUMER_KEY, OAUTH.CONSUMER_SECRET);
 		     t.setOAuthAccessToken(tToken);
-		     try {
-				t.updateStatus(message+" "+mentions);
-				if (prefs.getBoolean("notify", true)) {
-					alert(message, c);
-				}
-			} catch (TwitterException e) {
-				e.printStackTrace();
-			}	    
+		     Calendar calendar = Calendar.getInstance();
+		     int cDay = calendar.get(Calendar.DAY_OF_WEEK); 
+		    	 do {
+			    	 try {
+					     if (day.split(",")[cDay-1].equals("true")) {
+					    	 t.updateStatus(getRandom()+" "+message+" "+mentions);
+					    	 DBAdapter db = new DBAdapter(c);
+					    	 db.open();
+					    	 int newAmount = Integer.parseInt(amount)-1;
+					    	 amount = Integer.toString(newAmount);
+					       	 if (newAmount > 0) {
+					       		 db.updateEntry(username, message, mentions, message, wait, Integer.toString(newAmount), day);
+					       	 } else {
+					       		 db.deleteEntry(new String [] {message});
+						       	 db.close();
+					       		 break;
+					       	 }
+					       	 db.close();
+					       	 if (prefs.getBoolean("notify", true)) {
+				    			 alert(message, c);
+				    		 }
+					     }
+			    	 } catch (TwitterException e) {
+			    		 e.printStackTrace();
+			    	 }
+			 	    try {
+			 	    	TimeUnit.MINUTES.sleep(Integer.parseInt(wait));
+			 	    } catch (InterruptedException e) {
+				        e.printStackTrace();
+				    }
+		    	 } while (Integer.parseInt(amount) > 0);
 	    }
+
+		private int getRandom() {
+			return new Random().nextInt(98 - 0 + 1) + 0;
+		}
 
 		private void getUser() {
 		     DBAdapter db = new DBAdapter(c);
@@ -64,7 +96,7 @@ public class RunnableTweets implements Runnable {
 	   			while (cu.moveToNext()) {
 	   				if (cu.getString(1).equals(username)) {
 	   					token = cu.getString(3);
-	   					token = cu.getString(4);
+	   					secret = cu.getString(4);
 	   				}
 	   			}
 	   		 } catch (Exception e) {}

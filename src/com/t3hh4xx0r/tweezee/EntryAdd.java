@@ -78,13 +78,13 @@ public class EntryAdd extends Activity {
 
 	    String[] weekdays = new DateFormatSymbols().getWeekdays();
 	    daysOfWeek = new String[] {
+	            weekdays[Calendar.SUNDAY],
 	            weekdays[Calendar.MONDAY],
 	            weekdays[Calendar.TUESDAY],
 	            weekdays[Calendar.WEDNESDAY],
 	            weekdays[Calendar.THURSDAY],
 	            weekdays[Calendar.FRIDAY],
 	            weekdays[Calendar.SATURDAY],
-	            weekdays[Calendar.SUNDAY],
 	    };
 		selected = new ArrayList<Boolean>();
 		selected.clear();
@@ -139,6 +139,7 @@ public class EntryAdd extends Activity {
                     .setCancelable(false)
                     .create().show();					
 				}
+		   		stopService(new Intent(v.getContext(), TweezeeService.class));
 			}
 		});
 		cancel = (Button)findViewById(R.id.cancel_b);
@@ -231,7 +232,7 @@ public class EntryAdd extends Activity {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				totalC = mLength + s.length() + incomingT;
+				totalC = 2 + mLength + s.length() + incomingT;
 				myCount.setText(String.valueOf(totalC));
 				if (totalC>140) {
 					myCount.setTextColor(Color.RED);
