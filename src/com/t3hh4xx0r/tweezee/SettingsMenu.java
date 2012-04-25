@@ -14,6 +14,7 @@ import android.view.MenuItem;
 
 public class SettingsMenu extends PreferenceActivity{
     private CheckBoxPreference mBoot;
+    private CheckBoxPreference mNotify;
     SharedPreferences prefs;
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -21,6 +22,7 @@ public class SettingsMenu extends PreferenceActivity{
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 		mBoot = (CheckBoxPreference) findPreference("boot");
+		mNotify = (CheckBoxPreference) findPreference("notify");
 	}
 	
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
@@ -28,13 +30,12 @@ public class SettingsMenu extends PreferenceActivity{
 	    Editor e = prefs.edit();
 	    if (preference == mBoot){
             value = mBoot.isChecked();
-            if(value) {
-            	e.putBoolean("boot", true);            
-            } else {
-            	e.putBoolean("boot", false);
-            }
-            e.commit();
-        }
+            e.putBoolean("boot", value);            
+	    } else if (preference == mNotify) {
+            value = mNotify.isChecked();
+            e.putBoolean("notify", value); 
+	    }
+        e.commit();
 	return true;
    }
 	

@@ -11,5 +11,9 @@
             	android:key="boot"
             	android:title="Start on boot"
             	android:defaultValue="true" />
-        </PreferenceCategory>
+        	<CheckBoxPreference
+            	android:key="notify"
+            	android:title="Notifiy on status update."
+            	android:defaultValue="true" />        
+            	</PreferenceCategory>
 </PreferenceScreen>

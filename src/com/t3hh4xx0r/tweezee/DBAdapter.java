@@ -26,7 +26,7 @@ public class DBAdapter {
     private static final String DATABASE_NAME = "tweezee.db";
     private static final String USER_TABLE = "users";
     private static final String ENTRY_TABLE = "entries";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
 
     private static final String CREATE_USERS =
             "create table users (_id integer primary key autoincrement, "
@@ -67,7 +67,7 @@ public class DBAdapter {
         int newVersion) 
         {
             db.execSQL("DROP TABLE IF EXISTS users");
-            db.execSQL("DROP TABLE IF EXISTS entires");
+            db.execSQL("DROP TABLE IF EXISTS entries");
             onCreate(db);
         }
     }    

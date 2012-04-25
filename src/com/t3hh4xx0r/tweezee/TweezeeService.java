@@ -63,7 +63,7 @@ public class TweezeeService extends Service {
    		try {
    			while (c.moveToNext()) {
    				i++;
-   	       		tweet[i-1] = new RunnableTweets(c.getString(c.getColumnIndex("message")));   			
+   	       		tweet[i-1] = new RunnableTweets(this,c.getString(0),c.getString(1),c.getString(2),c.getString(3),c.getString(4),c.getString(5));   			
    	       	}
    		} catch (Exception e) {}
    		c.close();
