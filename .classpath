@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="/home/r2doesinc/bin/extras/android/support/v4/android-support-v4.jar"/>
 	<classpathentry kind="lib" path="/home/r2doesinc/Dropbox/Private/eclipse/guava-11.0.2.jar"/>
 	<classpathentry kind="lib" path="/home/r2doesinc/Dropbox/Private/eclipse/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="/home/r2doesinc/eclipse/workspace/RomCrawler/assets/pontiflex_sdk.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

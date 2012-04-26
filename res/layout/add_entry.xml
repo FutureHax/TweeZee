@@ -222,7 +222,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/sends"
-        android:hint="Number of sends per day."
+        android:hint="Total number of sends."
         android:inputType="number"
         android:paddingTop="3dp" />
 

@@ -140,6 +140,7 @@ public class EntryAdd extends Activity {
                     .create().show();					
 				}
 		   		stopService(new Intent(v.getContext(), TweezeeService.class));
+		   		startService(new Intent(v.getContext(), TweezeeService.class));
 			}
 		});
 		cancel = (Button)findViewById(R.id.cancel_b);

@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,6 +29,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.pontiflex.mobile.webview.sdk.AdManagerFactory;
+import com.pontiflex.mobile.webview.sdk.IAdManager;
 import com.viewpagerindicator.TitlePageIndicator;
 import com.viewpagerindicator.TitleProvider;
 
@@ -45,12 +48,13 @@ public class MainActivity extends FragmentActivity {
 	private final static int SIGN_IN = 0;
 
 	public static SharedPreferences prefs;
+	
+	boolean showAd = true;
 
     
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.main);
-		
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
         
@@ -71,6 +75,17 @@ public class MainActivity extends FragmentActivity {
       		alert.show();
         }
         if (!prefs.getBoolean("isReg", false)) {
+        	int count = prefs.getInt("adCount", 0);
+        	int nCount = count+1;
+        	IAdManager adManager = AdManagerFactory.createInstance(getApplication());
+        	if (count == 5) {
+        		prefs.edit().putInt("adCount", 0).commit();
+        	} else if (count == 0){
+        		prefs.edit().putInt("adCount", nCount).commit();        		
+        		adManager.showAd();        		
+        	} else {
+        		prefs.edit().putInt("adCount", nCount).commit();        		
+         	}
     	   Intent intent = new Intent("com.t3hh4xx0r.tweezee.REGISTER");
     	   this.sendBroadcast(intent, Manifest.permission.REGISTER);	
     	}

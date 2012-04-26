@@ -29,6 +29,7 @@ public class RunnableTweets implements Runnable {
     private String mentions; 
     private String token; 
     private String secret; 
+    Twitter t;
     
     Context c;
     
@@ -46,18 +47,17 @@ public class RunnableTweets implements Runnable {
 	    }
 
 	    public void run() {	    	 
-	    	 getUser();
-		     Twitter t = new TwitterFactory().getInstance();
-		     AccessToken tToken = new AccessToken(token, secret);
+		     t = new TwitterFactory().getInstance();
 		     t.setOAuthConsumer(OAUTH.CONSUMER_KEY, OAUTH.CONSUMER_SECRET);
-		     t.setOAuthAccessToken(tToken);
-		     Calendar calendar = Calendar.getInstance();
-		     int cDay = calendar.get(Calendar.DAY_OF_WEEK); 
+		     t.setOAuthAccessToken(getToken());
 		    	 do {
 			    	 try {
-					     if (day.split(",")[cDay-1].equals("true")) {
+					     if (day.split(",")[getcDay()-1].equals("true")) {
 					    	 t.updateStatus(getRandom()+" "+message+" "+mentions);
-					    	 DBAdapter db = new DBAdapter(c);
+					       	 if (prefs.getBoolean("notify", true)) {
+				    			 alert(message, c);
+				    		 }
+					       	 DBAdapter db = new DBAdapter(c);
 					    	 db.open();
 					    	 int newAmount = Integer.parseInt(amount)-1;
 					    	 amount = Integer.toString(newAmount);
@@ -69,9 +69,6 @@ public class RunnableTweets implements Runnable {
 					       		 break;
 					       	 }
 					       	 db.close();
-					       	 if (prefs.getBoolean("notify", true)) {
-				    			 alert(message, c);
-				    		 }
 					     }
 			    	 } catch (TwitterException e) {
 			    		 e.printStackTrace();
@@ -84,11 +81,7 @@ public class RunnableTweets implements Runnable {
 		    	 } while (Integer.parseInt(amount) > 0);
 	    }
 
-		private int getRandom() {
-			return new Random().nextInt(98 - 0 + 1) + 0;
-		}
-
-		private void getUser() {
+		private AccessToken getToken() {
 		     DBAdapter db = new DBAdapter(c);
 	       	 db.open();
 	       	 Cursor cu = db.getAllUsers();
@@ -101,10 +94,21 @@ public class RunnableTweets implements Runnable {
 	   			}
 	   		 } catch (Exception e) {}
 	   		 cu.close();
-	   		 db.close();   						
+	   		 db.close();
+ 			 return new AccessToken(token, secret);
+		}
+
+		private int getcDay() {
+		    Calendar calendar = Calendar.getInstance();
+			return calendar.get(Calendar.DAY_OF_WEEK);
+		}
+
+		private int getRandom() {
+			return new Random().nextInt(98 - 0 + 1) + 0;
 		}
 
 		private void alert(String message, Context c) {
+				 Log.d("TWEET", message);
 				 int icon = R.drawable.ic_launcher;
 				 CharSequence tickerText = "Status Update!";
 				 long when = System.currentTimeMillis();
