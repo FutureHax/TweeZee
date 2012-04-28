@@ -11,9 +11,39 @@
             	android:key="boot"
             	android:title="Start on boot"
             	android:defaultValue="true" />
+        </PreferenceCategory>
+        
+        <PreferenceCategory
+	 	    android:key="notification"
+	 	    android:title="Notification Settings" >
         	<CheckBoxPreference
             	android:key="notify"
             	android:title="Notifiy on status update."
-            	android:defaultValue="true" />        
-            	</PreferenceCategory>
+            	android:defaultValue="true" />
+        	<CheckBoxPreference
+            	android:key="notifyIntrusive"
+            	android:title="Notification on status update."
+				android:summaryOn="Notification on status update."
+				android:summaryOff="Toast on status update."
+            	android:dependency="notify"
+            	android:defaultValue="true" />
+        </PreferenceCategory>
+        
+        <PreferenceCategory
+            android:key="tweet"
+            android:title="Tweet Settings">
+       		<CheckBoxPreference
+            	android:key="direct"
+            	android:title="Tweet directly to user."
+				android:summaryOn="Mentions will come first."
+				android:summaryOff="Mentions will come at the end"
+            	android:defaultValue="false" />            
+       		<CheckBoxPreference
+            	android:key="delete"
+            	android:title="Delete saved tweet when finished."
+				android:summaryOn="When all tweets are sent, saved tweet will be deleted."
+				android:summaryOff="When all tweets are sent, saved tweet will be not deleted."
+            	android:defaultValue="true" />          
+        </PreferenceCategory>
+            
 </PreferenceScreen>

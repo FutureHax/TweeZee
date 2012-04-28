@@ -26,7 +26,7 @@ public class DBAdapter {
     private static final String DATABASE_NAME = "tweezee.db";
     private static final String USER_TABLE = "users";
     private static final String ENTRY_TABLE = "entries";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     private static final String CREATE_USERS =
             "create table users (_id integer primary key autoincrement, "

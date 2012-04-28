@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
@@ -30,8 +32,8 @@ public class UserFragment extends ListFragment {
 	  View v;
 	  Button mAddEntry;
 	  int pos; 
-	  ArrayList<String> entryArray;
-	  ArrayAdapter<String> a;
+	  public static ArrayList<String> entryArray;
+	  static ArrayAdapter<String> a;
 	  ListView listView;
 	  
 	  @Override
@@ -40,6 +42,7 @@ public class UserFragment extends ListFragment {
 		    if (v != null) {
 		        v.invalidate();
 		    }
+		    
 		    entryArray = new ArrayList<String>();
 			
 			final Vibrator vibe = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE) ;
@@ -93,23 +96,36 @@ public class UserFragment extends ListFragment {
     		       	} catch (Exception e1) {}
 	    	       	c.close();
 	    	       	db.close();
-	    	       	if (count>2 && !prefs.getBoolean("isReg", false)) {
+	    	       	if (count>0) {
 	    	           	AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-	    	      		builder.setTitle("Upgrade to premium today!");
-	    	      		builder.setMessage("The free version is limited to only three saved messages.\nPlease upgrade to access premium features.")
+	    	      		builder.setTitle("This app is beta.");
+	    	      		builder.setMessage("Currently the beta only supports saving of one tweet.\nInt the future, the free version will allow for saving of up to three tweets, and the premium version will all you to save as many as you want.")
 	    	      		   .setCancelable(false)
-	    	      		   .setPositiveButton("Let\'s check it out!", new DialogInterface.OnClickListener() {
-	    	      		       public void onClick(DialogInterface dialog, int id) {
-	    	      		    	   Toast.makeText(ctx, "Premium version is currently not available. Sorry!", Toast.LENGTH_LONG).show();
-	    	      		       }
-	    	      		   })
-	    	      		.setNegativeButton("Not today", new DialogInterface.OnClickListener() {
+	    	      		   .setPositiveButton("Aw man!", new DialogInterface.OnClickListener() {
 	    	      		       public void onClick(DialogInterface dialog, int id) {
 	    	      		    	   dialog.dismiss();
 	    	      		       }
 	    	      		   });
 	    	      		AlertDialog alert = builder.create();
 	    	      		alert.show();
+//	    	       	}
+//	    	       	if (count>2 && !prefs.getBoolean("isReg", false)) {
+//	    	           	AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+//	    	      		builder.setTitle("Upgrade to premium today!");
+//	    	      		builder.setMessage("The free version is limited to only three saved messages.\nPlease upgrade to access premium features.")
+//	    	      		   .setCancelable(false)
+//	    	      		   .setPositiveButton("Let\'s check it out!", new DialogInterface.OnClickListener() {
+//	    	      		       public void onClick(DialogInterface dialog, int id) {
+//	    	      		    	   Toast.makeText(ctx, "Premium version is currently not available. Sorry!", Toast.LENGTH_LONG).show();
+//	    	      		       }
+//	    	      		   })
+//	    	      		.setNegativeButton("Not today", new DialogInterface.OnClickListener() {
+//	    	      		       public void onClick(DialogInterface dialog, int id) {
+//	    	      		    	   dialog.dismiss();
+//	    	      		       }
+//	    	      		   });
+//	    	      		AlertDialog alert = builder.create();
+//	    	      		alert.show();
 	    	       	} else {
 		                Bundle b = new Bundle();
 		                b.putInt("pos", pos);
@@ -181,7 +197,7 @@ public class UserFragment extends ListFragment {
 		populateList();
 	}	
 	
-	private void populateList() {
+	void populateList() {
 		a = new ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, entryArray);
 		setListAdapter(a);
 
@@ -200,6 +216,17 @@ public class UserFragment extends ListFragment {
 	       	 } catch (Exception e) {}
 	   c.close();
 	   db.close();			       	 
-	   a.notifyDataSetChanged();			
+	   a.notifyDataSetChanged();
 	}
+	
+	 public static Handler handy = new Handler() {
+		public void handleMessage(Message m) {
+			switch (m.what) {
+			case 0:			
+				   a.notifyDataSetChanged();
+				break;
+			}
+		}
+	};
+	
 }

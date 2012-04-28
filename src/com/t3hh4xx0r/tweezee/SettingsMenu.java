@@ -14,7 +14,10 @@ import android.view.MenuItem;
 
 public class SettingsMenu extends PreferenceActivity{
     private CheckBoxPreference mBoot;
+    private CheckBoxPreference mNotifyIntrusive;
     private CheckBoxPreference mNotify;
+    private CheckBoxPreference mDirect;
+    private CheckBoxPreference mDelete;
     SharedPreferences prefs;
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -23,6 +26,9 @@ public class SettingsMenu extends PreferenceActivity{
 
 		mBoot = (CheckBoxPreference) findPreference("boot");
 		mNotify = (CheckBoxPreference) findPreference("notify");
+		mNotifyIntrusive = (CheckBoxPreference) findPreference("notifyIntrusive");
+		mDirect = (CheckBoxPreference) findPreference("direct");
+		mDelete = (CheckBoxPreference) findPreference("delete");
 	}
 	
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
@@ -31,10 +37,19 @@ public class SettingsMenu extends PreferenceActivity{
 	    if (preference == mBoot){
             value = mBoot.isChecked();
             e.putBoolean("boot", value);            
+	    } else if (preference == mNotifyIntrusive) {
+            value = mNotifyIntrusive.isChecked();
+            e.putBoolean("notifyIntrusive", value); 
 	    } else if (preference == mNotify) {
             value = mNotify.isChecked();
-            e.putBoolean("notify", value); 
-	    }
+        	e.putBoolean("notify", value);
+        } else if (preference == mDirect) {
+            value = mDirect.isChecked();
+        	e.putBoolean("direct", value);
+        } else if (preference == mDelete) {
+            value = mDelete.isChecked();
+        	e.putBoolean("delete", value);
+        }
         e.commit();
 	return true;
    }

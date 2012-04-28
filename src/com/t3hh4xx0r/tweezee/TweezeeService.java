@@ -3,6 +3,7 @@ package com.t3hh4xx0r.tweezee;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -63,7 +64,7 @@ public class TweezeeService extends Service {
    		try {
    			while (c.moveToNext()) {
    				i++;
-   	       		tweet[i-1] = new RunnableTweets(this,c.getString(0),c.getString(1),c.getString(2),c.getString(3),c.getString(4),c.getString(5));   			
+   	       		tweet[i-1] = new RunnableTweets(i,this,c.getString(0),c.getString(1),c.getString(2),c.getString(3),c.getString(4),c.getString(5));   			
    	       	}
    		} catch (Exception e) {}
    		c.close();

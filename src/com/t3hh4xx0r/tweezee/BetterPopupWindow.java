@@ -17,6 +17,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
@@ -267,12 +268,10 @@ public class BetterPopupWindow {
 			       	 db.deleteEntry(m);
 			       	 db.close();
 			       	 this.dismiss();
-			         Intent mi = new Intent(v.getContext(), MainActivity.class);
-			         mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			         Bundle b = new Bundle();
-			         b.putInt("pos", place);
-			         mi.putExtras(b);
-			         this.anchor.getContext().startActivity(mi);
+	       			 UserFragment.entryArray.remove(place);
+	       			 Message msg = new Message();
+	       			 msg.what = 0;
+	       			 UserFragment.handy.sendMessage(msg);
   	    	    } else {
 				     DBAdapter db = new DBAdapter(this.anchor.getContext());
 			       	 db.open();

@@ -78,7 +78,7 @@ public class MainActivity extends FragmentActivity {
         	int count = prefs.getInt("adCount", 0);
         	int nCount = count+1;
         	IAdManager adManager = AdManagerFactory.createInstance(getApplication());
-        	if (count == 5) {
+        	if (count == 3) {
         		prefs.edit().putInt("adCount", 0).commit();
         	} else if (count == 0){
         		prefs.edit().putInt("adCount", nCount).commit();        		

@@ -8,6 +8,7 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -15,6 +16,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -34,8 +37,12 @@ public class RunnableTweets implements Runnable {
     Context c;
     
     SharedPreferences prefs;
+    
+    Handler mHandler;
+    
+    int position;
 
-	    public RunnableTweets(Context c, String username, String message, String amount, String wait, String day, String mentions){ 
+	    public RunnableTweets(int position, Context c, String username, String message, String amount, String wait, String day, String mentions){ 
 	        this.username = username; 
 	        this.message = message; 
 	        this.amount = amount; 
@@ -43,7 +50,9 @@ public class RunnableTweets implements Runnable {
 	        this.day = day; 
 	        this.mentions = mentions; 
 	        this.c = c;
+	        this.position = position;
 			prefs = PreferenceManager.getDefaultSharedPreferences(c);
+			mHandler = new Handler();
 	    }
 
 	    public void run() {	    	 
@@ -53,19 +62,37 @@ public class RunnableTweets implements Runnable {
 		    	 do {
 			    	 try {
 					     if (day.split(",")[getcDay()-1].equals("true")) {
-					    	 t.updateStatus(getRandom()+" "+message+" "+mentions);
+					    	 if (prefs.getBoolean("direct", false)) {
+					    		 t.updateStatus(mentions+" "+message+" "+mentions+" "+getRandom());
+					    	 } else {
+					    		 t.updateStatus(getRandom()+" "+message+" "+mentions);					    		 
+					    	 }
 					       	 if (prefs.getBoolean("notify", true)) {
-				    			 alert(message, c);
-				    		 }
+				    			 if (!prefs.getBoolean("notifyIntrusive", true)) {
+				    				 mHandler.post(new Runnable() {
+				    					 @Override
+				    					 public void run() {
+				    						 Toast.makeText(c, message, Toast.LENGTH_LONG).show();
+				    					 }
+				    				 });
+				    			 } else{
+					    			 alert(message, c);
+				    			 }
+					       	 }
 					       	 DBAdapter db = new DBAdapter(c);
 					    	 db.open();
 					    	 int newAmount = Integer.parseInt(amount)-1;
 					    	 amount = Integer.toString(newAmount);
-					       	 if (newAmount > 0) {
-					       		 db.updateEntry(username, message, mentions, message, wait, Integer.toString(newAmount), day);
-					       	 } else {
-					       		 db.deleteEntry(new String [] {message});
-						       	 db.close();
+				       		 db.updateEntry(username, message, mentions, message, wait, Integer.toString(newAmount), day);
+					       	 if (newAmount == 0) {
+					       		 if (prefs.getBoolean("delete", true)) {
+					       			 db.deleteEntry(new String [] {message});
+					       			 UserFragment.entryArray.remove(position-1);
+					       			 Message msg = new Message();
+					       			 msg.what = 0;
+					       			 UserFragment.handy.sendMessage(msg);
+					       		 }
+					       		 db.close();
 					       		 break;
 					       	 }
 					       	 db.close();
@@ -129,4 +156,5 @@ public class RunnableTweets implements Runnable {
 			                Context.NOTIFICATION_SERVICE);	
 				 mNotificationManager.notify(HELLO_ID, notification);			
 		} 
+		
 	}
