@@ -25,6 +25,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,8 +38,6 @@ import android.widget.Toast;
 
 public class EntryAdd extends Activity {
 
-	Button save;
-	Button cancel;
 	EditText et1;
 	EditText et2;
 	EditText et3;
@@ -92,63 +92,6 @@ public class EntryAdd extends Activity {
 			selected.add(false);
 		}
 	 
-		save = (Button)findViewById(R.id.save_b);
-		save.setOnClickListener(new OnClickListener() {
-			public void onClick (View v) {
-				if (selectedDays != null) {
-					myDaysBooleans = selectedDays.toString();
-				} else {
-					if (extras.getString("days") != null) {
-						myDaysBooleans = extras.getString("days");
-					} else {
-						myDaysBooleans = "false,false,false,false,false,false,false,";
-					}
-				}
-				if (users == null) {
-					if (extras.getString("mentions") == null) {
-						users = "";
-					} else {
-						users = extras.getString("mentions");
-					}
-				}
-				if (totalC<140) {
-					if (et1.getText().toString().length() != 0 && et2.getText().toString().length() != 0 && et3.getText().toString().length() != 0) {
-					   final DBAdapter db = new DBAdapter(v.getContext());
-			       	   db.open();
-			           if (!extras.getBoolean("editing", false)) {
-				       		db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), myDaysBooleans, users);
-			           } else {
-			        	   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et2.getText().toString(), et3.getText().toString(), myDaysBooleans);
-			           }
-			       	   db.close();
-			           finish();
-					} else {
-						Toast.makeText(v.getContext(), "Do not leave any fields blank.", 99999).show();
-					}
-				} else {
-					new AlertDialog.Builder(v.getContext())
-					.setTitle("Yikes!")
-                    .setMessage("The Twitter character limit is 140.\nYou are "+Integer.toString(totalC-140)+" over the limit.")
-                    .setPositiveButton("Whoops!",
-                            new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            	dialog.dismiss();
-                            }
-                    })
-                    .setCancelable(false)
-                    .create().show();					
-				}
-		   		stopService(new Intent(v.getContext(), TweezeeService.class));
-		   		startService(new Intent(v.getContext(), TweezeeService.class));
-			}
-		});
-		cancel = (Button)findViewById(R.id.cancel_b);
-		cancel.setOnClickListener(new OnClickListener() {
-			public void onClick (View v) {
-				finish();
-			}
-		});
 		name = (TextView)findViewById(R.id.userN);
 		name.setText("@"+usern);
 		pic = (ImageView)findViewById(R.id.userP);
@@ -349,6 +292,12 @@ public class EntryAdd extends Activity {
 	    }
 	}
 	
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater menuinflate = new MenuInflater(this);
+		menuinflate.inflate(R.menu.add_menu, menu);
+		return true;
+	}	
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
@@ -357,8 +306,57 @@ public class EntryAdd extends Activity {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             return true;
-            default:
+        case R.id.save:
+			if (selectedDays != null) {
+				myDaysBooleans = selectedDays.toString();
+			} else {
+				if (extras.getString("days") != null) {
+					myDaysBooleans = extras.getString("days");
+				} else {
+					myDaysBooleans = "false,false,false,false,false,false,false,";
+				}
+			}
+			if (users == null) {
+				if (extras.getString("mentions") == null) {
+					users = "";
+				} else {
+					users = extras.getString("mentions");
+				}
+			}
+			if (totalC<140) {
+				if (et1.getText().toString().length() != 0 && et2.getText().toString().length() != 0 && et3.getText().toString().length() != 0) {
+				   final DBAdapter db = new DBAdapter(this);
+		       	   db.open();
+		           if (!extras.getBoolean("editing", false)) {
+			       		db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), myDaysBooleans, users);
+		           } else {
+		        	   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et2.getText().toString(), et3.getText().toString(), myDaysBooleans);
+		           }
+		       	   db.close();
+		           finish();
+				} else {
+					Toast.makeText(this, "Do not leave any fields blank.", 99999).show();
+				}
+			} else {
+				new AlertDialog.Builder(this)
+				.setTitle("Yikes!")
+                .setMessage("The Twitter character limit is 140.\nYou are "+Integer.toString(totalC-140)+" over the limit.")
+                .setPositiveButton("Whoops!",
+                        new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        	dialog.dismiss();
+                        }
+                })
+                .setCancelable(false)
+                .create().show();					
+			}
+	   		stopService(new Intent(this, TweezeeService.class));
+	   		startService(new Intent(this, TweezeeService.class));
+	   		break;
+        	default:
 	            return super.onOptionsItemSelected(item);
 	    }
+		return false;
 	}
 }

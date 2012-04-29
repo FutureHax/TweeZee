@@ -200,7 +200,7 @@ public class DBAdapter {
 	    this.db.update(USER_TABLE, args, "username = ?", new String[] {user});
 	}
 
-	public void updateEntry(String user, String message, String mentions, String og, String wait, String amount, String days) {
+	public void updateEntry(String user, String message, String mentions, String og, String amount, String wait, String days) {
 		ContentValues args = new ContentValues();
 	    args.put(KEY_MESSAGE, message);
 	    args.put(KEY_MENTIONS, mentions);
