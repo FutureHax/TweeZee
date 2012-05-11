@@ -11,5 +11,5 @@
 	<string name="cancel_auth">Cancel signing in</string>
 	<string name="dont_cancel_auth">Don\'t cancel</string>
 	<string name="auth_network_error">Could not contact Twitter. Please try again.</string>
-	<string name="updates">This is a beta release and currently only supports saving of one tweet.\nIf you have questions, comments, or any other feedback, please feel free to send me an email using the \"Send feedback\" option. </string>
+	<string name="updates">-Massive battery enhancements, now uses next to no battery.\n-Option to send tweets at specific times as well as specific intervals.\n-Option to start/stop tweets.\n-Premium features added.\n--Start selected tweets on boot.\n--Multiple account support.\n--Unlimited saved tweets.</string>
 </resources>

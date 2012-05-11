@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 
 	public class RegistrationService extends BroadcastReceiver{
@@ -16,6 +17,7 @@ import android.preference.PreferenceManager;
 		public void onReceive(Context context, Intent intent) {
 			 final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
+			 Log.d("TWEEZEE", "RECIEVED");
 			 if (!prefs.getBoolean("isReg", false)) {
 	             SharedPreferences.Editor editor = prefs.edit();
 	             editor.putBoolean("isReg", true);

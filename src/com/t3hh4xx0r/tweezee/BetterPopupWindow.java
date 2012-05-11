@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -38,6 +39,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 /**
  * This class does most of the work of wrapping the {@link PopupWindow} so it's simpler to use.
@@ -273,13 +275,13 @@ public class BetterPopupWindow {
 
   			if(v.getId() == R.id.delete) {  
               	if (!prefs.getBoolean("account", false)) {
+				     String user = MainActivity.users[place].getName();
+				     killTweet(user, message, getID(user, message));
 				     DBAdapter db = new DBAdapter(this.anchor.getContext());
 			       	 db.open();
 			       	 String[] m = new String[] {message};
 			       	 db.deleteEntry(m);
 			       	 db.close();
-				     String user = MainActivity.users[place].getName();
-				     killTweet(user, message);
 			       	 this.dismiss();
 	       			 UserFragment.entryArray.remove(place);
 	       			 Message msg = new Message();
@@ -302,37 +304,70 @@ public class BetterPopupWindow {
   	    	    }
 	        } 
   	    	
-  	    	if(v.getId() == R.id.send) {  
+  	    	if(v.getId() == R.id.send) { 
+			     String user = MainActivity.users[place].getName();
+			     String time = "";
+			     String mentions = "";
+			     String interval = "";
+			     String days = "";
+			     String id = "";
+			     
 			     DBAdapter db = new DBAdapter(this.anchor.getContext());
 			     db.open();
 			     Cursor c = db.getAllEntries();
-		       	 c.moveToPosition(position);
-		       	 String user = c.getString(c.getColumnIndex("username"));
-		       	 String message = c.getString(c.getColumnIndex("message"));
-		       	 String time = c.getString(c.getColumnIndex("send_time"));
-		       	 String mentions = c.getString(c.getColumnIndex("mentions"));
-		       	 String interval = c.getString(c.getColumnIndex("send_wait"));
-		       	 String days = c.getString(c.getColumnIndex("send_day"));
-		       	 c.close();
-		       	 db.close();
+		 	       	try {
+			       		while (c.moveToNext()) {
+			       			if (c.getString(c.getColumnIndex("username")).equals(user) && c.getString(c.getColumnIndex("message")).equals(message)) {
+			   		       	  time = c.getString(c.getColumnIndex("send_time"));
+					       	  mentions = c.getString(c.getColumnIndex("mentions"));
+					       	  interval = c.getString(c.getColumnIndex("send_wait"));
+					       	  days = c.getString(c.getColumnIndex("send_day"));
+					       	  id = c.getString(c.getColumnIndex("my_id"));			       			}
+			       		}
+			       	} catch (Exception e1) {
+			       		e1.printStackTrace();
+			       	}
+			     c.close();
+			     db.close();		       	 
 		       	 
 		       	 if (time.length() < 2) {
-		       		 setupIntervalTweet(this.anchor.getContext(), user, message, interval, days, mentions);
+		       		 setupIntervalTweet(this.anchor.getContext(), user, message, interval, days, mentions, id);
 		       	 } else {
-		       		 setupTimedTweet(this.anchor.getContext(), user, message, days, mentions, time);
+		       		 setupTimedTweet(this.anchor.getContext(), user, message, days, mentions, time, id);
 		       	 }
 		       	 this.dismiss();
 	        }
   	    	
- 	    	if(v.getId() == R.id.stop) {  
+ 	    	if(v.getId() == R.id.stop) {   	    		
 			     String user = MainActivity.users[place].getName();
-			     killTweet(user, message);
+			     killTweet(user, message, getID(user, message));
 		       	 this.dismiss();
  	    	}
  	    }
 
-		public void killTweet(String user, String message) {
+		private String getID(String user, String message) {
+			String id = "";
+		    DBAdapter db = new DBAdapter(this.anchor.getContext());
+		    db.open();
+		    Cursor c = db.getAllEntries();
+ 	       	try {
+	       		while (c.moveToNext()) {
+	       			if (c.getString(c.getColumnIndex("username")).equals(user) && c.getString(c.getColumnIndex("message")).equals(message)) {
+	       				id = c.getString(c.getColumnIndex("my_id"));
+	       			}
+	       		}
+	       	} catch (Exception e1) {
+	       		e1.printStackTrace();
+	       	}
+	       	c.close();
+	       	db.close();
+	       	return id;
+		}
+
+		public void killTweet(String user, String message, String id) {
 	    	Intent myIntent = new Intent(this.anchor.getContext(), TweezeeReceiver.class);
+	        myIntent.setAction(Integer.toString(md5(user+message))+id);
+	        myIntent.setData(Uri.parse(Integer.toString(md5(user+message))+id));
 	        PendingIntent pendingIntent = PendingIntent.getBroadcast(this.anchor.getContext(), md5(user+message), myIntent, 0);
 	        AlarmManager alarmManager = (AlarmManager)this.anchor.getContext().getSystemService(Context.ALARM_SERVICE);
 	        alarmManager.cancel(pendingIntent);		
@@ -350,14 +385,14 @@ public class BetterPopupWindow {
 			}
 		}
 		
-		private void setupTimedTweet(Context c, String username, String message, String day, String mentions, String timeValue) {
-			Bundle b = new Bundle(); 
-	    	b.putString("username", username);
-	    	b.putString("message", message);
-	    	b.putString("mentions", mentions);
-	    	b.putString("day", day);
+		private void setupTimedTweet(Context c, String username, String message, String day, String mentions, String timeValue, String id) {
 	        Intent myIntent = new Intent(c, TweezeeReceiver.class);
-	        myIntent.putExtras(b);
+	    	myIntent.putExtra("username", username);
+	    	myIntent.putExtra("message", message);
+	    	myIntent.putExtra("mentions", mentions);
+	    	myIntent.putExtra("day", day); 
+	        myIntent.setAction(Integer.toString(md5(username+message))+id);
+	        myIntent.setData(Uri.parse(Integer.toString(md5(username+message))+id));	        
 	        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, md5(username+message), myIntent, 0);
 	        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
 	        Calendar calendar = Calendar.getInstance();
@@ -368,15 +403,15 @@ public class BetterPopupWindow {
 	        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);					
 		}
 		
-		private void setupIntervalTweet(Context c, String username, String message, String wait, String day, String mentions) {
-			Bundle b = new Bundle(); 
-	    	b.putString("username", username);
-	    	b.putString("message", message);
-	    	b.putString("mentions", mentions);
-	    	b.putString("day", day);
+		private void setupIntervalTweet(Context c, String username, String message, String wait, String day, String mentions, String id) {
 	        Intent myIntent = new Intent(c, TweezeeReceiver.class);
-	        myIntent.putExtras(b);
-	        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, md5(username+message), myIntent, 0);
+		    myIntent.putExtra("username", username);
+		    myIntent.putExtra("message", message);
+		    myIntent.putExtra("mentions", mentions);
+		    myIntent.putExtra("day", day); 
+		    myIntent.setAction(Integer.toString(md5(username+message))+id);
+		    myIntent.setData(Uri.parse(Integer.toString(md5(username+message))+id));	  	        
+		    PendingIntent pendingIntent = PendingIntent.getBroadcast(c, md5(username+message), myIntent, 0);
 	        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
 	        Calendar calendar = Calendar.getInstance();
 	        calendar.setTimeInMillis(System.currentTimeMillis());

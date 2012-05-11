@@ -3,15 +3,6 @@
 	        android:title="Settings"
 	        android:layout_width="fill_parent"
 	        android:layout_height="fill_parent">
-		
-	 	<PreferenceCategory
-	 	    android:key="general"
-	 	    android:title="General Settings" >
-        	<CheckBoxPreference
-            	android:key="boot"
-            	android:title="Start on boot"
-            	android:defaultValue="true" />
-        </PreferenceCategory>
         
         <PreferenceCategory
 	 	    android:key="notification"

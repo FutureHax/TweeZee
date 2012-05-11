@@ -25,6 +25,7 @@ import android.widget.Toast;
 public class TweezeeReceiver extends BroadcastReceiver {
 
 	private String message; 
+	private String mentions; 
     private String username; 
     private String day; 
     private String token; 
@@ -44,10 +45,10 @@ public class TweezeeReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context c, Intent i) {
 		Log.d("RECERIVER", "TWEET RECIEVED!");
-		Bundle tweetInfo = i.getExtras();
-		message = tweetInfo.getString("message");
-		username = tweetInfo.getString("username");
-		day = tweetInfo.getString("day");
+		message = i.getStringExtra("message");
+		username = i.getStringExtra("username");
+		mentions = i.getStringExtra("mentions");
+		day = i.getStringExtra("day");
 	
 		prefs = PreferenceManager.getDefaultSharedPreferences(c);
 
@@ -72,9 +73,9 @@ public class TweezeeReceiver extends BroadcastReceiver {
 		    	 try {
 				     if (day.split(",")[getcDay()-1].equals("true")) {
 				    	 if (prefs.getBoolean("direct", false)) {
-				    		 //t.updateStatus(mentions+" "+message+" "+mentions+" "+getRandom());
+				    		 t.updateStatus(mentions+" "+message+" "+mentions+" "+getRandom());
 				    	 } else {
-				    		 //t.updateStatus(getRandom()+" "+message+" "+mentions);					    		 
+				    		 t.updateStatus(getRandom()+" "+message+" "+mentions);					    		 
 				    	 }
 				       	 if (prefs.getBoolean("notify", true)) {
 			    			 if (!prefs.getBoolean("notifyIntrusive", true)) {

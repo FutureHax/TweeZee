@@ -22,6 +22,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -79,8 +80,14 @@ public class AccountManager extends ListActivity {
 		      		   .setCancelable(false)
 		      		   .setPositiveButton("Let\'s check it out!", new DialogInterface.OnClickListener() {
 		      		       public void onClick(DialogInterface dialog, int id) {
-		      		    	   Toast.makeText(getBaseContext(), "Premium version is currently not available. Sorry!", Toast.LENGTH_LONG).show();
-		      		       }
+		      					Intent marketApp = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.t3hh4xx0r.tweezeekey"));
+		      					marketApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+		      		 			try{
+		      						startActivity(marketApp);
+		      					}catch(Exception e){
+		      						e.printStackTrace();
+		      					}
+		      		 		}
 		      		   })
 		      		.setNegativeButton("Not today", new DialogInterface.OnClickListener() {
 		      		       public void onClick(DialogInterface dialog, int id) {

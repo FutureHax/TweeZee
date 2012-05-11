@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -96,43 +97,36 @@ public class UserFragment extends ListFragment {
     		       	} catch (Exception e1) {}
 	    	       	c.close();
 	    	       	db.close();
-//	    	       	if (count>0) {
-//	    	           	AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-//	    	      		builder.setTitle("This app is beta.");
-//	    	      		builder.setMessage("Currently the beta only supports saving of one tweet.\nInt the future, the free version will allow for saving of up to three tweets, and the premium version will all you to save as many as you want.")
-//	    	      		   .setCancelable(false)
-//	    	      		   .setPositiveButton("Aw man!", new DialogInterface.OnClickListener() {
-//	    	      		       public void onClick(DialogInterface dialog, int id) {
-//	    	      		    	   dialog.dismiss();
-//	    	      		       }
-//	    	      		   });
-//	    	      		AlertDialog alert = builder.create();
-//	    	      		alert.show();
-//	    	       	}
-//	    	       	if (count>2 && !prefs.getBoolean("isReg", false)) {
-//	    	           	AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-//	    	      		builder.setTitle("Upgrade to premium today!");
-//	    	      		builder.setMessage("The free version is limited to only three saved messages.\nPlease upgrade to access premium features.")
-//	    	      		   .setCancelable(false)
-//	    	      		   .setPositiveButton("Let\'s check it out!", new DialogInterface.OnClickListener() {
-//	    	      		       public void onClick(DialogInterface dialog, int id) {
-//	    	      		    	   Toast.makeText(ctx, "Premium version is currently not available. Sorry!", Toast.LENGTH_LONG).show();
-//	    	      		       }
-//	    	      		   })
-//	    	      		.setNegativeButton("Not today", new DialogInterface.OnClickListener() {
-//	    	      		       public void onClick(DialogInterface dialog, int id) {
-//	    	      		    	   dialog.dismiss();
-//	    	      		       }
-//	    	      		   });
-//	    	      		AlertDialog alert = builder.create();
-//	    	      		alert.show();
-//	    	       	} else {
+	    	       	if (count>2 && !prefs.getBoolean("isReg", false)) {
+	    	           	AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+	    	      		builder.setTitle("Upgrade to premium today!");
+	    	      		builder.setMessage("The free version is limited to only three saved messages.\nPlease upgrade to access premium features.")
+	    	      		   .setCancelable(false)
+	    	      		   .setPositiveButton("Let\'s check it out!", new DialogInterface.OnClickListener() {
+	    	      		       public void onClick(DialogInterface dialog, int id) {
+			      					Intent marketApp = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.t3hh4xx0r.tweezeekey"));
+			      					marketApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+			      		 			try{
+			      						startActivity(marketApp);
+			      					}catch(Exception e){
+			      						e.printStackTrace();
+			      					}
+			      		 		}
+	    	      		   })
+	    	      		.setNegativeButton("Not today", new DialogInterface.OnClickListener() {
+	    	      		       public void onClick(DialogInterface dialog, int id) {
+	    	      		    	   dialog.dismiss();
+	    	      		       }
+	    	      		   });
+	    	      		AlertDialog alert = builder.create();
+	    	      		alert.show();
+	    	       	} else {
 		                Bundle b = new Bundle();
 		                b.putInt("pos", pos);
 			            Intent mi = new Intent(v.getContext(), EntryAdd.class);
 			            mi.putExtras(b);
 				        startActivity(mi);
-//	    	       	}
+	    	       	}
 	        	}
 	        });	   
 		    pos = getArguments().getInt("p");
@@ -145,11 +139,13 @@ public class UserFragment extends ListFragment {
 			ArrayList<String> mIntervals = new ArrayList<String>();
 			ArrayList<String> mDays = new ArrayList<String>();
 			ArrayList<String> mTimes = new ArrayList<String>();
+			ArrayList<String> mBoots = new ArrayList<String>();
 			String m = null;
 			String e = null;
 			String i = null;
 			String d = null;
 			String t = null;
+			String boot = null;
 			DBAdapter db = new DBAdapter(ctx);
 		    db.open();
 		    Cursor c = db.getAllEntries();
@@ -161,6 +157,7 @@ public class UserFragment extends ListFragment {
 		       				mIntervals.add(c.getString(c.getColumnIndex("send_wait")));
 		       				mDays.add(c.getString(c.getColumnIndex("send_day")));
 		       				mTimes.add(c.getString(c.getColumnIndex("send_time")));
+		       				mBoots.add(c.getString(c.getColumnIndex("start_boot")));
 		       			}
 		       		}
 		       	 } catch (Exception e1) {}
@@ -171,6 +168,7 @@ public class UserFragment extends ListFragment {
 		    i = mIntervals.get(p);
 		    d = mDays.get(p);
 		    t = mTimes.get(p);
+		    boot = mBoots.get(p);
             Bundle b = new Bundle();
             b.putBoolean("editing", true);
             b.putInt("pos", pos);
@@ -178,6 +176,7 @@ public class UserFragment extends ListFragment {
             b.putString("interval", i);
             b.putString("mentions", m);
             b.putString("days", d);
+            b.putString("boot", boot);
             if (t.length()>1) {
             	b.putString("time", t);
             }

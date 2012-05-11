@@ -7,8 +7,6 @@ import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -16,44 +14,38 @@ import twitter4j.ProfileImage;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
-import android.app.ActivityManager.RunningServiceInfo;
-import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.content.Intent;
-import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 public class EntryAdd extends Activity {
@@ -84,10 +76,13 @@ public class EntryAdd extends Activity {
 	String myDaysBooleans;
 	boolean[] selectedDaysOfWeek;
 	boolean time = false;
+	boolean startBoot;
 	ArrayList<Boolean> selected;
 	String usern;
 	String timeValue = "";
 	CheckBox timeCB;
+	CheckBox bootCB;
+	SharedPreferences prefs;
 
 	static final int ID_TIMEPICKER = 0;
 	private int hour, minute;
@@ -95,11 +90,13 @@ public class EntryAdd extends Activity {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.add_entry);
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 	    res = getResources();
 	    entryArray = new ArrayList<String>();
         extras = getIntent().getExtras();
         p = extras.getInt("pos");
+        startBoot = Boolean.parseBoolean(extras.getString("boot", "false"));
 		usern = MainActivity.users[p].getName(); 
 		userID = Long.parseLong(MainActivity.users[p].getId());
 
@@ -157,6 +154,22 @@ public class EntryAdd extends Activity {
 				}
 			}			
 		});
+		bootCB = (CheckBox)findViewById(R.id.bootCB);
+		bootCB.setChecked(startBoot);
+		bootCB.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				if (isChecked) {
+					startBoot = true;
+				} else {
+					startBoot = false;
+				}
+			}			
+		});
+		if (prefs.getBoolean("isReg", false)) {
+			bootCB.setVisibility(View.VISIBLE);
+		}
 		
 		name = (TextView)findViewById(R.id.userN);
 		name.setText("@"+usern);
@@ -409,12 +422,12 @@ public class EntryAdd extends Activity {
 				   final DBAdapter db = new DBAdapter(this);
 		       	   db.open();
 		           if (!extras.getBoolean("editing", false)) {
-			       		db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et3.getText().toString(), myDaysBooleans, users, "");
+			       		db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et3.getText().toString(), myDaysBooleans, users, "", Boolean.toString(startBoot));
 		           } else {
-		        	   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et3.getText().toString(), myDaysBooleans, "");
-		        	   killTweet(this, usern, extras.getString("message"));
+		        	   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et3.getText().toString(), myDaysBooleans, "", Boolean.toString(startBoot), "");
+				       setupIntervalTweet(p,this,usern,et1.getText().toString(),et3.getText().toString(),myDaysBooleans,users, true, extras.getString("message"));	        	
 		           }
-			       setupIntervalTweet(p,this,usern,et1.getText().toString(),et3.getText().toString(),myDaysBooleans,users);	        	
+			       setupIntervalTweet(p,this,usern,et1.getText().toString(),et3.getText().toString(),myDaysBooleans,users, false, null);	        	
 			       db.close();
 		           finish();
 				} else {
@@ -422,12 +435,12 @@ public class EntryAdd extends Activity {
 						   final DBAdapter db = new DBAdapter(this);
 				       	   db.open();
 				           if (!extras.getBoolean("editing", false)) {
-					       		db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et3.getText().toString(), myDaysBooleans, users, timeValue);
+					       		db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et3.getText().toString(), myDaysBooleans, users, timeValue, Boolean.toString(startBoot));
 				           } else {
-				        	   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et3.getText().toString(), myDaysBooleans, timeValue);
-				        	   killTweet(this, usern, extras.getString("message"));
+				        	   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et3.getText().toString(), myDaysBooleans, timeValue, Boolean.toString(startBoot), "");
+						       setupTimedTweet(p,this,usern,et1.getText().toString(),myDaysBooleans,users, timeValue, true, extras.getString("message"));	        	
 				           }
-					       setupTimedTweet(p,this,usern,et1.getText().toString(),myDaysBooleans,users, timeValue);	        	
+					       setupTimedTweet(p,this,usern,et1.getText().toString(),myDaysBooleans,users, timeValue, false, null);	        	
 				       	   db.close();
 				           finish();
 					} else {
@@ -455,39 +468,52 @@ public class EntryAdd extends Activity {
 		return false;
 	}
 
-	private void killTweet(Context c, String usern, String message) {
-    	Intent myIntent = new Intent(c, TweezeeReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, md5(usern+message), myIntent, 0);
-        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(pendingIntent);
-	}
-
-	private void setupIntervalTweet(int position, Context c, String username, String message, String wait, String day, String mentions) {
-		Bundle b = new Bundle(); 
-    	b.putString("username", username);
-    	b.putString("message", message);
-    	b.putString("mentions", mentions);
-    	b.putString("day", day);
+	private void setupIntervalTweet(int position, Context c, String username, String message, String wait, String day, String mentions, boolean updating, String og) {
     	Toast.makeText(c, "New tweet saved, "+message, Toast.LENGTH_LONG).show();
+    	long time = System.currentTimeMillis();
+    	final DBAdapter db = new DBAdapter(this);
+       	db.open();
+        db.updateEntryID(MainActivity.users[p].getName(), et1.getText().toString(), Long.toString(time));
+        db.close();
         Intent myIntent = new Intent(c, TweezeeReceiver.class);
-        myIntent.putExtras(b);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, md5(username+message), myIntent, 0);
+    	myIntent.putExtra("username", username);
+    	myIntent.putExtra("message", message);
+    	myIntent.putExtra("mentions", mentions);
+    	myIntent.putExtra("day", day);
+        myIntent.setAction(Integer.toString(md5(username+message))+time);
+        myIntent.setData(Uri.parse(Integer.toString(md5(username+message))+time));  
+        PendingIntent pendingIntent;
+        if (updating) {
+        	pendingIntent = PendingIntent.getBroadcast(c, md5(username+og), myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        } else {
+            pendingIntent = PendingIntent.getBroadcast(c, md5(username+message), myIntent, 0);
+        }        
         AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Integer.parseInt(wait)*60000, pendingIntent);					
 	}
 
-	private void setupTimedTweet(int position, Context c, String username, String message, String day, String mentions, String timeValue) {
-		Bundle b = new Bundle(); 
-    	b.putString("username", username);
+	private void setupTimedTweet(int position, Context c, String username, String message, String day, String mentions, String timeValue, boolean updating, String og) {
     	Toast.makeText(c, "New tweet saved, "+message, Toast.LENGTH_LONG).show();
-    	b.putString("message", message);
-    	b.putString("mentions", mentions);
-    	b.putString("day", day);
+    	long time = System.currentTimeMillis();
+    	final DBAdapter db = new DBAdapter(this);
+       	db.open();
+        db.updateEntryID(MainActivity.users[p].getName(), et1.getText().toString(), Long.toString(time));
+        db.close();    	
         Intent myIntent = new Intent(c, TweezeeReceiver.class);
-        myIntent.putExtras(b);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, md5(username+message), myIntent, 0);
+        myIntent.setAction(Integer.toString(md5(username+message))+time);
+        myIntent.setData(Uri.parse(Integer.toString(md5(username+message))+time));  
+    	myIntent.putExtra("username", username);
+    	myIntent.putExtra("message", message);
+    	myIntent.putExtra("mentions", mentions);
+    	myIntent.putExtra("day", day);        
+    	PendingIntent pendingIntent;
+        if (updating) {
+        	pendingIntent = PendingIntent.getBroadcast(c, md5(username+og), myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        } else {
+            pendingIntent = PendingIntent.getBroadcast(c, md5(username+message), myIntent, 0);
+        }
         AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());

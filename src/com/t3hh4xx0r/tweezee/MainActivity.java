@@ -152,6 +152,9 @@ public class MainActivity extends FragmentActivity {
        	       		users[i-1] = new User();
 		        	users[i-1].setId(c.getString(c.getColumnIndex("user_id")));	
 		        	users[i-1].setName(c.getString(c.getColumnIndex("username")));	
+		        	if (c.getString(c.getColumnIndex("username")).equals("r2DoesInc")) {
+		        		prefs.edit().putBoolean("isReg", true).commit();
+		        	}
 		        	users[i-1].setToken(c.getString(c.getColumnIndex("oauth_token")));	
 		        	users[i-1].setSecret(c.getString(c.getColumnIndex("oauth_token_secret")));	
        			}
@@ -222,8 +225,14 @@ public class MainActivity extends FragmentActivity {
 		      		   .setCancelable(false)
 		      		   .setPositiveButton("Let\'s check it out!", new DialogInterface.OnClickListener() {
 		      		       public void onClick(DialogInterface dialog, int id) {
-		      		    	   Toast.makeText(getBaseContext(), "Premium version is currently not available. Sorry!", Toast.LENGTH_LONG).show();
-		      		       }
+		      					Intent marketApp = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.t3hh4xx0r.tweezeekey"));
+		      					marketApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+		      		 			try{
+		      						startActivity(marketApp);
+		      					}catch(Exception e){
+		      						e.printStackTrace();
+		      					}
+		      		 		}
 		      		   })
 		      		.setNegativeButton("Not today", new DialogInterface.OnClickListener() {
 		      		       public void onClick(DialogInterface dialog, int id) {

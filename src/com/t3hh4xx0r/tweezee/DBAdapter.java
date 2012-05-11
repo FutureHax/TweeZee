@@ -7,6 +7,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 public class DBAdapter {
     public static final String KEY_ROWID = "_id";
@@ -22,11 +23,13 @@ public class DBAdapter {
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_MENTIONS = "mentions";
     public static final String KEY_TIME = "send_time";
+    public static final String BOOT = "start_boot";
+    public static final String ID = "my_id";
     
     private static final String DATABASE_NAME = "tweezee.db";
     private static final String USER_TABLE = "users";
     private static final String ENTRY_TABLE = "entries";
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 12;
 
     private static final String CREATE_USERS =
             "create table users (_id integer primary key autoincrement, "
@@ -35,7 +38,8 @@ public class DBAdapter {
     private static final String CREATE_ENTRIES =
             "create table entries (_id integer primary key autoincrement, "
                     + "username text not null, message text not null, mentions text not null, "
-            		+" send_wait text not null, send_day text not null, send_time text not null);";
+            		+" send_wait text not null, send_day text not null, send_time text not null, "
+                    +" start_boot text not null, my_id text not null);";
          
     
     private final Context context; 
@@ -86,7 +90,7 @@ public class DBAdapter {
     	DBHelper.close();
     }
     
-    public long insertEntry(String name, String message, String wait, String day, String mentions, String time) 
+    public long insertEntry(String name, String message, String wait, String day, String mentions, String time, String boot) 
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_USERNAME, name);
@@ -95,6 +99,8 @@ public class DBAdapter {
         initialValues.put(KEY_DAY, day);
         initialValues.put(KEY_MENTIONS, mentions);
         initialValues.put(KEY_TIME, time);
+        initialValues.put(BOOT, boot);
+        initialValues.put(ID, "");
         
         return db.insert(ENTRY_TABLE, null, initialValues);
     }
@@ -120,7 +126,9 @@ public class DBAdapter {
                 KEY_WAIT,
                 KEY_DAY,
                 KEY_MENTIONS,
-                KEY_TIME}, 
+                KEY_TIME,
+                BOOT,
+                ID}, 
                 null,
                 null, 
                 null, 
@@ -201,14 +209,22 @@ public class DBAdapter {
 	    this.db.update(USER_TABLE, args, "username = ?", new String[] {user});
 	}
 
-	public void updateEntry(String user, String message, String mentions, String og, String wait, String days, String time) {
+	public void updateEntry(String user, String message, String mentions, String og, String wait, String days, String time, String boot, String id) {
 		ContentValues args = new ContentValues();
 	    args.put(KEY_MESSAGE, message);
 	    args.put(KEY_MENTIONS, mentions);
 	    args.put(KEY_WAIT, wait);
 	    args.put(KEY_DAY, days);
 	    args.put(KEY_TIME, time);
+	    args.put(BOOT, boot);
+	    args.put(ID, id);
 	    this.db.update(ENTRY_TABLE, args, ("message = ? AND username = ?"), new String[] {og, user});
+	}
+	
+	public void updateEntryID(String user, String message, String id) {
+		ContentValues args = new ContentValues();
+	    args.put(ID, id);
+	    this.db.update(ENTRY_TABLE, args, ("message = ? AND username = ?"), new String[] {message, user});
 	}
 	
 	public boolean isLoggedIn() {

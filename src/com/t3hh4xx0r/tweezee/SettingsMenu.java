@@ -13,7 +13,6 @@ import android.preference.PreferenceScreen;
 import android.view.MenuItem;
 
 public class SettingsMenu extends PreferenceActivity{
-    private CheckBoxPreference mBoot;
     private CheckBoxPreference mNotifyIntrusive;
     private CheckBoxPreference mNotify;
     private CheckBoxPreference mDirect;
@@ -24,7 +23,6 @@ public class SettingsMenu extends PreferenceActivity{
 		addPreferencesFromResource(R.layout.settings);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-		mBoot = (CheckBoxPreference) findPreference("boot");
 		mNotify = (CheckBoxPreference) findPreference("notify");
 		mNotifyIntrusive = (CheckBoxPreference) findPreference("notifyIntrusive");
 		mDirect = (CheckBoxPreference) findPreference("direct");
@@ -34,10 +32,7 @@ public class SettingsMenu extends PreferenceActivity{
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
 	    boolean value;
 	    Editor e = prefs.edit();
-	    if (preference == mBoot){
-            value = mBoot.isChecked();
-            e.putBoolean("boot", value);            
-	    } else if (preference == mNotifyIntrusive) {
+	    if (preference == mNotifyIntrusive) {
             value = mNotifyIntrusive.isChecked();
             e.putBoolean("notifyIntrusive", value); 
 	    } else if (preference == mNotify) {
