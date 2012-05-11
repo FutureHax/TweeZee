@@ -17,16 +17,16 @@ public class DBAdapter {
     public static final String KEY_FRIENDS = "friends";
     public static final String KEY_FRIEND_IDS = "friend_ids";
     
-    public static final String KEY_AMOUNT = "send_amount";
     public static final String KEY_WAIT = "send_wait";
     public static final String KEY_DAY = "send_day";
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_MENTIONS = "mentions";
+    public static final String KEY_TIME = "send_time";
     
     private static final String DATABASE_NAME = "tweezee.db";
     private static final String USER_TABLE = "users";
     private static final String ENTRY_TABLE = "entries";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 9;
 
     private static final String CREATE_USERS =
             "create table users (_id integer primary key autoincrement, "
@@ -34,7 +34,8 @@ public class DBAdapter {
         
     private static final String CREATE_ENTRIES =
             "create table entries (_id integer primary key autoincrement, "
-                    + "username text not null, message text not null, mentions text not null, send_amount text not null, send_wait text not null, send_day text not null);";
+                    + "username text not null, message text not null, mentions text not null, "
+            		+" send_wait text not null, send_day text not null, send_time text not null);";
          
     
     private final Context context; 
@@ -85,15 +86,15 @@ public class DBAdapter {
     	DBHelper.close();
     }
     
-    public long insertEntry(String name, String message, String amount, String wait, String day, String mentions) 
+    public long insertEntry(String name, String message, String wait, String day, String mentions, String time) 
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_USERNAME, name);
         initialValues.put(KEY_MESSAGE, message);
-        initialValues.put(KEY_AMOUNT, amount);
         initialValues.put(KEY_WAIT, wait);
         initialValues.put(KEY_DAY, day);
         initialValues.put(KEY_MENTIONS, mentions);
+        initialValues.put(KEY_TIME, time);
         
         return db.insert(ENTRY_TABLE, null, initialValues);
     }
@@ -116,10 +117,10 @@ public class DBAdapter {
     	Cursor mCursor = db.query(ENTRY_TABLE, new String[] {
                 KEY_USERNAME,
                 KEY_MESSAGE,
-                KEY_AMOUNT,
                 KEY_WAIT,
                 KEY_DAY,
-                KEY_MENTIONS}, 
+                KEY_MENTIONS,
+                KEY_TIME}, 
                 null,
                 null, 
                 null, 
@@ -200,13 +201,13 @@ public class DBAdapter {
 	    this.db.update(USER_TABLE, args, "username = ?", new String[] {user});
 	}
 
-	public void updateEntry(String user, String message, String mentions, String og, String amount, String wait, String days) {
+	public void updateEntry(String user, String message, String mentions, String og, String wait, String days, String time) {
 		ContentValues args = new ContentValues();
 	    args.put(KEY_MESSAGE, message);
 	    args.put(KEY_MENTIONS, mentions);
-	    args.put(KEY_AMOUNT, amount);
 	    args.put(KEY_WAIT, wait);
 	    args.put(KEY_DAY, days);
+	    args.put(KEY_TIME, time);
 	    this.db.update(ENTRY_TABLE, args, ("message = ? AND username = ?"), new String[] {og, user});
 	}
 	

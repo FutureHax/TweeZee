@@ -1,9 +1,14 @@
 package com.t3hh4xx0r.tweezee;
 
+import java.math.BigInteger;
 import java.net.URL;
+import java.security.MessageDigest;
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.TimeZone;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -11,17 +16,28 @@ import twitter4j.ProfileImage;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.Dialog;
+import android.app.PendingIntent;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -31,22 +47,28 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 public class EntryAdd extends Activity {
 
 	EditText et1;
-	EditText et2;
 	EditText et3;
 	TextView tV;
 	TextView myCount;
 	TextView tV2;
 	TextView mPreview;
 	TextView dPreview;
+	TextView timePre;
 	TextView name;
+	TextView timePicker;
+	TextView intervalTV;
 	ImageView pic;
 	int p;
 	int mLength = 0;
@@ -61,21 +83,30 @@ public class EntryAdd extends Activity {
 	StringBuilder selectedDays;
 	String myDaysBooleans;
 	boolean[] selectedDaysOfWeek;
+	boolean time = false;
 	ArrayList<Boolean> selected;
+	String usern;
+	String timeValue = "";
+	CheckBox timeCB;
 
+	static final int ID_TIMEPICKER = 0;
+	private int hour, minute;
+	
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.add_entry);
-		
 
 	    res = getResources();
 	    entryArray = new ArrayList<String>();
         extras = getIntent().getExtras();
         p = extras.getInt("pos");
-		String usern = MainActivity.users[p].getName(); 
+		usern = MainActivity.users[p].getName(); 
 		userID = Long.parseLong(MainActivity.users[p].getId());
+
 		SelectionAdapter.selections.clear();
 
+		timePre = (TextView)findViewById(R.id.time_pre);
+		intervalTV = (TextView)findViewById(R.id.interval);
 	    String[] weekdays = new DateFormatSymbols().getWeekdays();
 	    daysOfWeek = new String[] {
 	            weekdays[Calendar.SUNDAY],
@@ -92,6 +123,41 @@ public class EntryAdd extends Activity {
 			selected.add(false);
 		}
 	 
+		timePicker = (TextView)findViewById(R.id.timePicker);
+		timePicker.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+			    final Calendar c = Calendar.getInstance();
+			       hour = c.get(Calendar.HOUR_OF_DAY);
+			       minute = c.get(Calendar.MINUTE);
+			       showDialog(ID_TIMEPICKER);
+			}
+		});
+		
+		timeCB = (CheckBox)findViewById(R.id.timeCB);
+		timeCB.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				if (isChecked) {
+					time = true;
+					et3.setVisibility(View.GONE);
+					timePicker.setVisibility(View.VISIBLE);
+					timePre.setVisibility(View.VISIBLE);
+					intervalTV.setVisibility(View.GONE);
+					et3.setText("");
+					timePre.setText(timeValue);
+				} else {
+					time = false;
+					et3.setVisibility(View.VISIBLE);
+					timePicker.setVisibility(View.GONE);
+					timePre.setVisibility(View.GONE);
+					intervalTV.setVisibility(View.VISIBLE);
+					timePre.setText("No time set.");
+				}
+			}			
+		});
+		
 		name = (TextView)findViewById(R.id.userN);
 		name.setText("@"+usern);
 		pic = (ImageView)findViewById(R.id.userP);
@@ -220,14 +286,29 @@ public class EntryAdd extends Activity {
     	            false,
     	    };
         }
-		et2 = (EditText)findViewById(R.id.editAmount);
-        if (extras.getBoolean("editing", false)) {
-        	et2.setText(extras.getString("sends"));
-        }
         et3 = (EditText)findViewById(R.id.editInterval);
-        if (extras.getBoolean("editing", false)) {
+		if (extras.getBoolean("editing", false)) {
         	et3.setText(extras.getString("interval"));
-        }		
+        	if (extras.getString("time", "").length()>1) {
+        		timeValue = extras.getString("time");
+				time = true;
+				timePre.setText(timeValue);
+			} else {
+				time = false;
+			}
+			timeCB.setChecked(time);
+		}
+		if (time) {
+			et3.setVisibility(View.GONE);
+			timePicker.setVisibility(View.VISIBLE);
+			timePre.setVisibility(View.VISIBLE);
+			intervalTV.setVisibility(View.GONE);			
+		} else {
+			et3.setVisibility(View.VISIBLE);
+			timePicker.setVisibility(View.GONE);
+			timePre.setVisibility(View.GONE);			
+			intervalTV.setVisibility(View.VISIBLE);
+		}
 		Thread thread = new Thread() {
 			Drawable p;
 		    @Override
@@ -324,18 +405,34 @@ public class EntryAdd extends Activity {
 				}
 			}
 			if (totalC<140) {
-				if (et1.getText().toString().length() != 0 && et2.getText().toString().length() != 0 && et3.getText().toString().length() != 0) {
+				if (et1.getText().toString().length() != 0 && et3.getText().toString().length() != 0 && !time) {
 				   final DBAdapter db = new DBAdapter(this);
 		       	   db.open();
 		           if (!extras.getBoolean("editing", false)) {
-			       		db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et2.getText().toString(), et3.getText().toString(), myDaysBooleans, users);
+			       		db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et3.getText().toString(), myDaysBooleans, users, "");
 		           } else {
-		        	   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et2.getText().toString(), et3.getText().toString(), myDaysBooleans);
+		        	   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et3.getText().toString(), myDaysBooleans, "");
+		        	   killTweet(this, usern, extras.getString("message"));
 		           }
-		       	   db.close();
+			       setupIntervalTweet(p,this,usern,et1.getText().toString(),et3.getText().toString(),myDaysBooleans,users);	        	
+			       db.close();
 		           finish();
 				} else {
-					Toast.makeText(this, "Do not leave any fields blank.", 99999).show();
+					if (time && timeValue != "" && timeValue != null) {
+						   final DBAdapter db = new DBAdapter(this);
+				       	   db.open();
+				           if (!extras.getBoolean("editing", false)) {
+					       		db.insertEntry(MainActivity.users[p].getName(), et1.getText().toString(), et3.getText().toString(), myDaysBooleans, users, timeValue);
+				           } else {
+				        	   db.updateEntry(MainActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et3.getText().toString(), myDaysBooleans, timeValue);
+				        	   killTweet(this, usern, extras.getString("message"));
+				           }
+					       setupTimedTweet(p,this,usern,et1.getText().toString(),myDaysBooleans,users, timeValue);	        	
+				       	   db.close();
+				           finish();
+					} else {
+						Toast.makeText(this, "Do not leave any fields blank.", Toast.LENGTH_LONG).show();
+					}
 				}
 			} else {
 				new AlertDialog.Builder(this)
@@ -343,20 +440,90 @@ public class EntryAdd extends Activity {
                 .setMessage("The Twitter character limit is 140.\nYou are "+Integer.toString(totalC-140)+" over the limit.")
                 .setPositiveButton("Whoops!",
                         new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        	dialog.dismiss();
-                        }
-                })
+                        	@Override
+                        	public void onClick(DialogInterface dialog, int which) {
+                        		dialog.dismiss();
+                        	}
+                		})
                 .setCancelable(false)
                 .create().show();					
 			}
-	   		stopService(new Intent(this, TweezeeService.class));
-	   		startService(new Intent(this, TweezeeService.class));
-	   		break;
+			break;
         	default:
 	            return super.onOptionsItemSelected(item);
 	    }
 		return false;
 	}
+
+	private void killTweet(Context c, String usern, String message) {
+    	Intent myIntent = new Intent(c, TweezeeReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, md5(usern+message), myIntent, 0);
+        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+	}
+
+	private void setupIntervalTweet(int position, Context c, String username, String message, String wait, String day, String mentions) {
+		Bundle b = new Bundle(); 
+    	b.putString("username", username);
+    	b.putString("message", message);
+    	b.putString("mentions", mentions);
+    	b.putString("day", day);
+    	Toast.makeText(c, "New tweet saved, "+message, Toast.LENGTH_LONG).show();
+        Intent myIntent = new Intent(c, TweezeeReceiver.class);
+        myIntent.putExtras(b);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, md5(username+message), myIntent, 0);
+        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Integer.parseInt(wait)*60000, pendingIntent);					
+	}
+
+	private void setupTimedTweet(int position, Context c, String username, String message, String day, String mentions, String timeValue) {
+		Bundle b = new Bundle(); 
+    	b.putString("username", username);
+    	Toast.makeText(c, "New tweet saved, "+message, Toast.LENGTH_LONG).show();
+    	b.putString("message", message);
+    	b.putString("mentions", mentions);
+    	b.putString("day", day);
+        Intent myIntent = new Intent(c, TweezeeReceiver.class);
+        myIntent.putExtras(b);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, md5(username+message), myIntent, 0);
+        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.setTimeZone(TimeZone.getDefault());
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeValue.split(":")[0]));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(timeValue.split(":")[1]));
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);					
+	}
+	
+	private int md5(String s) {
+		MessageDigest digest;
+		try {
+			digest = MessageDigest.getInstance("MD5");
+			digest.update(s.getBytes(), 0, s.length());
+			String hash = new BigInteger(1,digest.digest()).toString(16);
+			return Integer.parseInt(hash);
+		} catch (Exception e) {
+			return 420;
+		}
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch(id){
+	    case ID_TIMEPICKER:
+	    	return new TimePickerDialog(this, timeSetListener, hour, minute, false); 
+	    default:
+	    	return null;
+	    }
+	}
+	  
+	private TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener(){	  
+		  @Override
+		  public void onTimeSet(android.widget.TimePicker arg0, int hour, int min) {			  
+			  timeValue = String.valueOf(hour) + ":" + String.valueOf(min);
+			  timePre.setText(timeValue);
+		  }
+	};
 }

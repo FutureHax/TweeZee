@@ -102,9 +102,7 @@ public class MainActivity extends FragmentActivity {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		} 
-   		
-   		startService(new Intent(this, TweezeeService.class));
-   		
+   		   		
         try {
             Bundle extras = getIntent().getExtras();
             place = extras.getInt("pos");
@@ -166,6 +164,9 @@ public class MainActivity extends FragmentActivity {
 	
 	   public ArrayList<String> updateUserFrag (int p) {		   
 		     entryArray = new ArrayList<String>();
+		     if (entryArray.size() != 0) {
+		    	 entryArray.clear();
+		     }
 		     DBAdapter db = new DBAdapter(this);
 	       	 db.open();
 	       	 Cursor c = db.getAllEntries();

@@ -73,7 +73,7 @@ public class UserFragment extends ListFragment {
 	    		   
 	        	   vibe.vibrate(50);
 	               String message = mEntries.get(position); 
-	               BetterPopupWindow dw = new BetterPopupWindow.DemoPopupWindow(v, message, pos);
+	               BetterPopupWindow dw = new BetterPopupWindow.DemoPopupWindow(v, message, pos, position);
 	               dw.showLikeQuickAction(0, 30);
 	               return false;
 	        	}
@@ -96,18 +96,18 @@ public class UserFragment extends ListFragment {
     		       	} catch (Exception e1) {}
 	    	       	c.close();
 	    	       	db.close();
-	    	       	if (count>0) {
-	    	           	AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-	    	      		builder.setTitle("This app is beta.");
-	    	      		builder.setMessage("Currently the beta only supports saving of one tweet.\nInt the future, the free version will allow for saving of up to three tweets, and the premium version will all you to save as many as you want.")
-	    	      		   .setCancelable(false)
-	    	      		   .setPositiveButton("Aw man!", new DialogInterface.OnClickListener() {
-	    	      		       public void onClick(DialogInterface dialog, int id) {
-	    	      		    	   dialog.dismiss();
-	    	      		       }
-	    	      		   });
-	    	      		AlertDialog alert = builder.create();
-	    	      		alert.show();
+//	    	       	if (count>0) {
+//	    	           	AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+//	    	      		builder.setTitle("This app is beta.");
+//	    	      		builder.setMessage("Currently the beta only supports saving of one tweet.\nInt the future, the free version will allow for saving of up to three tweets, and the premium version will all you to save as many as you want.")
+//	    	      		   .setCancelable(false)
+//	    	      		   .setPositiveButton("Aw man!", new DialogInterface.OnClickListener() {
+//	    	      		       public void onClick(DialogInterface dialog, int id) {
+//	    	      		    	   dialog.dismiss();
+//	    	      		       }
+//	    	      		   });
+//	    	      		AlertDialog alert = builder.create();
+//	    	      		alert.show();
 //	    	       	}
 //	    	       	if (count>2 && !prefs.getBoolean("isReg", false)) {
 //	    	           	AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
@@ -126,13 +126,13 @@ public class UserFragment extends ListFragment {
 //	    	      		   });
 //	    	      		AlertDialog alert = builder.create();
 //	    	      		alert.show();
-	    	       	} else {
+//	    	       	} else {
 		                Bundle b = new Bundle();
 		                b.putInt("pos", pos);
 			            Intent mi = new Intent(v.getContext(), EntryAdd.class);
 			            mi.putExtras(b);
 				        startActivity(mi);
-	    	       	}
+//	    	       	}
 	        	}
 	        });	   
 		    pos = getArguments().getInt("p");
@@ -143,13 +143,13 @@ public class UserFragment extends ListFragment {
 			ArrayList<String> mEntries = new ArrayList<String>();
 			ArrayList<String> mMentions = new ArrayList<String>();
 			ArrayList<String> mIntervals = new ArrayList<String>();
-			ArrayList<String> mSends = new ArrayList<String>();
 			ArrayList<String> mDays = new ArrayList<String>();
+			ArrayList<String> mTimes = new ArrayList<String>();
 			String m = null;
 			String e = null;
 			String i = null;
-			String s = null;
 			String d = null;
+			String t = null;
 			DBAdapter db = new DBAdapter(ctx);
 		    db.open();
 		    Cursor c = db.getAllEntries();
@@ -159,8 +159,8 @@ public class UserFragment extends ListFragment {
 		       				mEntries.add(c.getString(1));
 		       				mMentions.add(c.getString(c.getColumnIndex("mentions")));
 		       				mIntervals.add(c.getString(c.getColumnIndex("send_wait")));
-		       				mSends.add(c.getString(c.getColumnIndex("send_amount")));
 		       				mDays.add(c.getString(c.getColumnIndex("send_day")));
+		       				mTimes.add(c.getString(c.getColumnIndex("send_time")));
 		       			}
 		       		}
 		       	 } catch (Exception e1) {}
@@ -169,16 +169,18 @@ public class UserFragment extends ListFragment {
 		    e = mEntries.get(p);
 		    m = mMentions.get(p);
 		    i = mIntervals.get(p);
-		    s = mSends.get(p);
 		    d = mDays.get(p);
+		    t = mTimes.get(p);
             Bundle b = new Bundle();
             b.putBoolean("editing", true);
             b.putInt("pos", pos);
             b.putString("message", e);
-            b.putString("sends", s);
             b.putString("interval", i);
             b.putString("mentions", m);
             b.putString("days", d);
+            if (t.length()>1) {
+            	b.putString("time", t);
+            }
             Intent mi = new Intent(v.getContext(), EntryAdd.class);
             mi.putExtras(b);
             entryArray.remove(p);

@@ -159,17 +159,34 @@
         android:scaleType="fitXY"
         android:src="@drawable/test" />
     
-       <TextView
+    <CheckBox
+        android:id="@+id/timeCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/div2"
+        android:text="Send at specific time" />
+         
+    <ImageView
+        android:id="@+id/div3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/timeCB"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />
+
+	<TextView
         android:id="@+id/interval"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/div2"
+        android:layout_below="@+id/div3"
         android:paddingLeft="10dp"
         android:paddingTop="3dp"
         android:text="Interval"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+    
     <EditText
         android:id="@+id/editInterval"
         android:layout_width="wrap_content"
@@ -178,50 +195,50 @@
         android:layout_below="@+id/interval"
         android:hint="Interval (in minutes) between sends."
         android:inputType="number"
-        android:paddingTop="3dp" />
-
+        android:paddingTop="3dp"/>
+    
     <ImageView
-        android:id="@+id/div3"
+        android:id="@+id/div7"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/editInterval"
         android:paddingTop="3dp"
         android:scaleType="fitXY"
-        android:src="@drawable/test" />
+        android:src="@drawable/test" />    
 
-    
-   <TextView
-        android:id="@+id/sends"
+	<TextView
+        android:id="@+id/timePicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/div3"
+        android:layout_below="@+id/div7"
         android:paddingLeft="10dp"
         android:paddingTop="3dp"
-        android:text="Number of sends"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-       
-    <EditText
-        android:id="@+id/editAmount"
+        android:text="Set Time"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+	
+	<TextView
+        android:id="@+id/time_pre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/sends"
-        android:hint="Total number of sends."
-        android:inputType="number"
-        android:paddingTop="3dp" />
-
+        android:layout_below="@+id/timePicker"
+        android:paddingLeft="10dp"
+        android:paddingTop="3dp"
+        android:text="No time set."
+        android:textColor="@color/ics"
+        android:textAppearance="?android:attr/textAppearanceSmall" />	
+        
     <ImageView
-        android:id="@+id/div1"
+        android:id="@+id/div6"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/editAmount"
+        android:layout_below="@+id/time_pre"
         android:paddingTop="3dp"
         android:scaleType="fitXY"
-        android:src="@drawable/test" />
-       
+        android:src="@drawable/test" />   
 </RelativeLayout>            
 </ScrollView>
 

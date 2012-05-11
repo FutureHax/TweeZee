@@ -127,7 +127,7 @@ public class AccountManager extends ListActivity {
 		
 		final Vibrator vibe = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE) ;
     	vibe.vibrate(50);
-    	BetterPopupWindow dw = new BetterPopupWindow.DemoPopupWindow(v, msg, p);
+    	BetterPopupWindow dw = new BetterPopupWindow.DemoPopupWindow(v, msg, p, p);
 		dw.showLikeQuickAction(0, 30);
 	}
 	

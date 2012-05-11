@@ -62,6 +62,26 @@
            		android:paddingLeft="15dp"
            		android:paddingRight="15dp"
            		android:textAppearance="?android:attr/textAppearanceMedium"
-           		android:text="Send now" />       		
-    </LinearLayout>
+           		android:text="Start" />       		
+
+       		<ImageView
+           		android:id="@+id/imageView3"
+           		android:layout_width="fill_parent"
+           		android:layout_height="wrap_content"
+           		android:scaleType="fitXY"
+           		android:src="@drawable/test" />
+       		       		
+      		<TextView
+           		android:id="@+id/stop"
+           		android:layout_width="wrap_content"
+           		android:layout_height="wrap_content"
+           		android:layout_weight="1"
+           		android:minWidth="80dp"
+           		android:paddingTop="5dp"
+           		android:paddingBottom="5dp"
+           		android:paddingLeft="15dp"
+           		android:paddingRight="15dp"
+           		android:textAppearance="?android:attr/textAppearanceMedium"
+           		android:text="Stop" />       		       		
+        </LinearLayout>
 </LinearLayout>
