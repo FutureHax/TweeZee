@@ -104,15 +104,16 @@
         android:text="Add Mentions"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-   	<AutoCompleteTextView 
+   	<MultiAutoCompleteTextView 
    	    android:paddingTop="3dp"
-		android:id="@+id/mentionsATC"
+		android:id="@+id/mentionsMACTV"
         android:paddingLeft="10dp"
 		android:layout_below="@+id/mentionsTv"
         android:focusableInTouchMode="true"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:hint="Mentions"
+		android:completionThreshold="1"
 		android:imeOptions="actionDone"/>      
 		 
     <ImageView
@@ -120,7 +121,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/mentionsATC"
+        android:layout_below="@+id/mentionsMACTV"
         android:paddingTop="3dp"
         android:scaleType="fitXY"
         android:src="@drawable/test" />

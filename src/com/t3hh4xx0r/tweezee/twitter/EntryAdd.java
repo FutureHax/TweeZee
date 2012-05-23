@@ -51,6 +51,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,7 +68,7 @@ public class EntryAdd extends Activity {
 	TextView tV;
 	TextView myCount;
 	TextView tV2;
-	AutoCompleteTextView mPreview;
+	MultiAutoCompleteTextView mPreview;
 	TextView dPreview;
 	TextView timePre;
 	TextView name;
@@ -184,7 +185,7 @@ public class EntryAdd extends Activity {
 		name = (TextView)findViewById(R.id.userN);
 		name.setText("@"+usern);
 		pic = (ImageView)findViewById(R.id.userP);
-		mPreview = (AutoCompleteTextView)findViewById(R.id.mentionsATC);
+		mPreview = (MultiAutoCompleteTextView)findViewById(R.id.mentionsMACTV);
 		getFollowing();
 		dPreview = (TextView)findViewById(R.id.day_pre);
 		tV2 = (TextView)findViewById(R.id.mentionsTv);
@@ -383,6 +384,7 @@ public class EntryAdd extends Activity {
 
 			ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line, screenNames);
 			mPreview.setAdapter(adapter);
+			mPreview.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
 	     } catch (TwitterException e) {
 			e.printStackTrace();
 		}
