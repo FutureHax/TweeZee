@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/settings"
+          android:title="Settings" />        
+    <item android:id="@+id/feedback"
+          android:title="Send Feedback" />   
+    <item android:id="@+id/apps"
+          android:title="View other apps" />  
+    <item android:id="@+id/twitter"
+          android:title="Follow developer on Twitter" />              
+</menu>

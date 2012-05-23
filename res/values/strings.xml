@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, TweeZeeActivity!</string>
-    <string name="app_name">TweeZee</string>
+    <string name="app_name">Ultimate Scheduler</string>
     <string name="fetching_request_token">Contacting Twitter...</string>
 	<string name="fetching_access_token">Checking Twitter access...</string>
 	<string name="ok">OK</string>
@@ -11,5 +10,5 @@
 	<string name="cancel_auth">Cancel signing in</string>
 	<string name="dont_cancel_auth">Don\'t cancel</string>
 	<string name="auth_network_error">Could not contact Twitter. Please try again.</string>
-	<string name="updates">-Massive battery enhancements, now uses next to no battery.\n-Option to send tweets at specific times as well as specific intervals.\n-Option to start/stop tweets.\n-Premium features added.\n--Start selected tweets on boot.\n--Multiple account support.\n--Unlimited saved tweets.</string>
+	<string name="updates">-Massive update.\n-Renamed to Ultimate Scheduler, new icon coming soon!\n-Unlocked all premium features for Twitter status updates.\n-Add mention auto complete.\n-Add SMS scheduling for Premium users.\n-Email, Facebook, and (possibly) G+ updates coming soon.</string>
 </resources>

@@ -9,7 +9,7 @@
   		    <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
             android:key="twitter"
     		android:title="Twitter Status Update"
-    		settings:icon="@drawable/ic_launcher" 
+    		settings:icon="@drawable/twitter" 
     		android:enabled="true" >
        			<intent
             	android:action="android.intent.action.MAIN"
@@ -19,8 +19,9 @@
        			
             <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
             android:key="sms"
+            android:id="@+id/sms"
        		android:title="SMS Message"
-    		settings:icon="@drawable/ic_launcher" >
+    		settings:icon="@drawable/sms">
        			<intent
             	android:action="android.intent.action.MAIN"
             	android:targetPackage="com.t3hh4xx0r.tweezee"

@@ -59,7 +59,11 @@ public class TweezeeReceiver extends BroadcastReceiver {
 			mentions = i.getStringExtra("mentions").replaceAll(",", "");
 			sendTweet();
 		} else if (type.equals("sms")) {
-			recipient = i.getStringExtra("recipient");
+			if (!Character.isDigit(i.getStringExtra("recipient").charAt(0))) {
+				recipient = i.getStringExtra("recipient").split("-", 2)[1];
+			} else {
+				recipient = i.getStringExtra("recipient");
+			}
 			sendSMS();
 		}
 
@@ -73,7 +77,7 @@ public class TweezeeReceiver extends BroadcastReceiver {
              i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		     PendingIntent pi = PendingIntent.getActivity(ctx, 0, i, 0);  
 		     SmsManager sms = SmsManager.getDefault();
-		     sms.sendTextMessage(recipient, null, message, pi, null);			        			       			          
+		     sms.sendTextMessage(recipient.replaceAll("-", ""), null, message, pi, null);			        			       			          
 	       	 if (prefs.getBoolean("notify", true)) {
     			 if (!prefs.getBoolean("notifyIntrusive", true)) {
     				 mHandler.post(new Runnable() {

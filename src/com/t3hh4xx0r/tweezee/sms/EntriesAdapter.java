@@ -48,8 +48,8 @@ public class EntriesAdapter extends BaseAdapter {
 	  } else {
 		  holder = (ViewHolder) convertView.getTag();
 	  }
-	  message = selectionList.get(position).split("-", 3)[0];
-	  recipient = selectionList.get(position).split("-", 3)[1] + " - " + selectionList.get(position).split("-", 3)[2];
+	  message = selectionList.get(position).split(":")[0];
+	  recipient = selectionList.get(position).split(":")[1];
 	  holder.message.setText(message);
 	  holder.send_to.setText(recipient);
 	  return convertView;

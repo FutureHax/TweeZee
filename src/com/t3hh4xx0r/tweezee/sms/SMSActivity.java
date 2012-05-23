@@ -150,7 +150,7 @@ public class SMSActivity extends ListActivity {
 	       		while (cu.moveToNext()) {
 	       			StringBuilder sB = new StringBuilder();
 	       			sB.append(cu.getString(cu.getColumnIndex("message")));
-	       			sB.append("-");
+	       			sB.append(":");
 	       			sB.append(cu.getString(cu.getColumnIndex("send_to")));
 	       			mEntries.add(sB.toString());
 	       		}

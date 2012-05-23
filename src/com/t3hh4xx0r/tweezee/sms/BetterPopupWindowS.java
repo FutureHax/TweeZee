@@ -264,6 +264,7 @@ public class BetterPopupWindowS {
   		public void onClick(View v) {
 
   			if(v.getId() == R.id.delete) {  
+      			killSMS(getID(recipient, message));
   	   			DBAdapter db = new DBAdapter(v.getContext());
     		    db.open();
     		    db.deleteSEntry(message, recipient);
@@ -272,7 +273,6 @@ public class BetterPopupWindowS {
       			Message msg = new Message();
       			msg.what = 0;
       			SMSActivity.handy.sendMessage(msg);
-      			killSMS(getID(recipient, message));
       			this.dismiss();
 	        } 
   	    	
@@ -328,6 +328,7 @@ public class BetterPopupWindowS {
 		}
 
 		public void killSMS(int id) {
+			Toast.makeText(this.anchor.getContext(), Integer.toString(id), Toast.LENGTH_LONG).show();
 	    	Intent myIntent = new Intent(this.anchor.getContext(), TweezeeReceiver.class);
 	        myIntent.setAction(Integer.toString(id));
 	        myIntent.setData(Uri.parse(Integer.toString(id)));

@@ -12,7 +12,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -29,7 +28,6 @@ import android.view.MenuItem;
 import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
-import com.t3hh4xx0r.tweezee.SettingsMenu;
 import com.viewpagerindicator.TitlePageIndicator;
 import com.viewpagerindicator.TitleProvider;
 
@@ -56,11 +54,10 @@ public class TwitterActivity extends FragmentActivity {
 		setContentView(R.layout.twitter);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        
         DBAdapter db = new DBAdapter(this);
    		db.open();
    		if (!db.isLoggedInT()) {
-            startActivity(new Intent(this, TwitterSplash.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            startActivity(new Intent(this, TwitterSplash.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
    		}
    		db.close();
    		   		
@@ -158,20 +155,6 @@ public class TwitterActivity extends FragmentActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
-	    	case R.id.feedback:
-	    		Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-	    		sendIntent.setClassName("com.google.android.gm", "com.google.android.gm.ComposeActivityGmail");
-	    		sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { "r2doesinc@gmail.com" });
-	    		sendIntent.setData(Uri.parse("r2doesinc@gmail.com"));
-	    		sendIntent.putExtra(Intent.EXTRA_SUBJECT, "TweeZee Feedback");
-	    		sendIntent.setType("plain/text");
-	    		startActivity(sendIntent);
-	    	break;
-	        case R.id.settings:
-	            Intent s = new Intent(this, SettingsMenu.class);
-	            s.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	            startActivity(s);
-	        break;
 	        case R.id.sign_in:
 		        Intent si = new Intent(this, TwitterAuth.class);
 		        si.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

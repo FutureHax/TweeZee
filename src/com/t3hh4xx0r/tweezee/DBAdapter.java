@@ -13,8 +13,6 @@ public class DBAdapter {
     public static final String KEY_USERNAME = "username";
     public static final String KEY_TOKEN = "oauth_token";
     public static final String KEY_SECRET = "oauth_token_secret";
-    public static final String KEY_FRIENDS = "friends";
-    public static final String KEY_FRIEND_IDS = "friend_ids";
     
     public static final String KEY_SEND_TO = "send_to";
     
@@ -134,8 +132,6 @@ public class DBAdapter {
         initialValues.put(KEY_USERID, id);
         initialValues.put(KEY_TOKEN, token);
         initialValues.put(KEY_SECRET, secret);
-        initialValues.put(KEY_FRIENDS, "");
-        initialValues.put(KEY_FRIEND_IDS, "");
         
         return db.insert(T_USER_TABLE, null, initialValues);
     }    
@@ -186,9 +182,7 @@ public class DBAdapter {
                 KEY_USERNAME,
                 KEY_USERID,
                 KEY_TOKEN,
-                KEY_SECRET,
-                KEY_FRIENDS,
-                KEY_FRIEND_IDS}, 
+                KEY_SECRET}, 
                 null, 
                 null, 
                 null, 
@@ -255,19 +249,7 @@ public class DBAdapter {
                 
         return db.delete(T_USER_TABLE, KEY_ROWID + 
         		"=" + mCursor.getString(0), null) > 0;  
-    }	
-   
-    public void addFriends(String user, String friends) {
-	        ContentValues args = new ContentValues();
-	        args.put(KEY_FRIENDS, friends);
-	        this.db.update(T_USER_TABLE, args, "username = ?", new String[] {user});
-    }
-
-	public void addFriendIds(String user, String ids) {
-		ContentValues args = new ContentValues();
-	    args.put(KEY_FRIEND_IDS, ids);
-	    this.db.update(T_USER_TABLE, args, "username = ?", new String[] {user});
-	}  
+    }	  
     
 	public void updateSEntry(String message, String og, String wait, String days, String send_to, String time, String boot) {
 		ContentValues args = new ContentValues();
