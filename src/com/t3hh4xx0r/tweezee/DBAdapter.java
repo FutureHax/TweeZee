@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-import android.widget.Toast;
 
 public class DBAdapter {
     public static final String KEY_ROWID = "_id";
@@ -18,6 +16,8 @@ public class DBAdapter {
     public static final String KEY_FRIENDS = "friends";
     public static final String KEY_FRIEND_IDS = "friend_ids";
     
+    public static final String KEY_SEND_TO = "send_to";
+    
     public static final String KEY_WAIT = "send_wait";
     public static final String KEY_DAY = "send_day";
     public static final String KEY_MESSAGE = "message";
@@ -27,20 +27,26 @@ public class DBAdapter {
     public static final String ID = "my_id";
     
     private static final String DATABASE_NAME = "tweezee.db";
-    private static final String USER_TABLE = "users";
-    private static final String ENTRY_TABLE = "entries";
-    private static final int DATABASE_VERSION = 12;
+    private static final String T_USER_TABLE = "twitter_users";
+    private static final String T_ENTRY_TABLE = "twitter_entries";
+    private static final String S_ENTRY_TABLE = "sms_entries";
+    private static final int DATABASE_VERSION = 14;
 
-    private static final String CREATE_USERS =
-            "create table users (_id integer primary key autoincrement, "
+    private static final String CREATE_T_USERS =
+            "create table twitter_users (_id integer primary key autoincrement, "
             + "username text not null, user_id text not null, oauth_token text not null, oauth_token_secret text not null, friends text not null, friend_ids text not null);";
         
-    private static final String CREATE_ENTRIES =
-            "create table entries (_id integer primary key autoincrement, "
+    private static final String CREATE_T_ENTRIES =
+            "create table twitter_entries (_id integer primary key autoincrement, "
                     + "username text not null, message text not null, mentions text not null, "
             		+" send_wait text not null, send_day text not null, send_time text not null, "
                     +" start_boot text not null, my_id text not null);";
          
+    private static final String CREATE_S_ENTRIES =
+            "create table sms_entries (_id integer primary key autoincrement, "
+                    + "message text not null, send_to text not null, "
+            		+" send_wait text not null, send_day text not null, send_time text not null, "
+                    +" start_boot text not null, my_id text not null);";
     
     private final Context context; 
     
@@ -63,16 +69,18 @@ public class DBAdapter {
         @Override
         public void onCreate(SQLiteDatabase db) 
         {
-            db.execSQL(CREATE_USERS);
-            db.execSQL(CREATE_ENTRIES);
+            db.execSQL(CREATE_T_USERS);
+            db.execSQL(CREATE_T_ENTRIES);
+            db.execSQL(CREATE_S_ENTRIES);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, 
         int newVersion) 
         {
-            db.execSQL("DROP TABLE IF EXISTS users");
-            db.execSQL("DROP TABLE IF EXISTS entries");
+            db.execSQL("DROP TABLE IF EXISTS twitter_users");
+            db.execSQL("DROP TABLE IF EXISTS twitter_entries");
+            db.execSQL("DROP TABLE IF EXISTS sms_entries");
             onCreate(db);
         }
     }    
@@ -89,8 +97,22 @@ public class DBAdapter {
     {
     	DBHelper.close();
     }
+
+    public void insertSEntry(String message, String wait, String day, String send_to, String time, String boot, int id) 
+    {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(KEY_MESSAGE, message);
+        initialValues.put(KEY_WAIT, wait);
+        initialValues.put(KEY_DAY, day);
+        initialValues.put(KEY_SEND_TO, send_to);
+        initialValues.put(KEY_TIME, time);
+        initialValues.put(BOOT, boot);
+        initialValues.put(ID, Integer.toString(id));
+        
+        db.insert(S_ENTRY_TABLE, null, initialValues);
+    }    
     
-    public long insertEntry(String name, String message, String wait, String day, String mentions, String time, String boot) 
+    public long insertTEntry(String name, String message, String wait, String day, String mentions, String time, String boot, int id) 
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_USERNAME, name);
@@ -100,12 +122,12 @@ public class DBAdapter {
         initialValues.put(KEY_MENTIONS, mentions);
         initialValues.put(KEY_TIME, time);
         initialValues.put(BOOT, boot);
-        initialValues.put(ID, "");
+        initialValues.put(ID, Integer.toString(id));
         
-        return db.insert(ENTRY_TABLE, null, initialValues);
+        return db.insert(T_ENTRY_TABLE, null, initialValues);
     }
 
-    public long insertUser(String name, String id, String token, String secret) 
+    public long insertTUser(String name, String id, String token, String secret) 
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_USERNAME, name);
@@ -115,12 +137,31 @@ public class DBAdapter {
         initialValues.put(KEY_FRIENDS, "");
         initialValues.put(KEY_FRIEND_IDS, "");
         
-        return db.insert(USER_TABLE, null, initialValues);
+        return db.insert(T_USER_TABLE, null, initialValues);
     }    
-    
-    public Cursor getAllEntries() 
+
+    public Cursor getAllSEntries() 
     {
-    	Cursor mCursor = db.query(ENTRY_TABLE, new String[] {
+    	Cursor mCursor = db.query(S_ENTRY_TABLE, new String[] {
+                KEY_MESSAGE,
+                KEY_WAIT,
+                KEY_DAY,
+                KEY_SEND_TO,
+                KEY_TIME,
+                BOOT,
+                ID}, 
+                null,
+                null, 
+                null, 
+                null, 
+                null);
+	
+		return mCursor;
+    }
+    
+    public Cursor getAllTEntries() 
+    {
+    	Cursor mCursor = db.query(T_ENTRY_TABLE, new String[] {
                 KEY_USERNAME,
                 KEY_MESSAGE,
                 KEY_WAIT,
@@ -138,9 +179,9 @@ public class DBAdapter {
 		return mCursor;
     }
     
-    public Cursor getAllUsers() 
+    public Cursor getAllTUsers() 
     {
-    	Cursor mCursor = db.query(USER_TABLE, new String[] {
+    	Cursor mCursor = db.query(T_USER_TABLE, new String[] {
         		KEY_ROWID, 
                 KEY_USERNAME,
                 KEY_USERID,
@@ -157,9 +198,9 @@ public class DBAdapter {
 		return mCursor;
     }
 
-    public boolean deleteEntry(String[] message) {
+    public boolean deleteTEntry(String[] message) {
     	
-        Cursor mCursor = db.query(true, ENTRY_TABLE, new String[] {
+        Cursor mCursor = db.query(true, T_ENTRY_TABLE, new String[] {
         		KEY_ROWID
         		}, 
         		"message=?", 
@@ -173,13 +214,32 @@ public class DBAdapter {
             mCursor.moveToFirst();
         }
                 
-        return db.delete(ENTRY_TABLE, KEY_ROWID + 
+        return db.delete(T_ENTRY_TABLE, KEY_ROWID + 
         		"=" + mCursor.getString(0), null) > 0;        		
     }	
-    
-   public boolean deleteUser(String[] user) {
+
+    public boolean deleteSEntry(String message, String recipient) {
     	
-        Cursor mCursor = db.query(true, USER_TABLE, new String[] {
+        Cursor mCursor = db.query(true, S_ENTRY_TABLE, new String[] {
+        		KEY_ROWID
+        		}, 
+        		"message=? AND send_to=?", 
+        		new String[] {message, recipient},
+        		null, 
+        		null, 
+        		null, 
+        		null);
+
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+                
+        return db.delete(S_ENTRY_TABLE, KEY_ROWID + 
+        		"=" + mCursor.getString(0), null) > 0;        		
+    }    
+   public boolean deleteTUser(String[] user) {
+    	
+        Cursor mCursor = db.query(true, T_USER_TABLE, new String[] {
         		KEY_ROWID
         		}, 
         		"username=?", 
@@ -193,23 +253,35 @@ public class DBAdapter {
             mCursor.moveToFirst();
         }
                 
-        return db.delete(USER_TABLE, KEY_ROWID + 
+        return db.delete(T_USER_TABLE, KEY_ROWID + 
         		"=" + mCursor.getString(0), null) > 0;  
     }	
    
     public void addFriends(String user, String friends) {
 	        ContentValues args = new ContentValues();
 	        args.put(KEY_FRIENDS, friends);
-	        this.db.update(USER_TABLE, args, "username = ?", new String[] {user});
+	        this.db.update(T_USER_TABLE, args, "username = ?", new String[] {user});
     }
 
 	public void addFriendIds(String user, String ids) {
 		ContentValues args = new ContentValues();
 	    args.put(KEY_FRIEND_IDS, ids);
-	    this.db.update(USER_TABLE, args, "username = ?", new String[] {user});
+	    this.db.update(T_USER_TABLE, args, "username = ?", new String[] {user});
+	}  
+    
+	public void updateSEntry(String message, String og, String wait, String days, String send_to, String time, String boot) {
+		ContentValues args = new ContentValues();
+	    args.put(KEY_MESSAGE, message);
+	    args.put(KEY_SEND_TO, send_to);
+	    args.put(KEY_WAIT, wait);
+	    args.put(KEY_DAY, days);
+	    args.put(KEY_TIME, time);
+	    args.put(BOOT, boot);
+	    this.db.update(S_ENTRY_TABLE, args, ("message = ? AND send_to = ?"), new String[] {og, send_to});
 	}
-
-	public void updateEntry(String user, String message, String mentions, String og, String wait, String days, String time, String boot, String id) {
+	
+	
+	public void updateTEntry(String user, String message, String mentions, String og, String wait, String days, String time, String boot) {
 		ContentValues args = new ContentValues();
 	    args.put(KEY_MESSAGE, message);
 	    args.put(KEY_MENTIONS, mentions);
@@ -217,18 +289,11 @@ public class DBAdapter {
 	    args.put(KEY_DAY, days);
 	    args.put(KEY_TIME, time);
 	    args.put(BOOT, boot);
-	    args.put(ID, id);
-	    this.db.update(ENTRY_TABLE, args, ("message = ? AND username = ?"), new String[] {og, user});
+	    this.db.update(T_ENTRY_TABLE, args, ("message = ? AND username = ?"), new String[] {og, user});
 	}
 	
-	public void updateEntryID(String user, String message, String id) {
-		ContentValues args = new ContentValues();
-	    args.put(ID, id);
-	    this.db.update(ENTRY_TABLE, args, ("message = ? AND username = ?"), new String[] {message, user});
-	}
-	
-	public boolean isLoggedIn() {
-		Cursor cur = db.rawQuery("SELECT COUNT(*) FROM USERS", null);
+	public boolean isLoggedInT() {
+		Cursor cur = db.rawQuery("SELECT COUNT(*) FROM TWITTER_USERS", null);
 		if (cur != null) {
 		    cur.moveToFirst();
 		    if (cur.getInt (0) == 0) {

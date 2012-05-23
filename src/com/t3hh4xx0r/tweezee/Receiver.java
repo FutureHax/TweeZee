@@ -1,5 +1,8 @@
 package com.t3hh4xx0r.tweezee;
 
+import com.t3hh4xx0r.tweezee.twitter.OAUTH;
+import com.t3hh4xx0r.tweezee.twitter.TwitterActivity;
+
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -30,7 +33,7 @@ public class Receiver extends BroadcastReceiver {
 			p = i.getIntExtra("pos", 0);
 			
 	        twitter = new TwitterFactory().getInstance();
-	        AccessToken t = new AccessToken(MainActivity.users[p].getToken(), MainActivity.users[p].getSecret());
+	        AccessToken t = new AccessToken(TwitterActivity.users[p].getToken(), TwitterActivity.users[p].getSecret());
 	        twitter.setOAuthConsumer(OAUTH.CONSUMER_KEY, OAUTH.CONSUMER_SECRET);
 	        twitter.setOAuthAccessToken(t);
 	        
@@ -56,7 +59,7 @@ public class Receiver extends BroadcastReceiver {
 		 CharSequence contentTitle = "TweeZee API"; 
 		 CharSequence contentText = "Our limit has been refreshed!"; 
 		 
-		 Intent notificationIntent = new Intent(ctx, MainActivity.class);
+		 Intent notificationIntent = new Intent(ctx, TwitterActivity.class);
 
 		 PendingIntent contentIntent = PendingIntent.getActivity(ctx, 0, notificationIntent, 0);
 

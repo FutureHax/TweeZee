@@ -1,6 +1,5 @@
 package com.t3hh4xx0r.tweezee;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;

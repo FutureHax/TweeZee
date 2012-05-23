@@ -6,21 +6,22 @@ import java.util.Random;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import android.telephony.SmsManager;
 import android.widget.Toast;
+
+import com.t3hh4xx0r.tweezee.sms.SMSActivity;
+import com.t3hh4xx0r.tweezee.twitter.OAUTH;
+import com.t3hh4xx0r.tweezee.twitter.TwitterActivity;
 
 public class TweezeeReceiver extends BroadcastReceiver {
 
@@ -31,7 +32,8 @@ public class TweezeeReceiver extends BroadcastReceiver {
     private String token; 
     private String secret; 
     private String tokenE;
-    
+    private String type;
+    private String recipient;
     Twitter t;
     
     SharedPreferences prefs;
@@ -44,22 +46,53 @@ public class TweezeeReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context c, Intent i) {
-		Log.d("RECERIVER", "TWEET RECIEVED!");
-		message = i.getStringExtra("message");
-		username = i.getStringExtra("username");
-		mentions = i.getStringExtra("mentions");
-		day = i.getStringExtra("day");
-	
+		type = i.getStringExtra("type");
 		prefs = PreferenceManager.getDefaultSharedPreferences(c);
-
 		ctx = c;
-		
 		mHandler = new Handler();
 
-		sendTweet();
+		message = i.getStringExtra("message");
+		day = i.getStringExtra("day");
+		
+		if (type.equals("tweet")) {
+			username = i.getStringExtra("username");
+			mentions = i.getStringExtra("mentions");
+			sendTweet();
+		} else if (type.equals("sms")) {
+			recipient = i.getStringExtra("recipient");
+			sendSMS();
+		}
+
+		
 	}
 
-    private void sendTweet () {	    	 
+    private void sendSMS() {
+   	 try {
+	     if (day.split(",")[getcDay()-1].equals("true")) {
+		     Intent i = new Intent(ctx, TweezeeReceiver.class);
+             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		     PendingIntent pi = PendingIntent.getActivity(ctx, 0, i, 0);  
+		     SmsManager sms = SmsManager.getDefault();
+		     sms.sendTextMessage(recipient, null, message, pi, null);			        			       			          
+	       	 if (prefs.getBoolean("notify", true)) {
+    			 if (!prefs.getBoolean("notifyIntrusive", true)) {
+    				 mHandler.post(new Runnable() {
+    					 @Override
+    					 public void run() {
+    						 Toast.makeText(ctx, message, Toast.LENGTH_LONG).show();
+    					 }
+    				 });
+    			 } else{
+	    			 alertS(message, ctx);
+    			 }
+	       	 }
+	     }
+	 } catch (Exception e) {
+		 e.printStackTrace();
+	 }
+	}
+
+	private void sendTweet () {	    	 
 	     t = new TwitterFactory().getInstance();
 	     t.setOAuthConsumer(OAUTH.CONSUMER_KEY, OAUTH.CONSUMER_SECRET);
 	     if (getToken() == null) {
@@ -68,8 +101,6 @@ public class TweezeeReceiver extends BroadcastReceiver {
 	    	 aToken = getToken();
 	     }
 	     t.setOAuthAccessToken(aToken);
-				 DBAdapter db = new DBAdapter(ctx);
-			     db.open();
 		    	 try {
 				     if (day.split(",")[getcDay()-1].equals("true")) {
 				    	 if (prefs.getBoolean("direct", false)) {
@@ -86,22 +117,19 @@ public class TweezeeReceiver extends BroadcastReceiver {
 			    					 }
 			    				 });
 			    			 } else{
-				    			 alert(message, ctx);
+				    			 alertT(message, ctx);
 			    			 }
 				       	 }
-				     } else {
-				    	 Log.d("TWEEZEE", "Wrong day");
 				     }
 		    	 } catch (Exception e) {
 		    		 e.printStackTrace();
 		    	 }
-		 	    db.close();
    }
     
 	private AccessToken getToken() {
 		 DBAdapter dba = new DBAdapter(ctx);
       	 dba.open();
-      	 Cursor cu = dba.getAllUsers();
+      	 Cursor cu = dba.getAllTUsers();
   		 try {
   			while (cu.moveToNext()) {
   				if (cu.getString(1).equals(username)) {
@@ -132,14 +160,14 @@ public class TweezeeReceiver extends BroadcastReceiver {
 		return new Random().nextInt(98 - 0 + 1) + 0;
 	}
 
-	private void alert(String message, Context c) {
+	private void alertT(String message, Context c) {
 			 int icon = R.drawable.ic_launcher;
 			 CharSequence tickerText = "Status Update!";
 			 long when = System.currentTimeMillis();
 			 CharSequence contentTitle = "TweeZee updated your status."; 
 			 CharSequence contentText = message; 
 			 
-			 Intent notificationIntent = new Intent(c, MainActivity.class);
+			 Intent notificationIntent = new Intent(c, TwitterActivity.class);
 
 			 PendingIntent contentIntent = PendingIntent.getActivity(c, 0, notificationIntent, 0);
 
@@ -153,5 +181,27 @@ public class TweezeeReceiver extends BroadcastReceiver {
 		                Context.NOTIFICATION_SERVICE);	
 			 mNotificationManager.notify(HELLO_ID, notification);			
 	} 
+
+	private void alertS(String message, Context c) {
+		 int icon = R.drawable.ic_launcher;
+		 CharSequence tickerText = "SMS Sent!";
+		 long when = System.currentTimeMillis();
+		 CharSequence contentTitle = "TweeZee sent an SMS."; 
+		 CharSequence contentText = message; 
+		 
+		 Intent notificationIntent = new Intent(c, SMSActivity.class);
+
+		 PendingIntent contentIntent = PendingIntent.getActivity(c, 0, notificationIntent, 0);
+
+		 Notification notification = new Notification(icon, tickerText, when);
+  	     notification.defaults = Notification.DEFAULT_VIBRATE;
+  	     notification.flags = Notification.FLAG_AUTO_CANCEL;
+		 notification.setLatestEventInfo(c, contentTitle, contentText, contentIntent);
+		 final int HELLO_ID = 1;
+
+		 NotificationManager mNotificationManager = (NotificationManager) c.getSystemService(
+	                Context.NOTIFICATION_SERVICE);	
+		 mNotificationManager.notify(HELLO_ID, notification);			
+} 
 
 }

@@ -1,20 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-	android:background="@drawable/pinstripe"
-    android:orientation="vertical" >
-        
-    <com.viewpagerindicator.TitlePageIndicator
-        android:id="@+id/indicator"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        style="@style/Widget.MyTitlepageIndicator" />
-        
-	<android.support.v4.view.ViewPager
-    	android:layout_width="match_parent" 
-    	android:layout_height="match_parent" 
-    	android:layout_below="@+id/indicator"
-    	android:id="@android:id/list"/>
+<PreferenceScreen
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:settings="http://schemas.android.com/apk/res/com.t3hh4xx0r.tweezee" >
 
-</RelativeLayout>
+    <PreferenceCategory
+    android:title="Sending Method" >
+    
+  		    <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
+            android:key="twitter"
+    		android:title="Twitter Status Update"
+    		settings:icon="@drawable/ic_launcher" 
+    		android:enabled="true" >
+       			<intent
+            	android:action="android.intent.action.MAIN"
+            	android:targetPackage="com.t3hh4xx0r.tweezee"
+            	android:targetClass="com.t3hh4xx0r.tweezee.twitter.TwitterActivity" />        
+			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>
+       			
+            <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
+            android:key="sms"
+       		android:title="SMS Message"
+    		settings:icon="@drawable/ic_launcher" >
+       			<intent
+            	android:action="android.intent.action.MAIN"
+            	android:targetPackage="com.t3hh4xx0r.tweezee"
+            	android:targetClass="com.t3hh4xx0r.tweezee.sms.SMSActivity" />
+			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>
+											
+			</PreferenceCategory>
+</PreferenceScreen>

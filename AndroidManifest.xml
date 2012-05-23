@@ -9,7 +9,9 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-
+	<uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+	
     <permission 
      android:label="Recieve registration broadcasts" 
      android:name="com.t3hh4xx0r.tweezee.REGISTER" 
@@ -25,14 +27,15 @@
         android:icon="@drawable/ic_launcher"
         android:theme="@android:style/Theme.Holo"        
         android:label="TweeZee" >
-        <activity
-            android:name="TwitterAuth"
-            android:label="TweeZee" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-       <activity
+<!-- Ads -->
+		<activity	
+			android:name="com.pontiflex.mobile.webview.sdk.activities.MultiOfferActivity"/>	
+		<activity	
+  			android:name="com.pontiflex.mobile.webview.sdk.activities.RegistrationActivity"
+  			android:configChanges="keyboardHidden"/>    
+  			
+<!-- Basic App -->    	
+      <activity
             android:name="SettingsMenu"
             android:label="Settings" >
             <intent-filter>
@@ -40,52 +43,80 @@
             </intent-filter>
         </activity>
        <activity
-            android:name="AccountManager"
+            android:name=".MainActivity"
+            android:label="TweeZee" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+        </activity>            
+       
+<!-- Twitter -->
+      <activity android:screenOrientation="portrait"
+            android:name=".twitter.TwitterSplash" >
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>        
+       </activity>        
+       <activity
+            android:name=".twitter.TwitterAuth"
+            android:label="TweeZee" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+       <activity
+            android:name=".twitter.AccountManager"
             android:label="Account Manager" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
        <activity
-            android:name="EntryAdd"
+            android:name=".twitter.EntryAdd"
             android:label="TweeZee" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
        <activity
-            android:name="DayPicker"
+            android:name=".twitter.DayPicker"
             android:label="TweeZee" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
-        </activity>
-       <activity
-            android:name="MainActivity"
-            android:label="TweeZee" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                </intent-filter>
         </activity>
         <activity android:screenOrientation="portrait"
             android:label="Mentions"
-            android:name=".MentionsActivity" >
+            android:name=".twitter.MentionsActivity" >
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+       </activity>
+        <activity android:screenOrientation="portrait"
+            android:label="Twitter"
+            android:name=".twitter.TwitterActivity" >
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+       </activity>
+       
+<!-- SMS -->
+        <activity android:screenOrientation="portrait"
+            android:label="SMS"
+            android:name=".sms.SMSActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
        </activity>
        <activity android:screenOrientation="portrait"
-            android:name=".Splash" >
+            android:label="SMS"
+            android:name=".sms.EntryAddS" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
-            </intent-filter>        
-       </activity>       
-		<activity	
-			android:name="com.pontiflex.mobile.webview.sdk.activities.MultiOfferActivity"/>	
-		<activity	
-  			android:name="com.pontiflex.mobile.webview.sdk.activities.RegistrationActivity"
-  			android:configChanges="keyboardHidden"/>        
+            </intent-filter>
+       </activity>                
+<!-- Receivers -->    
        <receiver android:name=".Receiver" />        
         <receiver android:name=".BootReceiver">
 		  <intent-filter android:priority="2147483647"> 

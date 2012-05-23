@@ -1,5 +1,7 @@
 package com.t3hh4xx0r.tweezee;
 
+import com.t3hh4xx0r.tweezee.twitter.TwitterActivity;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -29,7 +31,7 @@ import android.util.Log;
 				 CharSequence contentTitle = "License Found"; 
 				 CharSequence contentText = "Click to unlock premium features."; 
 				 
-				 Intent notificationIntent = new Intent(context, MainActivity.class);
+				 Intent notificationIntent = new Intent(context, TwitterActivity.class);
 	
 				 PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 	
