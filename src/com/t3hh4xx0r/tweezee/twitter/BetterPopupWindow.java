@@ -341,7 +341,7 @@ public class BetterPopupWindow {
 			int id = 420;
 	    	final DBAdapter db = new DBAdapter(this.anchor.getContext());
 	    	db.open();
-	        Cursor cu = db.getAllSEntries();
+	        Cursor cu = db.getAllTEntries();
 		    try {
 		       	while (cu.moveToNext()) {
 		        	if ((cu.getString(cu.getColumnIndex("message")).equals(message)) && cu.getString(cu.getColumnIndex("username")).equals(user)) {

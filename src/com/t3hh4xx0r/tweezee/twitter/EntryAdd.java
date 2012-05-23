@@ -38,17 +38,15 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AutoCompleteTextView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
@@ -113,8 +111,6 @@ public class EntryAdd extends Activity {
         startBoot = Boolean.parseBoolean(extras.getString("boot", "false"));
 		usern = TwitterActivity.users[p].getName(); 
 		userID = Long.parseLong(TwitterActivity.users[p].getId());
-
-		SelectionAdapter.selections.clear();
 
 		timePre = (TextView)findViewById(R.id.time_pre);
 		intervalTV = (TextView)findViewById(R.id.interval);
@@ -189,30 +185,6 @@ public class EntryAdd extends Activity {
 		getFollowing();
 		dPreview = (TextView)findViewById(R.id.day_pre);
 		tV2 = (TextView)findViewById(R.id.mentionsTv);
-		tV2 = (TextView)findViewById(R.id.mentionsTv);
-		tV2.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {	
-				if (extras.getBoolean("editing", false)) {
-					Intent i = new Intent(v.getContext(), MentionsActivity.class);
-					Bundle b = new Bundle();
-					b.putInt("pos", p);
-					b.putLong("id", userID);
-					b.putString("user", name.getText().toString().replace("@", ""));
-					b.putString("users", extras.getString("mentions"));
-					i.putExtras(b);
-					startActivityForResult(i, 0);					
-				} else {
-					Intent i = new Intent(v.getContext(), MentionsActivity.class);
-					Bundle b = new Bundle();
-					b.putInt("pos", p);
-					b.putLong("id", userID);
-					b.putString("user", name.getText().toString().replace("@", ""));
-					i.putExtras(b);
-					startActivityForResult(i, 0);
-				}
-			}
-		});
 		myCount = (TextView)findViewById(R.id.myCount);
 		if (extras.getBoolean("editing", false)) {
 			incomingT = extras.getString("mentions").replaceAll("@", "").length();
@@ -365,7 +337,6 @@ public class EntryAdd extends Activity {
 			while (check) {
 				for (int i=start;i<finish;i++) {		
 					IDS.add(friendsID[i]);
-					Log.d("USER", Long.toString(friendsID[i]));
 					if (friendsID.length-1 == i) {
 						check = false;
 						break;						
@@ -377,7 +348,7 @@ public class EntryAdd extends Activity {
 				ResponseList<User> userName = t.lookupUsers(ids);
 				IDS.clear();
 				for (User u : userName) {
-					names.add(u.getScreenName());
+					names.add("@"+u.getScreenName());
 				}
 			}
 			String[] screenNames = (String[]) names.toArray(new String[names.size()]);
@@ -438,8 +409,7 @@ public class EntryAdd extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    switch (requestCode) {
 	    case 0:
-	    	StringBuilder s = new StringBuilder();
-	    	mLength = MentionsActivity.count;
+	    	mLength = dPreview.getText().length();
 	    	totalC = mLength+et1.getText().length();
 			myCount.setText(String.valueOf(totalC));
 			if (totalC>140) {
@@ -447,17 +417,6 @@ public class EntryAdd extends Activity {
 			} else {
 				myCount.setTextColor(getResources().getColor(R.color.ics));
 			}
-//			
-//			for (int i=0;i<MentionsActivity.users.size();i++) {
-//				s.append(MentionsActivity.users.get(i));
-//				s.append(" ");
-//			}
-//			users = s.toString();
-//			if (users.length()>2) {
-//	    		mPreview.setText(users);
-//			} else {
-//	    		mPreview.setText("No mentions");
-//			}
 	        break;
 	    default:
 	        break;
@@ -489,11 +448,7 @@ public class EntryAdd extends Activity {
 				}
 			}
 			if (users == null) {
-				if (extras.getString("mentions") == null) {
-					users = "";
-				} else {
-					users = extras.getString("mentions");
-				}
+				users = mPreview.getText().toString();
 			}
 			if (totalC<140) {
 				if (et1.getText().toString().length() != 0 && et3.getText().toString().length() != 0 && !time) {
@@ -553,7 +508,7 @@ public class EntryAdd extends Activity {
        	final DBAdapter db = new DBAdapter(this);
     	db.open();
     	if (id == 420) {
-          	Cursor cu = db.getAllSEntries();
+          	Cursor cu = db.getAllTEntries();
 	    	try {
 	       		while (cu.moveToNext()) {
 	        		if ((cu.getString(cu.getColumnIndex("message")).equals(message)) && cu.getString(cu.getColumnIndex("username")).equals(username)) {
@@ -588,7 +543,7 @@ public class EntryAdd extends Activity {
        	final DBAdapter db = new DBAdapter(this);
     	db.open();
     	if (id == 420) {
-          	Cursor cu = db.getAllSEntries();
+          	Cursor cu = db.getAllTEntries();
 	    	try {
 	       		while (cu.moveToNext()) {
 	        		if ((cu.getString(cu.getColumnIndex("message")).equals(message)) && cu.getString(cu.getColumnIndex("username")).equals(username)) {

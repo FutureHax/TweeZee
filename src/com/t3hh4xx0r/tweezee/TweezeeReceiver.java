@@ -56,7 +56,7 @@ public class TweezeeReceiver extends BroadcastReceiver {
 		
 		if (type.equals("tweet")) {
 			username = i.getStringExtra("username");
-			mentions = i.getStringExtra("mentions");
+			mentions = i.getStringExtra("mentions").replaceAll(",", "");
 			sendTweet();
 		} else if (type.equals("sms")) {
 			recipient = i.getStringExtra("recipient");
@@ -105,8 +105,8 @@ public class TweezeeReceiver extends BroadcastReceiver {
 				     if (day.split(",")[getcDay()-1].equals("true")) {
 				    	 if (prefs.getBoolean("direct", false)) {
 				    		 t.updateStatus(mentions+" "+message+" "+mentions+" "+getRandom());
-				    	 } else {
-				    		 t.updateStatus(getRandom()+" "+message+" "+mentions);					    		 
+				    	 } else {	
+		    				 t.updateStatus(getRandom()+" "+message+" "+mentions);					    		 
 				    	 }
 				       	 if (prefs.getBoolean("notify", true)) {
 			    			 if (!prefs.getBoolean("notifyIntrusive", true)) {

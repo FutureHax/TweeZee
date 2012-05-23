@@ -6,7 +6,6 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -22,9 +21,6 @@ import android.widget.ListView;
 import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
-import com.t3hh4xx0r.tweezee.SettingsMenu;
-import com.t3hh4xx0r.tweezee.twitter.AccountManager;
-import com.t3hh4xx0r.tweezee.twitter.TwitterAuth;
 
 public class SMSActivity extends ListActivity {
 	ListView lv1;
