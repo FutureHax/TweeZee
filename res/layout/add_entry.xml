@@ -104,24 +104,23 @@
         android:text="Add Mentions"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-       <TextView
-        android:id="@+id/mentions_pre"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/mentionsTv"
+   	<AutoCompleteTextView 
+   	    android:paddingTop="3dp"
+		android:id="@+id/mentionsATC"
         android:paddingLeft="10dp"
-        android:paddingTop="3dp"
-        android:text="No mentions"
-        android:textColor="@color/ics"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-       
+		android:layout_below="@+id/mentionsTv"
+        android:focusableInTouchMode="true"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:hint="Mentions"
+		android:imeOptions="actionDone"/>      
+		 
     <ImageView
         android:id="@+id/div4"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/mentions_pre"
+        android:layout_below="@+id/mentionsATC"
         android:paddingTop="3dp"
         android:scaleType="fitXY"
         android:src="@drawable/test" />
@@ -256,7 +255,8 @@
         android:paddingTop="3dp"
         android:scaleType="fitXY"
         android:src="@drawable/test" />         
-</RelativeLayout>            
+ 
+</RelativeLayout>  
 </ScrollView>
 
 </RelativeLayout>

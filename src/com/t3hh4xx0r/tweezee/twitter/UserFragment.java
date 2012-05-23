@@ -17,6 +17,7 @@ import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.t3hh4xx0r.tweezee.DBAdapter;
+import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
 
 public class UserFragment extends ListFragment {
@@ -231,4 +233,16 @@ public class UserFragment extends ListFragment {
 		}
 	};
 	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {	   
+	        case android.R.id.home:
+	            Intent hi = new Intent(ctx, MainActivity.class);
+	            hi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	            startActivity(hi);
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}	
 }

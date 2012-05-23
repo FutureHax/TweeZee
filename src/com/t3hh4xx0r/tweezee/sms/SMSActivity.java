@@ -6,10 +6,12 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -18,7 +20,11 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.t3hh4xx0r.tweezee.DBAdapter;
+import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
+import com.t3hh4xx0r.tweezee.SettingsMenu;
+import com.t3hh4xx0r.tweezee.twitter.AccountManager;
+import com.t3hh4xx0r.tweezee.twitter.TwitterAuth;
 
 public class SMSActivity extends ListActivity {
 	ListView lv1;
@@ -169,4 +175,17 @@ public class SMSActivity extends ListActivity {
 			}
 		}
 	};
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {	   
+	        case android.R.id.home:
+	            Intent hi = new Intent(this, MainActivity.class);
+	            hi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	            startActivity(hi);
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}	
 }

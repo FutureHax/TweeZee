@@ -2,6 +2,7 @@ package com.t3hh4xx0r.tweezee.twitter;
 
 import com.t3hh4xx0r.tweezee.ActivityTask;
 import com.t3hh4xx0r.tweezee.DBAdapter;
+import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
 
 import oauth.signpost.OAuthConsumer;
@@ -19,12 +20,14 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -322,4 +325,16 @@ public class TwitterAuth extends Activity {
                     }
             }
 
+        	@Override
+        	public boolean onOptionsItemSelected(MenuItem item) {
+        	    switch (item.getItemId()) {	   
+        	        case android.R.id.home:
+        	            Intent hi = new Intent(this, MainActivity.class);
+        	            hi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        	            startActivity(hi);
+        	            return true;
+        	        default:
+        	            return super.onOptionsItemSelected(item);
+        	    }
+        	}	            
 }

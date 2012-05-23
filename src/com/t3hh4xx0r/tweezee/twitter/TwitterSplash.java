@@ -1,13 +1,15 @@
 package com.t3hh4xx0r.tweezee.twitter;
 
-import com.t3hh4xx0r.tweezee.R;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.TextView;
+
+import com.t3hh4xx0r.tweezee.MainActivity;
+import com.t3hh4xx0r.tweezee.R;
 
 
 public class TwitterSplash extends Activity {
@@ -39,4 +41,17 @@ public class TwitterSplash extends Activity {
 	        break;
 	    }
 	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {	   
+	        case android.R.id.home:
+	            Intent hi = new Intent(this, MainActivity.class);
+	            hi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	            startActivity(hi);
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}	
 }

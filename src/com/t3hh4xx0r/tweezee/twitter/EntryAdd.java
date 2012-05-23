@@ -9,8 +9,12 @@ import java.util.TimeZone;
 import org.apache.commons.lang3.ArrayUtils;
 
 import twitter4j.ProfileImage;
+import twitter4j.ResponseList;
 import twitter4j.Twitter;
+import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.User;
+import twitter4j.auth.AccessToken;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -34,19 +38,23 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.common.primitives.Longs;
 import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
@@ -59,7 +67,7 @@ public class EntryAdd extends Activity {
 	TextView tV;
 	TextView myCount;
 	TextView tV2;
-	TextView mPreview;
+	AutoCompleteTextView mPreview;
 	TextView dPreview;
 	TextView timePre;
 	TextView name;
@@ -87,6 +95,7 @@ public class EntryAdd extends Activity {
 	CheckBox timeCB;
 	CheckBox bootCB;
 	SharedPreferences prefs;
+	AccessToken aToken;
 
 	static final int ID_TIMEPICKER = 0;
 	private int hour, minute;
@@ -175,7 +184,8 @@ public class EntryAdd extends Activity {
 		name = (TextView)findViewById(R.id.userN);
 		name.setText("@"+usern);
 		pic = (ImageView)findViewById(R.id.userP);
-		mPreview = (TextView)findViewById(R.id.mentions_pre);
+		mPreview = (AutoCompleteTextView)findViewById(R.id.mentionsATC);
+		getFollowing();
 		dPreview = (TextView)findViewById(R.id.day_pre);
 		tV2 = (TextView)findViewById(R.id.mentionsTv);
 		tV2 = (TextView)findViewById(R.id.mentionsTv);
@@ -339,6 +349,71 @@ public class EntryAdd extends Activity {
 		thread.start();
 	}
 
+	private void getFollowing() {	
+	     Twitter t = new TwitterFactory().getInstance();
+	     t.setOAuthConsumer(OAUTH.CONSUMER_KEY, OAUTH.CONSUMER_SECRET);
+    	 aToken = getToken();
+	     t.setOAuthAccessToken(aToken);
+	     ArrayList<String> names = new ArrayList<String>();
+	     try {
+	    	int start = 0;
+	    	int finish = 100;
+	    	ArrayList<Long> IDS = new ArrayList<Long>();
+			long[] friendsID =	t.getFriendsIDs(userID, -1).getIDs();
+			boolean check = true;
+			while (check) {
+				for (int i=start;i<finish;i++) {		
+					IDS.add(friendsID[i]);
+					Log.d("USER", Long.toString(friendsID[i]));
+					if (friendsID.length-1 == i) {
+						check = false;
+						break;						
+					}
+				}
+				start = start+100;
+				finish = finish+100;
+				long[] ids = Longs.toArray(IDS);
+				ResponseList<User> userName = t.lookupUsers(ids);
+				IDS.clear();
+				for (User u : userName) {
+					names.add(u.getScreenName());
+				}
+			}
+			String[] screenNames = (String[]) names.toArray(new String[names.size()]);
+
+			ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line, screenNames);
+			mPreview.setAdapter(adapter);
+	     } catch (TwitterException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private AccessToken getToken() {
+		 String token = null;
+		 String secret = null;
+		 DBAdapter dba = new DBAdapter(this);
+     	 dba.open();
+     	 Cursor cu = dba.getAllTUsers();
+ 		 try {
+ 			while (cu.moveToNext()) {
+ 				if (cu.getString(1).equals(usern)) {
+ 					token = cu.getString(3);
+ 					secret = cu.getString(4);
+ 				}
+ 			}
+ 		 } catch (Exception e) {
+ 			 e.printStackTrace();
+ 		 }
+ 		 cu.close();
+ 		 dba.close();
+ 		 
+ 		 try {
+ 			 return new AccessToken(token, secret);
+ 		 } catch (Exception e) {
+ 			 e.printStackTrace();
+ 			 return null; 
+ 		 }
+	}
 	public Drawable setProfilePic(String name){
 		Drawable d;
 		try {
@@ -370,17 +445,17 @@ public class EntryAdd extends Activity {
 			} else {
 				myCount.setTextColor(getResources().getColor(R.color.ics));
 			}
-			
-			for (int i=0;i<MentionsActivity.users.size();i++) {
-				s.append(MentionsActivity.users.get(i));
-				s.append(" ");
-			}
-			users = s.toString();
-			if (users.length()>2) {
-	    		mPreview.setText(users);
-			} else {
-	    		mPreview.setText("No mentions");
-			}
+//			
+//			for (int i=0;i<MentionsActivity.users.size();i++) {
+//				s.append(MentionsActivity.users.get(i));
+//				s.append(" ");
+//			}
+//			users = s.toString();
+//			if (users.length()>2) {
+//	    		mPreview.setText(users);
+//			} else {
+//	    		mPreview.setText("No mentions");
+//			}
 	        break;
 	    default:
 	        break;

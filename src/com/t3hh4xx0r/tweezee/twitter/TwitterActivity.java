@@ -27,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.t3hh4xx0r.tweezee.DBAdapter;
+import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
 import com.t3hh4xx0r.tweezee.SettingsMenu;
 import com.viewpagerindicator.TitlePageIndicator;
@@ -185,7 +186,7 @@ public class TwitterActivity extends FragmentActivity {
 	        	apiCheck();
 	        break;	   
 	        case android.R.id.home:
-	            Intent hi = new Intent(this, TwitterActivity.class);
+	            Intent hi = new Intent(this, MainActivity.class);
 	            hi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(hi);
 	            return true;

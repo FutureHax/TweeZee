@@ -33,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
 
 public class AccountManager extends ListActivity {
@@ -186,7 +187,7 @@ public class AccountManager extends ListActivity {
 		public boolean onOptionsItemSelected(MenuItem item) {
 		    switch (item.getItemId()) {
 	        case android.R.id.home:
-	            Intent intent = new Intent(this, TwitterActivity.class);
+	            Intent intent = new Intent(this, MainActivity.class);
 	            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(intent);
 	            return true;
