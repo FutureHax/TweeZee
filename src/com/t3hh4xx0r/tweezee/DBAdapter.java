@@ -11,6 +11,7 @@ public class DBAdapter {
     public static final String KEY_ROWID = "_id";
     public static final String KEY_USERID = "user_id";
     public static final String KEY_USERNAME = "username";
+    public static final String KEY_PASSWORD = "password";
     public static final String KEY_TOKEN = "oauth_token";
     public static final String KEY_SECRET = "oauth_token_secret";
     
@@ -26,13 +27,19 @@ public class DBAdapter {
     
     private static final String DATABASE_NAME = "tweezee.db";
     private static final String T_USER_TABLE = "twitter_users";
-    private static final String T_ENTRY_TABLE = "twitter_entries";
+    private static final String T_ENTRY_TABLE = "twitter_entri                                                                                                                      es";
     private static final String S_ENTRY_TABLE = "sms_entries";
-    private static final int DATABASE_VERSION = 14;
+    private static final String E_USER_TABLE = "email_users";
 
+    private static final int DATABASE_VERSION = 17;
+
+    private static final String CREATE_E_USERS =
+            "create table email_users (_id integer primary key autoincrement, "
+            + "username text not null, password text not null);";
+    
     private static final String CREATE_T_USERS =
             "create table twitter_users (_id integer primary key autoincrement, "
-            + "username text not null, user_id text not null, oauth_token text not null, oauth_token_secret text not null, friends text not null, friend_ids text not null);";
+            + "username text not null, user_id text not null, oauth_token text not null, oauth_token_secret text not null);";
         
     private static final String CREATE_T_ENTRIES =
             "create table twitter_entries (_id integer primary key autoincrement, "
@@ -67,6 +74,7 @@ public class DBAdapter {
         @Override
         public void onCreate(SQLiteDatabase db) 
         {
+            db.execSQL(CREATE_E_USERS);
             db.execSQL(CREATE_T_USERS);
             db.execSQL(CREATE_T_ENTRIES);
             db.execSQL(CREATE_S_ENTRIES);
@@ -79,6 +87,7 @@ public class DBAdapter {
             db.execSQL("DROP TABLE IF EXISTS twitter_users");
             db.execSQL("DROP TABLE IF EXISTS twitter_entries");
             db.execSQL("DROP TABLE IF EXISTS sms_entries");
+            db.execSQL("DROP TABLE IF EXISTS email_users");
             onCreate(db);
         }
     }    
@@ -96,6 +105,14 @@ public class DBAdapter {
     	DBHelper.close();
     }
 
+    public void insertEUser(String username, String password) 
+    {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(KEY_USERNAME, username);
+        initialValues.put(KEY_PASSWORD, password);
+        db.insert(E_USER_TABLE, null, initialValues);
+    } 
+    
     public void insertSEntry(String message, String wait, String day, String send_to, String time, String boot, int id) 
     {
         ContentValues initialValues = new ContentValues();
@@ -136,6 +153,20 @@ public class DBAdapter {
         return db.insert(T_USER_TABLE, null, initialValues);
     }    
 
+    public Cursor getAllEUsers() 
+    {
+    	Cursor mCursor = db.query(E_USER_TABLE, new String[] {
+                KEY_USERNAME,
+                KEY_PASSWORD}, 
+                null,
+                null, 
+                null, 
+                null, 
+                null);
+	
+		return mCursor;
+    }
+    
     public Cursor getAllSEntries() 
     {
     	Cursor mCursor = db.query(S_ENTRY_TABLE, new String[] {
@@ -276,6 +307,22 @@ public class DBAdapter {
 	
 	public boolean isLoggedInT() {
 		Cursor cur = db.rawQuery("SELECT COUNT(*) FROM TWITTER_USERS", null);
+		if (cur != null) {
+		    cur.moveToFirst();
+		    if (cur.getInt (0) == 0) {
+		    	cur.close();
+		    	return false;
+		    } else{
+		    	cur.close();
+		    	return true;
+		    }
+		} else {
+			return false;
+		}			
+	}
+
+	public boolean isLoggedInE() {
+		Cursor cur = db.rawQuery("SELECT COUNT(*) FROM EMAIL_USERS", null);
 		if (cur != null) {
 		    cur.moveToFirst();
 		    if (cur.getInt (0) == 0) {

@@ -276,7 +276,7 @@ public class BetterPopupWindow {
 			       	 db.deleteTEntry(m);
 			       	 db.close();
 			       	 this.dismiss();
-	       			 UserFragment.entryArray.remove(place);
+	       			 UserFragment.entryArray.remove(position);
 	       			 Message msg = new Message();
 	       			 msg.what = 0;
 	       			 UserFragment.handy.sendMessage(msg);

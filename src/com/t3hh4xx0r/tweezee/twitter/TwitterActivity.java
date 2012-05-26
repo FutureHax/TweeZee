@@ -203,7 +203,7 @@ public class TwitterActivity extends FragmentActivity {
 			e.printStackTrace();
 		}
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	    builder.setTitle("TweeZee API limit");
+	    builder.setTitle("Twitter API limit");
 	    builder.setIcon(R.drawable.ic_launcher);
 	    builder.setMessage("You currently have "+Integer.toString(left)+" of "+Integer.toString(total)+".\nThis limit will refresh in "+Integer.toString(mins)+" minutes")
 			   .setCancelable(false)

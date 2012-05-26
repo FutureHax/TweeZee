@@ -108,9 +108,9 @@ public class TweezeeReceiver extends BroadcastReceiver {
 		    	 try {
 				     if (day.split(",")[getcDay()-1].equals("true")) {
 				    	 if (prefs.getBoolean("direct", false)) {
-				    		 t.updateStatus(mentions+" "+message+" "+mentions+" "+getRandom());
+				    		 //t.updateStatus(mentions+" "+message+" "+mentions+" "+getRandom());
 				    	 } else {	
-		    				 t.updateStatus(getRandom()+" "+message+" "+mentions);					    		 
+		    				 //t.updateStatus(getRandom()+" "+message+" "+mentions);					    		 
 				    	 }
 				       	 if (prefs.getBoolean("notify", true)) {
 			    			 if (!prefs.getBoolean("notifyIntrusive", true)) {

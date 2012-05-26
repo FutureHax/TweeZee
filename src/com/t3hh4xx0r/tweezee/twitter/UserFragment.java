@@ -86,51 +86,12 @@ public class UserFragment extends ListFragment {
 	        mAddEntry.setOnClickListener(new OnClickListener() {
 	        	@Override
 	        	public void onClick(View v) {
-	    			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(v.getContext());
-	    		    DBAdapter db = new DBAdapter(v.getContext());
-	    	       	db.open();
-	    	       	Cursor c = db.getAllTEntries();
-	    	       	int count = 0;
-	    	       	try {
-    		       		while (c.moveToNext()) {
-    		       			if (c.getString(0).equals(TwitterActivity.users[pos].getName())) {
-    		       				count++;
-    		       			}
-    		       		}
-    		       	} catch (Exception e1) {}
-	    	       	c.close();
-	    	       	db.close();
-	    	       	if (count>2 && !prefs.getBoolean("isReg", false)) {
-	    	           	AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-	    	      		builder.setTitle("Upgrade to premium today!");
-	    	      		builder.setMessage("The free version is limited to only three saved messages.\nPlease upgrade to access premium features.")
-	    	      		   .setCancelable(false)
-	    	      		   .setPositiveButton("Let\'s check it out!", new DialogInterface.OnClickListener() {
-	    	      		       public void onClick(DialogInterface dialog, int id) {
-			      					Intent marketApp = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.t3hh4xx0r.tweezeekey"));
-			      					marketApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-			      		 			try{
-			      						startActivity(marketApp);
-			      					}catch(Exception e){
-			      						e.printStackTrace();
-			      					}
-			      		 		}
-	    	      		   })
-	    	      		.setNegativeButton("Not today", new DialogInterface.OnClickListener() {
-	    	      		       public void onClick(DialogInterface dialog, int id) {
-	    	      		    	   dialog.dismiss();
-	    	      		       }
-	    	      		   });
-	    	      		AlertDialog alert = builder.create();
-	    	      		alert.show();
-	    	       	} else {
-		                Bundle b = new Bundle();
-		                b.putInt("pos", pos);
-			            Intent mi = new Intent(v.getContext(), EntryAdd.class);
-			            mi.putExtras(b);
-				        startActivity(mi);
-	    	       	}
-	        	}
+	                Bundle b = new Bundle();
+	                b.putInt("pos", pos);
+		            Intent mi = new Intent(v.getContext(), EntryAdd.class);
+		            mi.putExtras(b);
+			        startActivity(mi);
+    	       	}
 	        });	   
 		    pos = getArguments().getInt("p");
 		    entryArray = getArguments().getStringArrayList("e");

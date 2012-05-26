@@ -27,6 +27,16 @@
             	android:targetPackage="com.t3hh4xx0r.tweezee"
             	android:targetClass="com.t3hh4xx0r.tweezee.sms.SMSActivity" />
 			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>
-											
+      			
+            <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
+            android:key="email"
+            android:id="@+id/email"
+       		android:title="Email Message"
+    		settings:icon="@drawable/email">
+       			<intent
+            	android:action="android.intent.action.MAIN"
+            	android:targetPackage="com.t3hh4xx0r.tweezee"
+            	android:targetClass="com.t3hh4xx0r.tweezee.email.EmailActivity" />
+			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>											
 			</PreferenceCategory>
 </PreferenceScreen>

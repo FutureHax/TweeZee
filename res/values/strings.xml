@@ -10,5 +10,5 @@
 	<string name="cancel_auth">Cancel signing in</string>
 	<string name="dont_cancel_auth">Don\'t cancel</string>
 	<string name="auth_network_error">Could not contact Twitter. Please try again.</string>
-	<string name="updates">-Massive update.\n-Renamed to Ultimate Scheduler, new icon coming soon!\n-Unlocked all premium features for Twitter status updates.\n-Add mention auto complete.\n-Add SMS scheduling for Premium users.\n-Email, Facebook, and (possibly) G+ updates coming soon.</string>
+	<string name="updates">Minor bugfix update.\n-Fixes issue where wrong tweet would be deleted.\n-Begin implementation of scheduled emails.</string>
 </resources>

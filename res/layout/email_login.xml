@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingTop="3dp"
+        android:text="Username"
+        android:textColor="@color/ics"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <EditText
+        android:id="@+id/userET"
+        android:paddingLeft="10dp"
+        android:paddingTop="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="user@gmail.com"
+        android:inputType="textEmailAddress" >
+    </EditText>
+    
+    <ImageView
+        android:id="@+id/div1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/userET"
+        android:layout_alignParentLeft="true"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />    
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingTop="3dp"
+        android:text="Password"
+        android:textColor="@color/ics"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <EditText
+        android:id="@+id/passET"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword" >
+    </EditText>
+
+    <Button
+        android:id="@+id/loginB"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="3dp"
+        android:text="Login" />
+    
+</LinearLayout>

@@ -28,6 +28,7 @@ public class MainActivity extends PreferenceActivity {
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 	    SharedPreferences.Editor editor = prefs.edit();
 		IconPreferenceScreenLeft mSMS = (IconPreferenceScreenLeft) findPreference("sms");
+		IconPreferenceScreenLeft mEmail = (IconPreferenceScreenLeft) findPreference("email");
 
 	    if (!prefs.getBoolean("lReg", false) && prefs.getBoolean("isReg", false)) {
 	        editor.putBoolean("lReg", true);
@@ -61,8 +62,13 @@ public class MainActivity extends PreferenceActivity {
 		   this.sendBroadcast(intent, Manifest.permission.REGISTER);
 		   mSMS.setEnabled(false);	
 		   mSMS.setSummary("Upgrade to Premium today to unlock this feature");
+		   mEmail.setEnabled(false);	
+		   mEmail.setSummary("Upgrade to Premium today to unlock this feature");
 		}
-	    
+	    //Temporary
+		//mEmail.setEnabled(false);	
+		mEmail.setSummary("Coming soon!");
+		   
    		try {
 			new SimpleEula(this).show();
 		} catch (IOException e1) {

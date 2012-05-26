@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.t3hh4xx0r.tweezee"
-    android:versionCode="6"
-    android:versionName="2.0.1" >
+    android:versionCode="8"
+    android:versionName="2.0.2" >
 
     <uses-sdk android:minSdkVersion="8" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -110,7 +110,37 @@
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
-       </activity>                
+       </activity>  
+       
+<!-- Email -->
+       <activity android:screenOrientation="portrait"
+            android:label="Email"
+            android:name=".email.EmailActivity" >
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+       </activity>  
+       <activity android:screenOrientation="portrait"
+            android:label="Email Accounts"
+            android:name=".email.EmailAcctManager" >
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+       </activity>        
+       <activity android:screenOrientation="portrait"
+            android:label="Email"
+            android:name=".email.EmailSplash" >
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+       </activity> 
+       <activity android:screenOrientation="portrait"
+            android:label="Login"
+            android:name=".email.EmailLogin" >
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+       </activity>               
 <!-- Receivers -->    
        <receiver android:name=".Receiver" />        
         <receiver android:name=".BootReceiver">
