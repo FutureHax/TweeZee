@@ -8,8 +8,4 @@
           android:icon="@drawable/manage_acct"
           android:title="Manage Accounts"
           android:showAsAction="ifRoom" />  
-    <item android:id="@+id/limit"
-          android:icon="@drawable/counter"
-          android:title="View API counter"
-          android:showAsAction="ifRoom" />
 </menu>

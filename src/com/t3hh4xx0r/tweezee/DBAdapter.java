@@ -30,12 +30,19 @@ public class DBAdapter {
     private static final String T_ENTRY_TABLE = "twitter_entri                                                                                                                      es";
     private static final String S_ENTRY_TABLE = "sms_entries";
     private static final String E_USER_TABLE = "email_users";
+    private static final String E_ENTRY_TABLE = "email_entries";
 
-    private static final int DATABASE_VERSION = 17;
+    private static final int DATABASE_VERSION = 18;
 
     private static final String CREATE_E_USERS =
             "create table email_users (_id integer primary key autoincrement, "
             + "username text not null, password text not null);";
+
+    private static final String CREATE_E_ENTRIES =
+            "create table email_entries (_id integer primary key autoincrement, "
+                    + "message text not null, send_to text not null, "
+            		+" send_wait text not null, send_day text not null, send_time text not null, "
+                    +" start_boot text not null, my_id text not null);";
     
     private static final String CREATE_T_USERS =
             "create table twitter_users (_id integer primary key autoincrement, "
@@ -75,6 +82,7 @@ public class DBAdapter {
         public void onCreate(SQLiteDatabase db) 
         {
             db.execSQL(CREATE_E_USERS);
+            db.execSQL(CREATE_E_ENTRIES);
             db.execSQL(CREATE_T_USERS);
             db.execSQL(CREATE_T_ENTRIES);
             db.execSQL(CREATE_S_ENTRIES);
@@ -88,6 +96,7 @@ public class DBAdapter {
             db.execSQL("DROP TABLE IF EXISTS twitter_entries");
             db.execSQL("DROP TABLE IF EXISTS sms_entries");
             db.execSQL("DROP TABLE IF EXISTS email_users");
+            db.execSQL("DROP TABLE IF EXISTS email_entries");
             onCreate(db);
         }
     }    
@@ -158,6 +167,25 @@ public class DBAdapter {
     	Cursor mCursor = db.query(E_USER_TABLE, new String[] {
                 KEY_USERNAME,
                 KEY_PASSWORD}, 
+                null,
+                null, 
+                null, 
+                null, 
+                null);
+	
+		return mCursor;
+    }
+
+    public Cursor getAllEEntries() 
+    {
+    	Cursor mCursor = db.query(E_ENTRY_TABLE, new String[] {
+                KEY_MESSAGE,
+                KEY_WAIT,
+                KEY_DAY,
+                KEY_SEND_TO,
+                KEY_TIME,
+                BOOT,
+                ID}, 
                 null,
                 null, 
                 null, 

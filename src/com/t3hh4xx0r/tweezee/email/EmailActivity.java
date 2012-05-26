@@ -1,5 +1,7 @@
 package com.t3hh4xx0r.tweezee.email;
 
+import java.util.ArrayList;
+
 import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.Encryption;
 import com.t3hh4xx0r.tweezee.MainActivity;
@@ -34,11 +36,12 @@ public class EmailActivity extends FragmentActivity {
     public static Accounts[] accounts;
     public static int account;    
 	private final static int SIGN_IN = 0;
+	public ArrayList<String> entryArray;
 
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.email);
-
+		
 	    DBAdapter db = new DBAdapter(this);
 	    db.open();
 	   	if (!db.isLoggedInE()) {
@@ -75,7 +78,7 @@ public class EmailActivity extends FragmentActivity {
    		db.open();
    		Cursor c = db.getAllEUsers();
    		account = c.getCount();
-   		accounts = new Accounts[c.getCount()];
+   		accounts = new Accounts[account];
    		int i=0;
    		try {
    			while (c.moveToNext()) {
@@ -89,7 +92,32 @@ public class EmailActivity extends FragmentActivity {
    		}
    		c.close();
    		db.close();
-}	
+	}
+	
+	   public ArrayList<String> updateUserFrag (int p) {		   
+		     entryArray = new ArrayList<String>();
+		     if (entryArray.size() != 0) {
+		    	 entryArray.clear();
+		     }
+		     DBAdapter db = new DBAdapter(this);
+	       	 db.open();
+	       	 Cursor c = db.getAllEEntries();
+	       	 try {
+	       		while (c.moveToNext()) {
+	       			if (Encryption.decryptString(c.getString(c.getColumnIndex("username")), Encryption.KEY).equals(accounts[p].getName())) {	       			
+	  					entryArray.add(Encryption.decryptString(c.getString(c.getColumnIndex("message")), Encryption.KEY));
+	       			}
+	       		}
+	       	 } catch (Exception e) {}
+	       	 c.close();
+	       	 db.close();
+	       	 if (entryArray.size() == 0) {
+	       		 entryArray.add("One");
+	       		 entryArray.add("Two");
+	       		 entryArray.add("Three");
+	       	 }
+			return entryArray;	       	 
+	   }
 
 	public class ExamplePagerAdapter extends FragmentPagerAdapter implements TitleProvider{
 
@@ -106,12 +134,12 @@ public class EmailActivity extends FragmentActivity {
 		    public Fragment getItem(int position) {
 		    	Fragment fragment = new EmailFragment();	
 		    	Bundle b = new Bundle(); 
-		    	//b.putInt("p", position); 
-		    	//b.putStringArrayList("e", updateUserFrag(position));
+		    	b.putInt("p", position); 
+		    	b.putStringArrayList("e", updateUserFrag(position));
 		    	fragment.setArguments(b);
 		        return fragment;
 		    }
-		    
+		   
 			@Override
 			public String getTitle(int pos) {
 				return accounts[pos].getName();

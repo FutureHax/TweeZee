@@ -141,6 +141,13 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
        </activity>               
+      <activity android:screenOrientation="portrait"
+            android:label="Add Entry"
+            android:name=".email.EntryAddE" >
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+       </activity>      
 <!-- Receivers -->    
        <receiver android:name=".Receiver" />        
         <receiver android:name=".BootReceiver">

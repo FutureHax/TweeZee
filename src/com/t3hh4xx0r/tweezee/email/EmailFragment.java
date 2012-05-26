@@ -3,6 +3,7 @@ package com.t3hh4xx0r.tweezee.email;
 import java.util.ArrayList;
 
 import com.t3hh4xx0r.tweezee.DBAdapter;
+import com.t3hh4xx0r.tweezee.Encryption;
 import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
 import com.t3hh4xx0r.tweezee.twitter.BetterPopupWindow;
@@ -70,11 +71,15 @@ public class EmailFragment extends ListFragment {
 	        mAddEntry.setOnClickListener(new OnClickListener() {
 	        	@Override
 	        	public void onClick(View v) {
-
+	                Bundle b = new Bundle();
+	                b.putInt("pos", pos);
+		            Intent mi = new Intent(v.getContext(), EntryAddE.class);
+		            mi.putExtras(b);
+			        startActivity(mi);
 	        	}
 	        });	   
-		    //pos = getArguments().getInt("p");
-		    //entryArray = getArguments().getStringArrayList("e");
+		    pos = getArguments().getInt("p");
+		    entryArray = getArguments().getStringArrayList("e");
 		    return v;
 	}
 	  
@@ -93,24 +98,19 @@ public class EmailFragment extends ListFragment {
 		void populateList() {
 			a = new ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, entryArray);
 			setListAdapter(a);
-			entryArray.add("One");
-			entryArray.add("Two");
-			entryArray.add("Three");
-//			DBAdapter db = new DBAdapter(ctx);
-//		    db.open();
-//		    Cursor c = db.getAllTEntries();
-//		    	try {
-//		       		while (c.moveToNext()) {
-//		       	    	StringBuilder sb = new StringBuilder();
-//		       			if (c.getString(0).equals(TwitterActivity.users[pos].getName()) && !entryArray.contains(c.getString(1)+" "+c.getString(c.getColumnIndex("mentions")))) {
-//		  					sb.append(c.getString(1));
-//		  					sb.append(" "+c.getString(c.getColumnIndex("mentions")));
-//		  					entryArray.add(sb.toString());
-//		       			}
-//		       		}
-//		       	 } catch (Exception e) {}
-//		   c.close();
-//		   db.close();			       	 
+		    DBAdapter db = new DBAdapter(ctx);
+	       	db.open();
+	       	Cursor c = db.getAllEEntries();
+	       	try {
+	       		while (c.moveToNext()) {
+	       			if (Encryption.decryptString(c.getString(c.getColumnIndex("username")), Encryption.KEY).equals(EmailActivity.accounts[pos].getName())
+	       					&& !entryArray.contains(Encryption.decryptString(c.getString(c.getColumnIndex("message")), Encryption.KEY))) {	       			
+	  					entryArray.add(Encryption.decryptString(c.getString(c.getColumnIndex("message")), Encryption.KEY));
+	       			}
+	       		}
+	       } catch (Exception e) {}
+	       c.close();
+	       db.close();    	 
 		   a.notifyDataSetChanged();
 		}
 		
