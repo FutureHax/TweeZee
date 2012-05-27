@@ -186,6 +186,7 @@
         android:paddingLeft="10dp"
         android:paddingTop="3dp"
         android:text="Set Time"
+        android:visibility="gone"
         android:textAppearance="?android:attr/textAppearanceMedium"/>
 	
 	<TextView

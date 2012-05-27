@@ -26,6 +26,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -105,17 +106,14 @@ public class EmailActivity extends FragmentActivity {
 	       	 try {
 	       		while (c.moveToNext()) {
 	       			if (Encryption.decryptString(c.getString(c.getColumnIndex("username")), Encryption.KEY).equals(accounts[p].getName())) {	       			
-	  					entryArray.add(Encryption.decryptString(c.getString(c.getColumnIndex("message")), Encryption.KEY));
+	  					entryArray.add(c.getString(c.getColumnIndex("message")));
 	       			}
 	       		}
-	       	 } catch (Exception e) {}
+	       	 } catch (Exception e) {
+	       		 e.printStackTrace();
+	       	 }
 	       	 c.close();
 	       	 db.close();
-	       	 if (entryArray.size() == 0) {
-	       		 entryArray.add("One");
-	       		 entryArray.add("Two");
-	       		 entryArray.add("Three");
-	       	 }
 			return entryArray;	       	 
 	   }
 

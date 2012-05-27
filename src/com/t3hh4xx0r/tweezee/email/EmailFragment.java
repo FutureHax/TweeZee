@@ -25,6 +25,7 @@ import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -104,11 +105,13 @@ public class EmailFragment extends ListFragment {
 	       	try {
 	       		while (c.moveToNext()) {
 	       			if (Encryption.decryptString(c.getString(c.getColumnIndex("username")), Encryption.KEY).equals(EmailActivity.accounts[pos].getName())
-	       					&& !entryArray.contains(Encryption.decryptString(c.getString(c.getColumnIndex("message")), Encryption.KEY))) {	       			
-	  					entryArray.add(Encryption.decryptString(c.getString(c.getColumnIndex("message")), Encryption.KEY));
+	       					&& !entryArray.contains(c.getString(c.getColumnIndex("message")))) {	       			
+	  					entryArray.add(c.getString(c.getColumnIndex("message")));
 	       			}
 	       		}
-	       } catch (Exception e) {}
+	       } catch (Exception e) {
+	    	   e.printStackTrace();
+	       }
 	       c.close();
 	       db.close();    	 
 		   a.notifyDataSetChanged();

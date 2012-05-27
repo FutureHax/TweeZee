@@ -27,12 +27,12 @@ public class DBAdapter {
     
     private static final String DATABASE_NAME = "tweezee.db";
     private static final String T_USER_TABLE = "twitter_users";
-    private static final String T_ENTRY_TABLE = "twitter_entri                                                                                                                      es";
+    private static final String T_ENTRY_TABLE = "twitter_entries";
     private static final String S_ENTRY_TABLE = "sms_entries";
     private static final String E_USER_TABLE = "email_users";
     private static final String E_ENTRY_TABLE = "email_entries";
 
-    private static final int DATABASE_VERSION = 18;
+    private static final int DATABASE_VERSION = 20;
 
     private static final String CREATE_E_USERS =
             "create table email_users (_id integer primary key autoincrement, "
@@ -40,6 +40,7 @@ public class DBAdapter {
 
     private static final String CREATE_E_ENTRIES =
             "create table email_entries (_id integer primary key autoincrement, "
+    				+ "username text not null, "
                     + "message text not null, send_to text not null, "
             		+" send_wait text not null, send_day text not null, send_time text not null, "
                     +" start_boot text not null, my_id text not null);";
@@ -135,6 +136,21 @@ public class DBAdapter {
         
         db.insert(S_ENTRY_TABLE, null, initialValues);
     }    
+
+    public void insertEEntry(String username, String message, String wait, String day, String send_to, String time, String boot, int id) 
+    {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(KEY_USERNAME, username);
+        initialValues.put(KEY_MESSAGE, message);
+        initialValues.put(KEY_WAIT, wait);
+        initialValues.put(KEY_DAY, day);
+        initialValues.put(KEY_SEND_TO, send_to);
+        initialValues.put(KEY_TIME, time);
+        initialValues.put(BOOT, boot);
+        initialValues.put(ID, Integer.toString(id));
+        
+        db.insert(E_ENTRY_TABLE, null, initialValues);
+    }    
     
     public long insertTEntry(String name, String message, String wait, String day, String mentions, String time, String boot, int id) 
     {
@@ -179,6 +195,7 @@ public class DBAdapter {
     public Cursor getAllEEntries() 
     {
     	Cursor mCursor = db.query(E_ENTRY_TABLE, new String[] {
+                KEY_USERNAME,
                 KEY_MESSAGE,
                 KEY_WAIT,
                 KEY_DAY,
@@ -289,7 +306,28 @@ public class DBAdapter {
                 
         return db.delete(S_ENTRY_TABLE, KEY_ROWID + 
         		"=" + mCursor.getString(0), null) > 0;        		
+    } 
+
+   public boolean deleteEUser(String[] user) {
+    	
+        Cursor mCursor = db.query(true, E_USER_TABLE, new String[] {
+        		KEY_ROWID
+        		}, 
+        		"username=?", 
+        		user,
+        		null, 
+        		null, 
+        		null, 
+        		null);
+
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+                
+        return db.delete(E_USER_TABLE, KEY_ROWID + 
+        		"=" + mCursor.getString(0), null) > 0;  
     }    
+    
    public boolean deleteTUser(String[] user) {
     	
         Cursor mCursor = db.query(true, T_USER_TABLE, new String[] {
@@ -321,6 +359,17 @@ public class DBAdapter {
 	    this.db.update(S_ENTRY_TABLE, args, ("message = ? AND send_to = ?"), new String[] {og, send_to});
 	}
 	
+	public void updateEEntry(String usern, String message, String og, String wait, String days, String send_to, String time, String boot) {
+		ContentValues args = new ContentValues();
+	    args.put(KEY_USERNAME, usern);
+	    args.put(KEY_MESSAGE, message);
+	    args.put(KEY_SEND_TO, send_to);
+	    args.put(KEY_WAIT, wait);
+	    args.put(KEY_DAY, days);
+	    args.put(KEY_TIME, time);
+	    args.put(BOOT, boot);
+	    this.db.update(E_ENTRY_TABLE, args, ("message = ? AND send_to = ?"), new String[] {og, send_to});
+	}
 	
 	public void updateTEntry(String user, String message, String mentions, String og, String wait, String days, String time, String boot) {
 		ContentValues args = new ContentValues();
