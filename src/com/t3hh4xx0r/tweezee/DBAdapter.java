@@ -20,6 +20,7 @@ public class DBAdapter {
     public static final String KEY_WAIT = "send_wait";
     public static final String KEY_DAY = "send_day";
     public static final String KEY_MESSAGE = "message";
+    public static final String KEY_SUBJECT = "subject";
     public static final String KEY_MENTIONS = "mentions";
     public static final String KEY_TIME = "send_time";
     public static final String BOOT = "start_boot";
@@ -32,7 +33,7 @@ public class DBAdapter {
     private static final String E_USER_TABLE = "email_users";
     private static final String E_ENTRY_TABLE = "email_entries";
 
-    private static final int DATABASE_VERSION = 20;
+    private static final int DATABASE_VERSION = 21;
 
     private static final String CREATE_E_USERS =
             "create table email_users (_id integer primary key autoincrement, "
@@ -41,7 +42,7 @@ public class DBAdapter {
     private static final String CREATE_E_ENTRIES =
             "create table email_entries (_id integer primary key autoincrement, "
     				+ "username text not null, "
-                    + "message text not null, send_to text not null, "
+                    + "message text not null, subject text not null, send_to text not null, "
             		+" send_wait text not null, send_day text not null, send_time text not null, "
                     +" start_boot text not null, my_id text not null);";
     
@@ -137,9 +138,10 @@ public class DBAdapter {
         db.insert(S_ENTRY_TABLE, null, initialValues);
     }    
 
-    public void insertEEntry(String username, String message, String wait, String day, String send_to, String time, String boot, int id) 
+    public void insertEEntry(String username, String subject, String message, String wait, String day, String send_to, String time, String boot, int id) 
     {
         ContentValues initialValues = new ContentValues();
+        initialValues.put(KEY_SUBJECT, subject);
         initialValues.put(KEY_USERNAME, username);
         initialValues.put(KEY_MESSAGE, message);
         initialValues.put(KEY_WAIT, wait);
@@ -202,6 +204,7 @@ public class DBAdapter {
                 KEY_SEND_TO,
                 KEY_TIME,
                 BOOT,
+                KEY_SUBJECT,
                 ID}, 
                 null,
                 null, 
@@ -308,6 +311,26 @@ public class DBAdapter {
         		"=" + mCursor.getString(0), null) > 0;        		
     } 
 
+    public boolean deleteEEntry(String message, String recipient) {
+    	
+        Cursor mCursor = db.query(true, E_ENTRY_TABLE, new String[] {
+        		KEY_ROWID
+        		}, 
+        		"message=? AND send_to=?", 
+        		new String[] {message, recipient},
+        		null, 
+        		null, 
+        		null, 
+        		null);
+
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+                
+        return db.delete(E_ENTRY_TABLE, KEY_ROWID + 
+        		"=" + mCursor.getString(0), null) > 0;        		
+    }
+    
    public boolean deleteEUser(String[] user) {
     	
         Cursor mCursor = db.query(true, E_USER_TABLE, new String[] {
@@ -359,8 +382,9 @@ public class DBAdapter {
 	    this.db.update(S_ENTRY_TABLE, args, ("message = ? AND send_to = ?"), new String[] {og, send_to});
 	}
 	
-	public void updateEEntry(String usern, String message, String og, String wait, String days, String send_to, String time, String boot) {
+	public void updateEEntry(String usern, String subject, String message, String og, String wait, String days, String send_to, String time, String boot) {
 		ContentValues args = new ContentValues();
+	    args.put(KEY_SUBJECT, subject);
 	    args.put(KEY_USERNAME, usern);
 	    args.put(KEY_MESSAGE, message);
 	    args.put(KEY_SEND_TO, send_to);

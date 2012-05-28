@@ -60,20 +60,18 @@ public class TwitterActivity extends FragmentActivity {
             startActivity(new Intent(this, TwitterSplash.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
    		}
    		db.close();
-   		   		
-        try {
-            Bundle extras = getIntent().getExtras();
-            place = extras.getInt("pos");
-        } catch (Exception e) {
-        	place = 999;
-        }
-        
+   		           
 		getUsers(this);        
         
         pager = (ViewPager) findViewById(android.R.id.list);
         pager.setAdapter(new ExamplePagerAdapter(getSupportFragmentManager()));
         TitlePageIndicator indicator = (TitlePageIndicator)findViewById(R.id.indicator);
-
+        try {
+            place = getIntent().getIntExtra("pos", 999);
+        } catch (Exception e) {
+        	place = 999;
+        }
+        
         if (place != 999) {
         	pager.setCurrentItem(place);
         	indicator.setViewPager(pager, place);
@@ -81,6 +79,7 @@ public class TwitterActivity extends FragmentActivity {
         	pager.setCurrentItem(0);
         	indicator.setViewPager(pager, 0);
         }
+
         indicator.setOnPageChangeListener(new OnPageChangeListener() {
         	@Override
         	public void onPageSelected(int position) {  
@@ -222,6 +221,7 @@ public class TwitterActivity extends FragmentActivity {
 	    switch (requestCode) {
 	    case SIGN_IN:
             Intent mi = new Intent(this, TwitterActivity.class);
+            mi.putExtra("pos", p);
             startActivity(mi);
 	        break;
 	    default:
@@ -245,7 +245,6 @@ public class TwitterActivity extends FragmentActivity {
 		    	Fragment fragment = new UserFragment();	
 		    	Bundle b = new Bundle(); 
 		    	b.putInt("p", position); 
-		    	b.putStringArrayList("e", updateUserFrag(position));
 		    	fragment.setArguments(b);
 		        return fragment;
 		    }

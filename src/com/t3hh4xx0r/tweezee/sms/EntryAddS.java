@@ -241,6 +241,9 @@ public class EntryAddS extends Activity {
 	        			dPre.append(daysOfWeek[i]+", ");
 	        		}
 	        	}
+            	if (dPre.toString().length()>6) {
+            		dayPre.setText(dPre.toString());
+            	}
 	        } else {
 	    	    selectedDaysOfWeek = new boolean[] {
 	    	            false,
@@ -378,6 +381,7 @@ public class EntryAddS extends Activity {
 	        		}
 	       		}
         	} catch (Exception e) {}
+	    	cu.close();
 	    }
         Intent myIntent = new Intent(c, TweezeeReceiver.class);
     	myIntent.putExtra("type", "sms");
@@ -419,7 +423,8 @@ public class EntryAddS extends Activity {
 	        		}
 	       		}
         	} catch (Exception e) {}
-	    }
+	    	cu.close();
+    	}
         Intent myIntent = new Intent(c, TweezeeReceiver.class);
         myIntent.setAction(Integer.toString(id));
         myIntent.setData(Uri.parse(Integer.toString(id)));   

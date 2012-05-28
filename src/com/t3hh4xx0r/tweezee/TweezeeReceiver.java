@@ -19,6 +19,8 @@ import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.widget.Toast;
 
+import com.t3hh4xx0r.tweezee.email.EmailActivity;
+import com.t3hh4xx0r.tweezee.email.GmailSender;
 import com.t3hh4xx0r.tweezee.sms.SMSActivity;
 import com.t3hh4xx0r.tweezee.twitter.OAUTH;
 import com.t3hh4xx0r.tweezee.twitter.TwitterActivity;
@@ -34,6 +36,8 @@ public class TweezeeReceiver extends BroadcastReceiver {
     private String tokenE;
     private String type;
     private String recipient;
+    private String pass;
+    private String subject;
     Twitter t;
     
     SharedPreferences prefs;
@@ -65,12 +69,48 @@ public class TweezeeReceiver extends BroadcastReceiver {
 				recipient = i.getStringExtra("recipient");
 			}
 			sendSMS();
+		} else if (type.equals("email")) {
+			recipient = i.getStringExtra("recipient");
+			username = Encryption.decryptString(i.getStringExtra("username"), Encryption.KEY);
+			pass = i.getStringExtra("pass");
+			subject = i.getStringExtra("subject");
+			sendEmail();
 		}
 
 		
 	}
 
-    private void sendSMS() {
+    private void sendEmail() {
+      	 try {
+    	     if (day.split(",")[getcDay()-1].equals("true")) {
+    	         try {   
+    	             GmailSender sender = new GmailSender(username, pass);
+    	             sender.sendMail(subject,   
+    	                     message,   
+    	                     username,   
+    	                     recipient);   
+    	         } catch (Exception e) {   
+    	         	e.printStackTrace();
+    	         }			        			       			          
+    	       	 if (prefs.getBoolean("notify", true)) {
+        			 if (!prefs.getBoolean("notifyIntrusive", true)) {
+        				 mHandler.post(new Runnable() {
+        					 @Override
+        					 public void run() {
+        						 Toast.makeText(ctx, message, Toast.LENGTH_LONG).show();
+        					 }
+        				 });
+        			 } else{
+    	    			 alertE(message, ctx);
+        			 }
+    	       	 }
+    	     }
+    	 } catch (Exception e) {
+    		 e.printStackTrace();
+    	 }
+	}
+
+	private void sendSMS() {
    	 try {
 	     if (day.split(",")[getcDay()-1].equals("true")) {
 		     Intent i = new Intent(ctx, TweezeeReceiver.class);
@@ -108,9 +148,9 @@ public class TweezeeReceiver extends BroadcastReceiver {
 		    	 try {
 				     if (day.split(",")[getcDay()-1].equals("true")) {
 				    	 if (prefs.getBoolean("direct", false)) {
-				    		 //t.updateStatus(mentions+" "+message+" "+mentions+" "+getRandom());
+				    		 t.updateStatus(mentions+" "+message+" "+mentions+" "+getRandom());
 				    	 } else {	
-		    				 //t.updateStatus(getRandom()+" "+message+" "+mentions);					    		 
+		    				 t.updateStatus(getRandom()+" "+message+" "+mentions);					    		 
 				    	 }
 				       	 if (prefs.getBoolean("notify", true)) {
 			    			 if (!prefs.getBoolean("notifyIntrusive", true)) {
@@ -168,7 +208,7 @@ public class TweezeeReceiver extends BroadcastReceiver {
 			 int icon = R.drawable.ic_launcher;
 			 CharSequence tickerText = "Status Update!";
 			 long when = System.currentTimeMillis();
-			 CharSequence contentTitle = "TweeZee updated your status."; 
+			 CharSequence contentTitle = "UltimateScheduler updated your status."; 
 			 CharSequence contentText = message; 
 			 
 			 Intent notificationIntent = new Intent(c, TwitterActivity.class);
@@ -190,7 +230,7 @@ public class TweezeeReceiver extends BroadcastReceiver {
 		 int icon = R.drawable.ic_launcher;
 		 CharSequence tickerText = "SMS Sent!";
 		 long when = System.currentTimeMillis();
-		 CharSequence contentTitle = "TweeZee sent an SMS."; 
+		 CharSequence contentTitle = "UltimateScheduler sent an SMS."; 
 		 CharSequence contentText = message; 
 		 
 		 Intent notificationIntent = new Intent(c, SMSActivity.class);
@@ -202,10 +242,32 @@ public class TweezeeReceiver extends BroadcastReceiver {
   	     notification.flags = Notification.FLAG_AUTO_CANCEL;
 		 notification.setLatestEventInfo(c, contentTitle, contentText, contentIntent);
 		 final int HELLO_ID = 1;
-
+		 
 		 NotificationManager mNotificationManager = (NotificationManager) c.getSystemService(
 	                Context.NOTIFICATION_SERVICE);	
 		 mNotificationManager.notify(HELLO_ID, notification);			
-} 
+	} 
 
+	private void alertE(String message, Context c) {
+		 int icon = R.drawable.ic_launcher;
+		 CharSequence tickerText = "Email Sent!";
+		 long when = System.currentTimeMillis();
+		 CharSequence contentTitle = "UltimateScheduler sent an Email."; 
+		 CharSequence contentText = message; 
+		 
+		 Intent notificationIntent = new Intent(c, EmailActivity.class);
+
+		 PendingIntent contentIntent = PendingIntent.getActivity(c, 0, notificationIntent, 0);
+
+		 Notification notification = new Notification(icon, tickerText, when);
+ 	     notification.defaults = Notification.DEFAULT_VIBRATE;
+ 	     notification.flags = Notification.FLAG_AUTO_CANCEL;
+		 notification.setLatestEventInfo(c, contentTitle, contentText, contentIntent);
+		 final int HELLO_ID = 1;
+		 
+		 NotificationManager mNotificationManager = (NotificationManager) c.getSystemService(
+	                Context.NOTIFICATION_SERVICE);	
+		 mNotificationManager.notify(HELLO_ID, notification);			
+	} 
+	
 }

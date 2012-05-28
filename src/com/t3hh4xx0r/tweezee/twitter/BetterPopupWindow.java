@@ -29,8 +29,10 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.t3hh4xx0r.tweezee.DBAdapter;
+import com.t3hh4xx0r.tweezee.Encryption;
 import com.t3hh4xx0r.tweezee.R;
 import com.t3hh4xx0r.tweezee.TweezeeReceiver;
 
@@ -276,10 +278,12 @@ public class BetterPopupWindow {
 			       	 db.deleteTEntry(m);
 			       	 db.close();
 			       	 this.dismiss();
-	       			 UserFragment.entryArray.remove(position);
-	       			 Message msg = new Message();
-	       			 msg.what = 0;
-	       			 UserFragment.handy.sendMessage(msg);
+			         Intent mi = new Intent(v.getContext(), TwitterActivity.class);
+			         mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			         Bundle b = new Bundle();
+			         b.putInt("pos", place);
+			         mi.putExtras(b);
+			         this.anchor.getContext().startActivity(mi);
   	    	    } else {
 				     DBAdapter db = new DBAdapter(this.anchor.getContext());
 			       	 db.open();
@@ -349,13 +353,16 @@ public class BetterPopupWindow {
 		        		break;
 		        	}
 		       	}
-	        } catch (Exception e) {}
+	        } catch (Exception e) {
+	        	e.printStackTrace();
+	        }
 		    cu.close();
 		    db.close();
 		    return id;
 		}
 
 		public void killTweet(int id) {
+			Toast.makeText(this.anchor.getContext(), Integer.toString(id), Toast.LENGTH_LONG).show();
 	    	Intent myIntent = new Intent(this.anchor.getContext(), TweezeeReceiver.class);
 	        myIntent.setAction(Integer.toString(id));
 	        myIntent.setData(Uri.parse(Integer.toString(id)));

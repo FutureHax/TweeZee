@@ -70,7 +70,7 @@ public class EmailAcctManager extends ListActivity{
 				
 		final Vibrator vibe = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE) ;
     	vibe.vibrate(50);
-    	BetterPopupWindowE dw = new BetterPopupWindowE.DemoPopupWindow(v, msg,p);
+    	BetterPopupWindowE dw = new BetterPopupWindowE.DemoPopupWindow(v, msg,p, null, null);
 		dw.showLikeQuickAction(0, 30);
 	}
 	

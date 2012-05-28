@@ -3,18 +3,23 @@ package com.t3hh4xx0r.tweezee.email;
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.ArrayUtils;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.Editable;
@@ -37,6 +42,7 @@ import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.Encryption;
 import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
+import com.t3hh4xx0r.tweezee.TweezeeReceiver;
 
 public class EntryAddE extends Activity {
 	MultiAutoCompleteTextView recipientsMACTV;
@@ -44,6 +50,8 @@ public class EntryAddE extends Activity {
 	TextView name;
 	String usern;
 	String usernE;
+	TextView subjectTV;
+	EditText subjectET;
 	int p;
 	Bundle extras;
 	TextView dayPre;
@@ -66,6 +74,7 @@ public class EntryAddE extends Activity {
 	EditText intervalET;
 	CheckBox bootCB;
 	boolean startBoot;
+	String pass;
 	
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -78,6 +87,7 @@ public class EntryAddE extends Activity {
         p = extras.getInt("pos");
 		usern = EmailActivity.accounts[p].getName(); 
 		usernE = Encryption.encryptString(usern, Encryption.KEY);
+		pass = EmailActivity.accounts[p].getPassword();
 
 		countTV = (TextView) findViewById(R.id.countTV);
 		messageET = (EditText) findViewById(R.id.messageET);
@@ -86,6 +96,9 @@ public class EntryAddE extends Activity {
 		timePre.setVisibility(View.GONE);
 		dayPre = (TextView)findViewById(R.id.day_pre);
 
+		subjectTV = (TextView) findViewById(R.id.subject);
+		subjectET = (EditText) findViewById(R.id.editSubject);
+		
 		intervalTV = (TextView)findViewById(R.id.interval);
 	    String[] weekdays = new DateFormatSymbols().getWeekdays();
 	    daysOfWeek = new String[] {
@@ -199,6 +212,7 @@ public class EntryAddE extends Activity {
 	        	bootCB.setChecked(startBoot);
 	        	recipientsMACTV.setText(extras.getString("recipient"));
 				messageET.setText(extras.getString("message"));
+				subjectET.setText(extras.getString("subject"));
 				time = extras.getString("time") != null;
 				intervalET.setText(extras.getString("interval"));
 				if (time) {
@@ -223,7 +237,10 @@ public class EntryAddE extends Activity {
 	        			dPre.append(daysOfWeek[i]+", ");
 	        		}
 	        	}
-	        } else {
+            	if (dPre.toString().length()>6) {
+            		dayPre.setText(dPre.toString());
+            	}
+            } else {
 	    	    selectedDaysOfWeek = new boolean[] {
 	    	            false,
 	    	            false,
@@ -298,16 +315,16 @@ public class EntryAddE extends Activity {
 					myDaysBooleans = "false,false,false,false,false,false,false,";
 				}
 			}
-			if (messageET.getText().toString().length() != 0 && recipientsMACTV.getText().toString().length() != 0 && !time) {
+			if (subjectET.getText().toString().length() !=0 && messageET.getText().toString().length() != 0 && recipientsMACTV.getText().toString().length() != 0 && !time) {
 			   final DBAdapter db = new DBAdapter(this);
 	       	   db.open();
 	           if (!extras.getBoolean("editing", false)) {
 	        	   int my_id = getReqID();
-	        	   db.insertEEntry(usernE, messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), "", Boolean.toString(startBoot), my_id);
-				   //setupIntervalSMS(this,messageET.getText().toString(),intervalET.getText().toString(),myDaysBooleans,txtPhoneNo.getText().toString(), false, null, my_id);	        	
+	        	   db.insertEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), "", Boolean.toString(startBoot), my_id);
+				   setupIntervalEmail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), false, null, my_id);	        	
 	           } else {
-	        	   db.updateEEntry(usernE, messageET.getText().toString(), extras.getString("message"), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), "", Boolean.toString(startBoot));
-				   //setupIntervalSMS(this,messageET.getText().toString(),intervalET.getText().toString(),myDaysBooleans,txtPhoneNo.getText().toString(), true, extras.getString("message"), 420);	        	
+	        	   db.updateEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), extras.getString("message"), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), "", Boolean.toString(startBoot));
+				   setupIntervalEmail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), true, extras.getString("message"), 420);	        	
 	           }
 		       db.close();
 	           finish();
@@ -317,11 +334,11 @@ public class EntryAddE extends Activity {
 		       	   db.open();
 		           if (!extras.getBoolean("editing", false)) {
 		        	   int my_id = getReqID();
-			      	   db.insertEEntry(usernE, messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, Boolean.toString(startBoot), my_id);
-			           //setupTimedSMS(this,messageET.getText().toString(),myDaysBooleans,txtPhoneNo.getText().toString(), timeValue, false, null, my_id);	        	
+			      	   db.insertEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, Boolean.toString(startBoot), my_id);
+			      	   setupTimedSMS(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(),myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, false, null, my_id);	        	
 				   } else {
-				       db.updateEEntry(usernE, messageET.getText().toString(), extras.getString("message"), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, Boolean.toString(startBoot));
-					   //setupTimedSMS(this,messageET.getText().toString(),myDaysBooleans,txtPhoneNo.getText().toString(), timeValue, true, extras.getString("message"), 420);	        	
+				       db.updateEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), extras.getString("message"), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, Boolean.toString(startBoot));
+					   setupTimedSMS(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(), myDaysBooleans,recipientsMACTV.getText().toString(), timeValue, true, extras.getString("message"), 420);	        	
 				   }
 				   db.close();
 				   finish();
@@ -335,4 +352,86 @@ public class EntryAddE extends Activity {
 	    }
 		return false;
 	}
+	
+	private void setupIntervalEmail(Context c, String username, String pass, String subject, String message, String wait, String day, String recipients, boolean updating, String og, int id) {
+    	Toast.makeText(c, "New email saved, "+message, Toast.LENGTH_LONG).show();
+       	final DBAdapter db = new DBAdapter(this);
+    	db.open();
+    	if (id == 420) {
+          	Cursor cu = db.getAllEEntries();
+	    	try {
+	       		while (cu.moveToNext()) {
+	        		if ((cu.getString(cu.getColumnIndex("message")).equals(message)) && cu.getString(cu.getColumnIndex("username")).equals(username)) {
+	        			id = Integer.parseInt(cu.getString(cu.getColumnIndex("my_id")));
+	        			break;
+	        		}
+	       		}
+        	} catch (Exception e) {}
+	    	cu.close();
+	    	db.close();
+	    }
+    	Intent myIntent = new Intent(c, TweezeeReceiver.class);
+    	myIntent.putExtra("type", "email");
+    	myIntent.putExtra("username", username);
+    	myIntent.putExtra("message", message + "\n\n\nSent via UltimateScheduler");
+    	myIntent.putExtra("recipient", recipients);
+    	myIntent.putExtra("day", day);
+    	myIntent.putExtra("pass", pass);
+    	myIntent.putExtra("subject", subject);
+        myIntent.setAction(Integer.toString(id));
+        myIntent.setData(Uri.parse(Integer.toString(id)));   
+        PendingIntent pendingIntent;
+        if (updating) {
+        	pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        } else {
+            pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, 0);
+        }        
+        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Integer.parseInt(wait)*60000, pendingIntent);					
+	}
+	
+	private void setupTimedSMS(Context c, String username, String pass, String subject, String message, String day, String recipients, String timeValue, boolean updating, String og, int id) {
+    	Toast.makeText(c, "New email saved, "+message, Toast.LENGTH_LONG).show();
+       	final DBAdapter db = new DBAdapter(this);
+    	db.open();
+    	Cursor cu = null;
+    	if (id == 420) {
+          	cu = db.getAllEEntries();
+	    	try {
+	       		while (cu.moveToNext()) {
+	        		if ((cu.getString(cu.getColumnIndex("message")).equals(message)) && cu.getString(cu.getColumnIndex("username")).equals(username)) {
+	        			id = Integer.parseInt(cu.getString(cu.getColumnIndex("my_id")));
+	        			break;
+	        		}
+	       		}
+        	} catch (Exception e) {}
+	    	cu.close();
+    	}  	
+    	db.close();
+        Intent myIntent = new Intent(c, TweezeeReceiver.class);        
+        myIntent.setAction(Integer.toString(id));
+        myIntent.setData(Uri.parse(Integer.toString(id)));   
+    	myIntent.putExtra("type", "email");
+    	myIntent.putExtra("username", username);
+    	myIntent.putExtra("message", message + "\n\n\nSent via UltimateScheduler");
+    	myIntent.putExtra("recipient", recipients);
+    	myIntent.putExtra("day", day);
+    	myIntent.putExtra("pass", pass);
+    	myIntent.putExtra("subject", subject);      
+    	PendingIntent pendingIntent;
+        if (updating) {
+        	pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        } else {
+            pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, 0);
+        }
+        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.setTimeZone(TimeZone.getDefault());
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeValue.split(":")[0]));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(timeValue.split(":")[1]));
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);					
+	}	
 }

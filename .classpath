@@ -11,5 +11,8 @@
 	<classpathentry kind="lib" path="/home/r2doesinc/Dropbox/Private/eclipse/guava-11.0.2.jar"/>
 	<classpathentry kind="lib" path="/home/r2doesinc/Dropbox/Private/eclipse/commons-lang3-3.1.jar"/>
 	<classpathentry kind="lib" path="/home/r2doesinc/eclipse/workspace/RomCrawler/assets/pontiflex_sdk.jar"/>
+	<classpathentry kind="lib" path="/home/r2doesinc/Dropbox/Private/eclipse/activation.jar"/>
+	<classpathentry kind="lib" path="/home/r2doesinc/Dropbox/Private/eclipse/additionnal.jar"/>
+	<classpathentry kind="lib" path="/home/r2doesinc/Dropbox/Private/eclipse/mail.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

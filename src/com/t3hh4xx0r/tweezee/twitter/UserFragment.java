@@ -2,14 +2,11 @@ package com.t3hh4xx0r.tweezee.twitter;
 
 import java.util.ArrayList;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -36,7 +33,7 @@ public class UserFragment extends ListFragment {
 	  View v;
 	  Button mAddEntry;
 	  int pos; 
-	  public static ArrayList<String> entryArray;
+	  public ArrayList<String> entryArray;
 	  static ArrayAdapter<String> a;
 	  ListView listView;
 	  
@@ -94,7 +91,6 @@ public class UserFragment extends ListFragment {
     	       	}
 	        });	   
 		    pos = getArguments().getInt("p");
-		    entryArray = getArguments().getStringArrayList("e");
 		    return v;
 	}	 
 		public void onListItemClick(ListView lv, View v, int p, long id) {	
@@ -163,6 +159,8 @@ public class UserFragment extends ListFragment {
 	}	
 	
 	void populateList() {
+    	entryArray.clear();
+
 		a = new ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, entryArray);
 		setListAdapter(a);
 
@@ -189,7 +187,7 @@ public class UserFragment extends ListFragment {
 			switch (m.what) {
 			case 0:			
 				   a.notifyDataSetChanged();
-				break;
+				   break;
 			}
 		}
 	};

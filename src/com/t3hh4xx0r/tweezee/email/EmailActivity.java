@@ -6,6 +6,7 @@ import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.Encryption;
 import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
+import com.t3hh4xx0r.tweezee.sms.SMSActivity;
 import com.t3hh4xx0r.tweezee.twitter.AccountManager;
 import com.t3hh4xx0r.tweezee.twitter.TwitterActivity;
 import com.t3hh4xx0r.tweezee.twitter.TwitterAuth;
@@ -20,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -38,6 +40,7 @@ public class EmailActivity extends FragmentActivity {
     public static int account;    
 	private final static int SIGN_IN = 0;
 	public ArrayList<String> entryArray;
+	int place;
 
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -66,12 +69,23 @@ public class EmailActivity extends FragmentActivity {
 			}
 
 			@Override
-			public void onPageScrolled(int arg0, float arg1, int arg2) {				
+			public void onPageScrolled(int arg0, float arg1, int arg2) {	
 			}
         });
-    	pager.setCurrentItem(0);
-    	indicator.setViewPager(pager, 0);        
-		
+        
+        try {
+            place = getIntent().getIntExtra("pos", 999);
+        } catch (Exception e) {
+        	place = 999;
+        }
+        
+        if (place != 999) {
+        	pager.setCurrentItem(place);
+        	indicator.setViewPager(pager, place);
+        } else {
+        	pager.setCurrentItem(0);
+        	indicator.setViewPager(pager, 0);
+        }       		
 	}
 	
 	public void getUsers(Context ctx) {
@@ -95,28 +109,6 @@ public class EmailActivity extends FragmentActivity {
    		db.close();
 	}
 	
-	   public ArrayList<String> updateUserFrag (int p) {		   
-		     entryArray = new ArrayList<String>();
-		     if (entryArray.size() != 0) {
-		    	 entryArray.clear();
-		     }
-		     DBAdapter db = new DBAdapter(this);
-	       	 db.open();
-	       	 Cursor c = db.getAllEEntries();
-	       	 try {
-	       		while (c.moveToNext()) {
-	       			if (Encryption.decryptString(c.getString(c.getColumnIndex("username")), Encryption.KEY).equals(accounts[p].getName())) {	       			
-	  					entryArray.add(c.getString(c.getColumnIndex("message")));
-	       			}
-	       		}
-	       	 } catch (Exception e) {
-	       		 e.printStackTrace();
-	       	 }
-	       	 c.close();
-	       	 db.close();
-			return entryArray;	       	 
-	   }
-
 	public class ExamplePagerAdapter extends FragmentPagerAdapter implements TitleProvider{
 
 			public ExamplePagerAdapter(FragmentManager fm) {
@@ -133,7 +125,6 @@ public class EmailActivity extends FragmentActivity {
 		    	Fragment fragment = new EmailFragment();	
 		    	Bundle b = new Bundle(); 
 		    	b.putInt("p", position); 
-		    	b.putStringArrayList("e", updateUserFrag(position));
 		    	fragment.setArguments(b);
 		        return fragment;
 		    }
@@ -181,6 +172,7 @@ public class EmailActivity extends FragmentActivity {
 	    switch (requestCode) {
 	    case SIGN_IN:
             Intent mi = new Intent(this, EmailActivity.class);
+            mi.putExtra("pos", p);
             startActivity(mi);
 	        break;
 	    default:

@@ -30,6 +30,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.Encryption;
@@ -52,6 +53,8 @@ public class BetterPopupWindowE {
 	private final WindowManager windowManager;
 	String message;
 	int position;
+	String recipient;
+	String user;
 
 	/**
 	 * Create a BetterPopupWindow
@@ -225,10 +228,13 @@ public class BetterPopupWindowE {
 	}
 	
 	public static class DemoPopupWindow extends BetterPopupWindowE implements OnClickListener {
-		public DemoPopupWindow(View anchor, String mes, int pos) {
+		public DemoPopupWindow(View anchor, String mes, int pos, String recip, String username) {
                   super(anchor);
                   message = mes;
                   position = pos;
+                  recipient = recip;
+                  user = username;
+                  
         }
 
         @Override
@@ -278,15 +284,59 @@ public class BetterPopupWindowE {
 			        Intent mi = new Intent(v.getContext(), EmailAcctManager.class);
 			        mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			        this.anchor.getContext().startActivity(mi);
+  				} else {
+				     killEmail(getID(user, message));
+				     DBAdapter db = new DBAdapter(this.anchor.getContext());
+			       	 db.open();
+			       	 db.deleteEEntry(message, recipient);
+			       	 db.close();
+			       	 this.dismiss();
+			         Intent mi = new Intent(v.getContext(), EmailActivity.class);
+			         mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			         Bundle b = new Bundle();
+			         b.putInt("pos", position);
+			         mi.putExtras(b);
+			         this.anchor.getContext().startActivity(mi);
   				}
   				this.dismiss();
 	        } 
   	    	
   	    	if(v.getId() == R.id.send) { 
- 	    		this.dismiss();
+			     String time = "";
+			     String interval = "";
+			     String days = "";
+			     String passD = "";
+			     String subject = "";
+			     
+			     DBAdapter db = new DBAdapter(this.anchor.getContext());
+			     db.open();
+			     Cursor c = db.getAllEEntries();
+		 	       	try {
+			       		while (c.moveToNext()) {
+			       			if (Encryption.decryptString(c.getString(c.getColumnIndex("username")), Encryption.KEY).equals(user) && c.getString(c.getColumnIndex("message")).equals(message)) {
+			       				time = c.getString(c.getColumnIndex("send_time"));
+			       				interval = c.getString(c.getColumnIndex("send_wait"));
+			       				days = c.getString(c.getColumnIndex("send_day"));
+			       				subject = c.getString(c.getColumnIndex("subject"));
+			       				passD = EmailActivity.accounts[position].getPassword();
+					       	 }
+			       		}
+			       	} catch (Exception e1) {
+			       		e1.printStackTrace();
+			       	}
+			     c.close();
+			     db.close();		       	 
+		       	 
+		       	 if (time.length() < 2) {
+					   setupIntervalEmail(this.anchor.getContext(), Encryption.encryptString(user, Encryption.KEY), passD, subject, message, interval, days, recipient, getID(user, message));	        	
+		       	 } else {
+			      	   setupTimedSMS(this.anchor.getContext(), Encryption.encryptString(user, Encryption.KEY), passD, subject, message, days, recipient, time, getID(user, message));	        	
+		       	 }
+		       	 this.dismiss();
 	        }
   	    	
  	    	if(v.getId() == R.id.stop) {   	    		
+			    killEmail(getID(user, message));
  	    		this.dismiss();
  	    	}
  	    }
@@ -295,10 +345,10 @@ public class BetterPopupWindowE {
 			int id = 420;
 	    	final DBAdapter db = new DBAdapter(this.anchor.getContext());
 	    	db.open();
-	        Cursor cu = db.getAllTEntries();
+	        Cursor cu = db.getAllEEntries();
 		    try {
 		       	while (cu.moveToNext()) {
-		        	if ((cu.getString(cu.getColumnIndex("message")).equals(message)) && cu.getString(cu.getColumnIndex("username")).equals(user)) {
+		        	if ((cu.getString(cu.getColumnIndex("message")).equals(message)) && Encryption.decryptString(cu.getString(cu.getColumnIndex("username")), Encryption.KEY).equals(user)) {
 		        		id = Integer.parseInt(cu.getString(cu.getColumnIndex("my_id")));
 		        		break;
 		        	}
@@ -309,7 +359,7 @@ public class BetterPopupWindowE {
 		    return id;
 		}
 
-		public void killTweet(int id) {
+		public void killEmail(int id) {
 	    	Intent myIntent = new Intent(this.anchor.getContext(), TweezeeReceiver.class);
 	        myIntent.setAction(Integer.toString(id));
 	        myIntent.setData(Uri.parse(Integer.toString(id)));
@@ -318,15 +368,69 @@ public class BetterPopupWindowE {
 	        alarmManager.cancel(pendingIntent);		
 		}
 		
-		private void setupTimedTweet(Context c, String username, String message, String day, String mentions, String timeValue, int id) {
-	        Intent myIntent = new Intent(c, TweezeeReceiver.class);
+		private void setupIntervalEmail(Context c, String username, String pass, String subject, String message, String wait, String day, String recipients, int id) {
+	    	Toast.makeText(c, "New email saved, "+message, Toast.LENGTH_LONG).show();
+	       	final DBAdapter db = new DBAdapter(c);
+	    	db.open();
+	    	if (id == 420) {
+	          	Cursor cu = db.getAllEEntries();
+		    	try {
+		       		while (cu.moveToNext()) {
+		        		if ((cu.getString(cu.getColumnIndex("message")).equals(message)) && cu.getString(cu.getColumnIndex("username")).equals(username)) {
+		        			id = Integer.parseInt(cu.getString(cu.getColumnIndex("my_id")));
+		        			break;
+		        		}
+		       		}
+	        	} catch (Exception e) {}
+		    	cu.close();
+		    	db.close();
+		    }
+	    	Intent myIntent = new Intent(c, TweezeeReceiver.class);
+	    	myIntent.putExtra("type", "email");
 	    	myIntent.putExtra("username", username);
-	    	myIntent.putExtra("message", message);
-	    	myIntent.putExtra("mentions", mentions);
-	    	myIntent.putExtra("day", day); 
+	    	myIntent.putExtra("message", message + "\n\n\nSent via UltimateScheduler");
+	    	myIntent.putExtra("recipient", recipients);
+	    	myIntent.putExtra("day", day);
+	    	myIntent.putExtra("pass", pass);
+	    	myIntent.putExtra("subject", subject);
 	        myIntent.setAction(Integer.toString(id));
-	        myIntent.setData(Uri.parse(Integer.toString(id)));  
+	        myIntent.setData(Uri.parse(Integer.toString(id)));   
 	        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, 0);
+	        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
+	        Calendar calendar = Calendar.getInstance();
+	        calendar.setTimeInMillis(System.currentTimeMillis());
+	        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Integer.parseInt(wait)*60000, pendingIntent);					
+		}
+		
+		private void setupTimedSMS(Context c, String username, String pass, String subject, String message, String day, String recipients, String timeValue, int id) {
+	    	Toast.makeText(c, "New email saved, "+message, Toast.LENGTH_LONG).show();
+	       	final DBAdapter db = new DBAdapter(c);
+	    	db.open();
+	    	Cursor cu = null;
+	    	if (id == 420) {
+	          	cu = db.getAllEEntries();
+		    	try {
+		       		while (cu.moveToNext()) {
+		        		if ((cu.getString(cu.getColumnIndex("message")).equals(message)) && cu.getString(cu.getColumnIndex("username")).equals(username)) {
+		        			id = Integer.parseInt(cu.getString(cu.getColumnIndex("my_id")));
+		        			break;
+		        		}
+		       		}
+	        	} catch (Exception e) {}
+		    	cu.close();
+	    	}  	
+	    	db.close();
+	        Intent myIntent = new Intent(c, TweezeeReceiver.class);        
+	        myIntent.setAction(Integer.toString(id));
+	        myIntent.setData(Uri.parse(Integer.toString(id)));   
+	    	myIntent.putExtra("type", "email");
+	    	myIntent.putExtra("username", username);
+	    	myIntent.putExtra("message", message + "\n\n\nSent via UltimateScheduler");
+	    	myIntent.putExtra("recipient", recipients);
+	    	myIntent.putExtra("day", day);
+	    	myIntent.putExtra("pass", pass);
+	    	myIntent.putExtra("subject", subject);      
+	    	PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, 0);
 	        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
 	        Calendar calendar = Calendar.getInstance();
 	        calendar.setTimeInMillis(System.currentTimeMillis());
@@ -334,23 +438,6 @@ public class BetterPopupWindowE {
 	        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeValue.split(":")[0]));
 	        calendar.set(Calendar.MINUTE, Integer.parseInt(timeValue.split(":")[1]));
 	        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);					
-		}
-		
-		private void setupIntervalTweet(Context c, String username, String message, String wait, String day, String mentions, int id) {
-	        Intent myIntent = new Intent(c, TweezeeReceiver.class);
-		    myIntent.putExtra("username", username);
-		    myIntent.putExtra("message", message);
-		    myIntent.putExtra("mentions", mentions);
-		    myIntent.putExtra("day", day); 
-	        myIntent.setAction(Integer.toString(id));
-	        myIntent.setData(Uri.parse(Integer.toString(id)));  
-	        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, 0);
-	        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
-	        Calendar calendar = Calendar.getInstance();
-	        calendar.setTimeInMillis(System.currentTimeMillis());
-	        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Integer.parseInt(wait)*60000, pendingIntent);					
-		}		
+		}	
 	}
-	
-	
 }

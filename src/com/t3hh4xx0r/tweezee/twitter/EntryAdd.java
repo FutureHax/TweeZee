@@ -507,8 +507,9 @@ public class EntryAdd extends Activity {
     	Toast.makeText(c, "New tweet saved, "+message, Toast.LENGTH_LONG).show();
        	final DBAdapter db = new DBAdapter(this);
     	db.open();
+    	Cursor cu = null;
     	if (id == 420) {
-          	Cursor cu = db.getAllTEntries();
+          	cu = db.getAllTEntries();
 	    	try {
 	       		while (cu.moveToNext()) {
 	        		if ((cu.getString(cu.getColumnIndex("message")).equals(message)) && cu.getString(cu.getColumnIndex("username")).equals(username)) {
@@ -517,7 +518,9 @@ public class EntryAdd extends Activity {
 	        		}
 	       		}
         	} catch (Exception e) {}
-	    }
+	    	cu.close();
+    	}
+    	db.close();
     	Intent myIntent = new Intent(c, TweezeeReceiver.class);
     	myIntent.putExtra("type", "tweet");
     	myIntent.putExtra("username", username);
@@ -542,8 +545,9 @@ public class EntryAdd extends Activity {
     	Toast.makeText(c, "New tweet saved, "+message, Toast.LENGTH_LONG).show();
        	final DBAdapter db = new DBAdapter(this);
     	db.open();
+    	Cursor cu = null;
     	if (id == 420) {
-          	Cursor cu = db.getAllTEntries();
+          	cu = db.getAllTEntries();
 	    	try {
 	       		while (cu.moveToNext()) {
 	        		if ((cu.getString(cu.getColumnIndex("message")).equals(message)) && cu.getString(cu.getColumnIndex("username")).equals(username)) {
@@ -552,7 +556,9 @@ public class EntryAdd extends Activity {
 	        		}
 	       		}
         	} catch (Exception e) {}
-	    }  	
+	    	cu.close();
+    	}  	
+    	db.close();
         Intent myIntent = new Intent(c, TweezeeReceiver.class);        
         myIntent.setAction(Integer.toString(id));
         myIntent.setData(Uri.parse(Integer.toString(id)));   
