@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
@@ -31,6 +32,7 @@ import android.widget.Toast;
 import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.R;
 import com.t3hh4xx0r.tweezee.TweezeeReceiver;
+import com.t3hh4xx0r.tweezee.email.EmailActivity;
 
 /**
  * This class does most of the work of wrapping the {@link PopupWindow} so it's simpler to use.
@@ -269,10 +271,6 @@ public class BetterPopupWindowS {
     		    db.open();
     		    db.deleteSEntry(message, recipient);
     		    db.close();
-    		    SMSActivity.mEntries.remove(position);
-      			Message msg = new Message();
-      			msg.what = 0;
-      			SMSActivity.handy.sendMessage(msg);
       			this.dismiss();
 	        } 
   	    	
@@ -280,19 +278,22 @@ public class BetterPopupWindowS {
 			     String time = "";
 			     String interval = "";
 			     String days = "";
+			     String id = "";
 			     
 			     DBAdapter db = new DBAdapter(this.anchor.getContext());
 			     db.open();
 			     Cursor c = db.getAllSEntries();
-		 	       	try {
-			       		c.moveToPosition(position);
-			       		time = c.getString(c.getColumnIndex("send_time"));
-			       		interval = c.getString(c.getColumnIndex("send_wait"));
-			       		days = c.getString(c.getColumnIndex("send_day"));			       		
-			       	} catch (Exception e1) {
-			       		e1.printStackTrace();
-			       	}
+		 	     try {
+		 	    	 c.moveToPosition(position);
+			       	 time = c.getString(c.getColumnIndex("send_time"));
+			       	 interval = c.getString(c.getColumnIndex("send_wait"));
+			       	 days = c.getString(c.getColumnIndex("send_day"));			       		
+			       	 id = c.getString(c.getColumnIndex("my_id"));			       		
+			     } catch (Exception e1) {
+			         e1.printStackTrace();
+			     }
 			     c.close();
+			     db.updateActiveS(id, true);
 			     db.close();		       	 
 		       	 
 		       	 if (time.length() < 2) {
@@ -305,9 +306,17 @@ public class BetterPopupWindowS {
   	    	
  	    	if(v.getId() == R.id.stop) {   	    		
       			killSMS(getID(recipient, message));
-		       	this.dismiss();
+			    DBAdapter db = new DBAdapter(this.anchor.getContext());
+			    db.open();
+      	        db.updateActiveS(Integer.toString(getID(recipient, message)), false);
+      	        db.close();
+      	        this.dismiss();
  	    	}
- 	    }
+
+	        Intent mi = new Intent(v.getContext(), SMSActivity.class);
+	        mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	        this.anchor.getContext().startActivity(mi);  		
+  		}
 
 		private int getID(String recipient, String message) {
 			int id = 420;
@@ -328,7 +337,6 @@ public class BetterPopupWindowS {
 		}
 
 		public void killSMS(int id) {
-			Toast.makeText(this.anchor.getContext(), Integer.toString(id), Toast.LENGTH_LONG).show();
 	    	Intent myIntent = new Intent(this.anchor.getContext(), TweezeeReceiver.class);
 	        myIntent.setAction(Integer.toString(id));
 	        myIntent.setData(Uri.parse(Integer.toString(id)));
@@ -339,7 +347,7 @@ public class BetterPopupWindowS {
 
 		private void setupIntervalSMS(Context c, String message, String wait, String day, String recipient, int id) {
 	    	Toast.makeText(c, "New sms saved, "+message, Toast.LENGTH_LONG).show();
-	        Intent myIntent = new Intent(c, TweezeeReceiver.class);
+	    	Intent myIntent = new Intent(c, TweezeeReceiver.class);
 	    	myIntent.putExtra("type", "sms");
 	    	myIntent.putExtra("message", message);
 	    	myIntent.putExtra("day", day);

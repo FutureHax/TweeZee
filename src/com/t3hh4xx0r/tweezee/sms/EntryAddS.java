@@ -396,11 +396,12 @@ public class EntryAddS extends Activity {
         } else {
             pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, 0);
         }        
-        db.close();
         AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Integer.parseInt(wait)*60000, pendingIntent);					
+        db.updateActiveS(Integer.toString(id), true);
+        db.close();
 	}
 
 	private int getReqID() {
@@ -438,7 +439,6 @@ public class EntryAddS extends Activity {
         } else {
             pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, 0);
         }
-        db.close();
         AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -446,5 +446,7 @@ public class EntryAddS extends Activity {
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeValue.split(":")[0]));
         calendar.set(Calendar.MINUTE, Integer.parseInt(timeValue.split(":")[1]));
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);					
+        db.updateActiveS(Integer.toString(id), true);
+        db.close();
 	}
 }

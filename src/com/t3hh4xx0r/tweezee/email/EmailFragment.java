@@ -41,7 +41,7 @@ public class EmailFragment extends ListFragment {
 	  Button mAddEntry;
 	  int pos; 
 	  public ArrayList<String> entryArray;
-	  static EntriesAdapter a;
+	  static EntriesAdapterE a;
 	  ListView listView;
 	  @Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -183,7 +183,7 @@ public class EmailFragment extends ListFragment {
 		public void populateList() {
 	    	entryArray.clear();
 	    	
-			a = new EntriesAdapter(ctx, entryArray);
+			a = new EntriesAdapterE(ctx, entryArray);
 			setListAdapter(a);
 		    DBAdapter db = new DBAdapter(ctx);
 	       	db.open();

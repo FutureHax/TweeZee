@@ -17,6 +17,7 @@ import android.database.Cursor;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.t3hh4xx0r.tweezee.email.EmailActivity;

@@ -368,7 +368,6 @@ public class EntryAddE extends Activity {
 	       		}
         	} catch (Exception e) {}
 	    	cu.close();
-	    	db.close();
 	    }
     	Intent myIntent = new Intent(c, TweezeeReceiver.class);
     	myIntent.putExtra("type", "email");
@@ -390,15 +389,16 @@ public class EntryAddE extends Activity {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Integer.parseInt(wait)*60000, pendingIntent);					
+        db.updateActiveE(username, message, true);
+        db.close();
 	}
 	
 	private void setupTimedSMS(Context c, String username, String pass, String subject, String message, String day, String recipients, String timeValue, boolean updating, String og, int id) {
     	Toast.makeText(c, "New email saved, "+message, Toast.LENGTH_LONG).show();
        	final DBAdapter db = new DBAdapter(this);
     	db.open();
-    	Cursor cu = null;
     	if (id == 420) {
-          	cu = db.getAllEEntries();
+          	Cursor cu = db.getAllEEntries();
 	    	try {
 	       		while (cu.moveToNext()) {
 	        		if ((cu.getString(cu.getColumnIndex("message")).equals(message)) && cu.getString(cu.getColumnIndex("username")).equals(username)) {
@@ -409,7 +409,6 @@ public class EntryAddE extends Activity {
         	} catch (Exception e) {}
 	    	cu.close();
     	}  	
-    	db.close();
         Intent myIntent = new Intent(c, TweezeeReceiver.class);        
         myIntent.setAction(Integer.toString(id));
         myIntent.setData(Uri.parse(Integer.toString(id)));   
@@ -433,5 +432,7 @@ public class EntryAddE extends Activity {
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeValue.split(":")[0]));
         calendar.set(Calendar.MINUTE, Integer.parseInt(timeValue.split(":")[1]));
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);					
+        db.updateActiveE(username, message, true);
+        db.close();
 	}	
 }

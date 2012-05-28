@@ -1,4 +1,4 @@
-package com.t3hh4xx0r.tweezee.sms;
+package com.t3hh4xx0r.tweezee.twitter;
 
 import java.util.ArrayList;
 
@@ -7,6 +7,7 @@ import com.t3hh4xx0r.tweezee.R;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,16 +15,16 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class EntriesAdapter extends BaseAdapter {
+public class EntriesAdapterT extends BaseAdapter {
 	ArrayList<String> selectionList;
 	
 	 private LayoutInflater mInflater;
 	 Context ctx;	 
 	 String message;
-	 String recipient;
+	 String id;
 	 boolean active;
 	 
-	 public EntriesAdapter(Context context, ArrayList<String> list) {
+	 public EntriesAdapterT(Context context, ArrayList<String> list) {
 	  selectionList = list;
 	  mInflater = LayoutInflater.from(context);
 	  ctx = context;	  
@@ -44,24 +45,22 @@ public class EntriesAdapter extends BaseAdapter {
 	 public View getView(final int position, View convertView, ViewGroup parent) {
 	  final ViewHolder holder;
 	  if (convertView == null) {
-		  convertView = mInflater.inflate(R.layout.sms_entries, null);
+		  convertView = mInflater.inflate(R.layout.tweet_entries, null);
 		  holder = new ViewHolder();
 		  holder.message = (TextView) convertView.findViewById(R.id.message);
-		  holder.send_to = (TextView) convertView.findViewById(R.id.send_to);
 		  holder.status_ic = (ImageView) convertView.findViewById(R.id.status_ic);
 		  convertView.setTag(holder);   	   	  
 	  } else {
 		  holder = (ViewHolder) convertView.getTag();
 	  }
-	  message = selectionList.get(position).split(":")[0];
-	  recipient = selectionList.get(position).split(":")[1];
+	  message = selectionList.get(position);
+	  id = UserFragment.idArray.get(position);
 	  DBAdapter db = new DBAdapter(ctx);
       db.open();
-      Cursor c = db.getAllSEntries();
+      Cursor c = db.getAllTEntries();
       try {
     	  while (c.moveToNext()) {
-    		  if (c.getString(c.getColumnIndex("message")).equals(message)
-       		      && c.getString(c.getColumnIndex("send_to")).equals(recipient)) {	 
+    		  if (c.getString(c.getColumnIndex("my_id")).equals(id)) {	 
     			  active = Boolean.parseBoolean(c.getString(c.getColumnIndex("active")));
        			  break;
        		  }
@@ -71,16 +70,15 @@ public class EntriesAdapter extends BaseAdapter {
        }
        if (active) {
 		  holder.status_ic.setImageResource(R.drawable.status_active);
-	  } else{
+	   } else {
 		  holder.status_ic.setImageResource(R.drawable.status_inactive);		  
-	  }	  holder.message.setText(message);
-	  holder.send_to.setText(recipient);
-	  return convertView;
-	 }
+	   } 	  
+       holder.message.setText(message);
+	   return convertView;
+	  }
 
 	 static class ViewHolder {
 	  TextView message;
-	  TextView send_to;
 	  ImageView status_ic;
 	 }
 	}

@@ -65,9 +65,6 @@ public class MainActivity extends PreferenceActivity {
 		   mEmail.setEnabled(false);	
 		   mEmail.setSummary("Upgrade to Premium today to unlock this feature");
 		}
-	    //Temporary
-		//mEmail.setEnabled(false);	
-		mEmail.setSummary("Coming soon!");
 		   
    		try {
 			new SimpleEula(this).show();

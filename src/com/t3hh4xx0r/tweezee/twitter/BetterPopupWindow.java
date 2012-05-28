@@ -35,6 +35,7 @@ import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.Encryption;
 import com.t3hh4xx0r.tweezee.R;
 import com.t3hh4xx0r.tweezee.TweezeeReceiver;
+import com.t3hh4xx0r.tweezee.email.EmailActivity;
 
 /**
  * This class does most of the work of wrapping the {@link PopupWindow} so it's simpler to use.
@@ -278,6 +279,7 @@ public class BetterPopupWindow {
 			       	 db.deleteTEntry(m);
 			       	 db.close();
 			       	 this.dismiss();
+			       	 
 			         Intent mi = new Intent(v.getContext(), TwitterActivity.class);
 			         mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			         Bundle b = new Bundle();
@@ -324,6 +326,7 @@ public class BetterPopupWindow {
 			       		e1.printStackTrace();
 			       	}
 			     c.close();
+			     db.updateActiveT(user, message, true);
 			     db.close();		       	 
 		       	 
 		       	 if (time.length() < 2) {
@@ -332,13 +335,32 @@ public class BetterPopupWindow {
 		       		 setupTimedTweet(this.anchor.getContext(), user, message, days, mentions, time, getID(user, message));
 		       	 }
 		       	 this.dismiss();
+		       	 
+			     Intent mi = new Intent(v.getContext(), TwitterActivity.class);
+			     mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			     Bundle b = new Bundle();
+			     b.putInt("pos", position);
+			     mi.putExtras(b);
+			     this.anchor.getContext().startActivity(mi); 
 	        }
   	    	
  	    	if(v.getId() == R.id.stop) {   	    		
 			     String user = TwitterActivity.users[place].getName();
 			     killTweet(getID(user, message));
 		       	 this.dismiss();
- 	    	}
+
+			     DBAdapter db = new DBAdapter(this.anchor.getContext());
+			     db.open();		       	 
+			     db.updateActiveT(user, message, false);
+			     db.close();
+			     
+			     Intent mi = new Intent(v.getContext(), TwitterActivity.class);
+			     mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			     Bundle b = new Bundle();
+			     b.putInt("pos", position);
+			     mi.putExtras(b);
+			     this.anchor.getContext().startActivity(mi); 
+ 	    	} 	    		    	
  	    }
 
 		private int getID(String user, String message) {
@@ -362,7 +384,6 @@ public class BetterPopupWindow {
 		}
 
 		public void killTweet(int id) {
-			Toast.makeText(this.anchor.getContext(), Integer.toString(id), Toast.LENGTH_LONG).show();
 	    	Intent myIntent = new Intent(this.anchor.getContext(), TweezeeReceiver.class);
 	        myIntent.setAction(Integer.toString(id));
 	        myIntent.setData(Uri.parse(Integer.toString(id)));

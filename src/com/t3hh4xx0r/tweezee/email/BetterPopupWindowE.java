@@ -291,12 +291,13 @@ public class BetterPopupWindowE {
 			       	 db.deleteEEntry(message, recipient);
 			       	 db.close();
 			       	 this.dismiss();
-			         Intent mi = new Intent(v.getContext(), EmailActivity.class);
-			         mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			         Bundle b = new Bundle();
-			         b.putInt("pos", position);
-			         mi.putExtras(b);
-			         this.anchor.getContext().startActivity(mi);
+
+				     Intent mi = new Intent(v.getContext(), EmailActivity.class);
+				     mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				     Bundle b = new Bundle();
+				     b.putInt("pos", position);
+				     mi.putExtras(b);
+				     this.anchor.getContext().startActivity(mi);			       	 
   				}
   				this.dismiss();
 	        } 
@@ -325,20 +326,39 @@ public class BetterPopupWindowE {
 			       		e1.printStackTrace();
 			       	}
 			     c.close();
+			     db.updateActiveE(Encryption.encryptString(user, Encryption.KEY), message, true);
 			     db.close();		       	 
 		       	 
 		       	 if (time.length() < 2) {
 					   setupIntervalEmail(this.anchor.getContext(), Encryption.encryptString(user, Encryption.KEY), passD, subject, message, interval, days, recipient, getID(user, message));	        	
 		       	 } else {
-			      	   setupTimedSMS(this.anchor.getContext(), Encryption.encryptString(user, Encryption.KEY), passD, subject, message, days, recipient, time, getID(user, message));	        	
+			      	   setupTimedEmail(this.anchor.getContext(), Encryption.encryptString(user, Encryption.KEY), passD, subject, message, days, recipient, time, getID(user, message));	        	
 		       	 }
 		       	 this.dismiss();
-	        }
+		       	 
+			     Intent mi = new Intent(v.getContext(), EmailActivity.class);
+			     mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			     Bundle b = new Bundle();
+			     b.putInt("pos", position);
+			     mi.putExtras(b);
+			     this.anchor.getContext().startActivity(mi);		       	 
+		    }
   	    	
  	    	if(v.getId() == R.id.stop) {   	    		
 			    killEmail(getID(user, message));
+			    DBAdapter db = new DBAdapter(this.anchor.getContext());
+			    db.open();
+			    db.updateActiveE(Encryption.encryptString(user, Encryption.KEY), message, false);
+			    db.close();
  	    		this.dismiss();
- 	    	}
+
+			    Intent mi = new Intent(v.getContext(), EmailActivity.class);
+			    mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			    Bundle b = new Bundle();
+			    b.putInt("pos", position);
+			    mi.putExtras(b);
+			    this.anchor.getContext().startActivity(mi);
+ 	    	} 	    
  	    }
 
 		private int getID(String user, String message) {
@@ -402,7 +422,7 @@ public class BetterPopupWindowE {
 	        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Integer.parseInt(wait)*60000, pendingIntent);					
 		}
 		
-		private void setupTimedSMS(Context c, String username, String pass, String subject, String message, String day, String recipients, String timeValue, int id) {
+		private void setupTimedEmail(Context c, String username, String pass, String subject, String message, String day, String recipients, String timeValue, int id) {
 	    	Toast.makeText(c, "New email saved, "+message, Toast.LENGTH_LONG).show();
 	       	final DBAdapter db = new DBAdapter(c);
 	    	db.open();

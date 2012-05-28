@@ -12,26 +12,6 @@
         android:layout_alignParentTop="true"
         android:text="Message"
         android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/message"
-        android:text="Send to:"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:id="@+id/send_to"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/textView2"
-        android:layout_toRightOf="@+id/textView2"
-        android:paddingLeft="5dp"
-        android:text="Recipient"
-        android:textColor="@color/ics"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
     
     <ImageView
         android:id="@+id/status_ic"

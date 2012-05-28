@@ -27,6 +27,8 @@ import android.widget.ListView;
 import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
+import com.t3hh4xx0r.tweezee.sms.EntriesAdapter;
+import com.t3hh4xx0r.tweezee.sms.SMSActivity;
 
 public class UserFragment extends ListFragment {
 	  Context ctx;
@@ -34,9 +36,9 @@ public class UserFragment extends ListFragment {
 	  Button mAddEntry;
 	  int pos; 
 	  public ArrayList<String> entryArray;
-	  static ArrayAdapter<String> a;
+	  static EntriesAdapterT a;
 	  ListView listView;
-	  
+	  public static ArrayList<String> idArray;	  
 	  @Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		    ctx = container.getContext();
@@ -160,8 +162,10 @@ public class UserFragment extends ListFragment {
 	
 	void populateList() {
     	entryArray.clear();
-
-		a = new ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, entryArray);
+  	  	idArray = new ArrayList<String>();
+  	  	idArray.clear();
+  	  	
+		a = new EntriesAdapterT(ctx, entryArray);
 		setListAdapter(a);
 
 		DBAdapter db = new DBAdapter(ctx);
@@ -174,6 +178,7 @@ public class UserFragment extends ListFragment {
 	  					sb.append(c.getString(1));
 	  					sb.append(" "+c.getString(c.getColumnIndex("mentions")));
 	  					entryArray.add(sb.toString());
+	  					idArray.add(c.getString(c.getColumnIndex("my_id")));
 	       			}
 	       		}
 	       	 } catch (Exception e) {}
