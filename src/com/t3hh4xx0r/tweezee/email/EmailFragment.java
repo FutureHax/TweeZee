@@ -128,12 +128,14 @@ public class EmailFragment extends ListFragment {
 			ArrayList<String> mDays = new ArrayList<String>();
 			ArrayList<String> mTimes = new ArrayList<String>();
 			ArrayList<String> mBoots = new ArrayList<String>();
+			ArrayList<String> mDates = new ArrayList<String>();
 			String r = null;
 			String e = null;
 			String i = null;
 			String d = null;
 			String t = null;
 			String s = null;
+			String date = null;
 			String boot = null;
 			DBAdapter db = new DBAdapter(ctx);
 		    db.open();
@@ -148,6 +150,7 @@ public class EmailFragment extends ListFragment {
 		       				mDays.add(c.getString(c.getColumnIndex("send_day")));
 		       				mTimes.add(c.getString(c.getColumnIndex("send_time")));
 		       				mBoots.add(c.getString(c.getColumnIndex("start_boot")));
+		       				mDates.add(c.getString(c.getColumnIndex("send_date")));
 		       			}
 		       		}
 		       	 } catch (Exception e1) {
@@ -161,6 +164,7 @@ public class EmailFragment extends ListFragment {
 		    i = mIntervals.get(p);
 		    d = mDays.get(p);
 		    t = mTimes.get(p);
+		    date = mDates.get(p);
 		    boot = mBoots.get(p);
             Bundle b = new Bundle();
             b.putBoolean("editing", true);
@@ -173,6 +177,9 @@ public class EmailFragment extends ListFragment {
             b.putString("boot", boot);
             if (t.length()>1) {
             	b.putString("time", t);
+            }
+            if (date.length()>1) {
+            	b.putString("date", date);
             }
             Intent mi = new Intent(v.getContext(), EntryAddE.class);
             mi.putExtras(b);

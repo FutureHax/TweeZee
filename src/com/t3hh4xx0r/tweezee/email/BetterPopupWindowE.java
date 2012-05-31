@@ -280,6 +280,7 @@ public class BetterPopupWindowE {
   					String[] m = new String[] {Encryption.encryptString(message, Encryption.KEY)};
   					db.deleteEUser(m);
   					db.close();
+  					deleteAllBy(Encryption.encryptString(message, Encryption.KEY));
 			        EmailActivity.accounts = ArrayUtils.remove(EmailActivity.accounts, position); 
 			        Intent mi = new Intent(v.getContext(), EmailAcctManager.class);
 			        mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -308,6 +309,7 @@ public class BetterPopupWindowE {
 			     String days = "";
 			     String passD = "";
 			     String subject = "";
+			     String date = "";
 			     
 			     DBAdapter db = new DBAdapter(this.anchor.getContext());
 			     db.open();
@@ -319,7 +321,9 @@ public class BetterPopupWindowE {
 			       				interval = c.getString(c.getColumnIndex("send_wait"));
 			       				days = c.getString(c.getColumnIndex("send_day"));
 			       				subject = c.getString(c.getColumnIndex("subject"));
+			       				date = c.getString(c.getColumnIndex("send_date"));
 			       				passD = EmailActivity.accounts[position].getPassword();
+			       				break;
 					       	 }
 			       		}
 			       	} catch (Exception e1) {
@@ -330,9 +334,9 @@ public class BetterPopupWindowE {
 			     db.close();		       	 
 		       	 
 		       	 if (time.length() < 2) {
-					   setupIntervalEmail(this.anchor.getContext(), Encryption.encryptString(user, Encryption.KEY), passD, subject, message, interval, days, recipient, getID(user, message));	        	
+					   setupIntervalEmail(this.anchor.getContext(), Encryption.encryptString(user, Encryption.KEY), passD, subject, message, interval, days, recipient, getID(user, message), date);	        	
 		       	 } else {
-			      	   setupTimedEmail(this.anchor.getContext(), Encryption.encryptString(user, Encryption.KEY), passD, subject, message, days, recipient, time, getID(user, message));	        	
+			      	   setupTimedEmail(this.anchor.getContext(), Encryption.encryptString(user, Encryption.KEY), passD, subject, message, days, recipient, time, getID(user, message), date);	        	
 		       	 }
 		       	 this.dismiss();
 		       	 
@@ -379,6 +383,30 @@ public class BetterPopupWindowE {
 		    return id;
 		}
 
+		private void deleteAllBy(String user) {	
+	    	final DBAdapter db = new DBAdapter(this.anchor.getContext());
+	    	db.open();
+	        Cursor cu = db.getAllEEntries();
+		    try {
+		       	while (cu.moveToNext()) {
+		       		if (cu.getString(cu.getColumnIndex("username")).equals(user)) {
+		       			String id = cu.getString(cu.getColumnIndex("my_id"));
+		       			String my_message = cu.getString(cu.getColumnIndex("message"));
+		       			String recipient = cu.getString(cu.getColumnIndex("send_to"));
+		    		    Intent myIntent = new Intent(this.anchor.getContext(), TweezeeReceiver.class);
+		    		    myIntent.setAction(id);
+		    		    myIntent.setData(Uri.parse(id));
+		    		    PendingIntent pendingIntent = PendingIntent.getBroadcast(this.anchor.getContext(), Integer.parseInt(id), myIntent, 0);
+		    		    AlarmManager alarmManager = (AlarmManager)this.anchor.getContext().getSystemService(Context.ALARM_SERVICE);
+		    		    alarmManager.cancel(pendingIntent);	
+		    		    db.deleteEEntry(my_message, recipient);
+		       		}
+		       	}
+		    } catch (Exception e) {}
+		    cu.close();
+		    db.close();
+		}
+		
 		public void killEmail(int id) {
 	    	Intent myIntent = new Intent(this.anchor.getContext(), TweezeeReceiver.class);
 	        myIntent.setAction(Integer.toString(id));
@@ -388,7 +416,7 @@ public class BetterPopupWindowE {
 	        alarmManager.cancel(pendingIntent);		
 		}
 		
-		private void setupIntervalEmail(Context c, String username, String pass, String subject, String message, String wait, String day, String recipients, int id) {
+		private void setupIntervalEmail(Context c, String username, String pass, String subject, String message, String wait, String day, String recipients, int id, String date) {
 	    	Toast.makeText(c, "New email saved, "+message, Toast.LENGTH_LONG).show();
 	       	final DBAdapter db = new DBAdapter(c);
 	    	db.open();
@@ -413,16 +441,24 @@ public class BetterPopupWindowE {
 	    	myIntent.putExtra("day", day);
 	    	myIntent.putExtra("pass", pass);
 	    	myIntent.putExtra("subject", subject);
+	    	if(date.length()>4) {
+		    	myIntent.putExtra("dated", true);
+	    	}
 	        myIntent.setAction(Integer.toString(id));
 	        myIntent.setData(Uri.parse(Integer.toString(id)));   
 	        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, 0);
 	        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
 	        Calendar calendar = Calendar.getInstance();
 	        calendar.setTimeInMillis(System.currentTimeMillis());
+	        if(date.length()>4) {
+	            calendar.setTimeZone(TimeZone.getDefault());
+	        	calendar.set(Calendar.MONTH, Integer.parseInt(date.split("-")[0]));
+	        	calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.split("-")[1]));
+	        } 
 	        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Integer.parseInt(wait)*60000, pendingIntent);					
 		}
 		
-		private void setupTimedEmail(Context c, String username, String pass, String subject, String message, String day, String recipients, String timeValue, int id) {
+		private void setupTimedEmail(Context c, String username, String pass, String subject, String message, String day, String recipients, String timeValue, int id, String date) {
 	    	Toast.makeText(c, "New email saved, "+message, Toast.LENGTH_LONG).show();
 	       	final DBAdapter db = new DBAdapter(c);
 	    	db.open();
@@ -450,6 +486,9 @@ public class BetterPopupWindowE {
 	    	myIntent.putExtra("day", day);
 	    	myIntent.putExtra("pass", pass);
 	    	myIntent.putExtra("subject", subject);      
+	    	if(date.length()>4) {
+		    	myIntent.putExtra("dated", true);
+	    	}
 	    	PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, 0);
 	        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
 	        Calendar calendar = Calendar.getInstance();
@@ -457,6 +496,11 @@ public class BetterPopupWindowE {
 	        calendar.setTimeZone(TimeZone.getDefault());
 	        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeValue.split(":")[0]));
 	        calendar.set(Calendar.MINUTE, Integer.parseInt(timeValue.split(":")[1]));
+	        if(date.length()>4) {
+	            calendar.setTimeZone(TimeZone.getDefault());
+	        	calendar.set(Calendar.MONTH, Integer.parseInt(date.split("-")[0]));
+	        	calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.split("-")[1]));	        	
+	        } 
 	        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);					
 		}	
 	}

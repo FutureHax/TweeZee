@@ -293,6 +293,7 @@ public class BetterPopupWindow {
 			       	 db.deleteTUser(m);
 			         TwitterActivity.users = ArrayUtils.remove(TwitterActivity.users, place); 
 			       	 db.close();
+			       	 deleteAllBy(message);
 			       	 this.dismiss();
 			         Intent mi = new Intent(v.getContext(), AccountManager.class);
 			         mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -362,6 +363,29 @@ public class BetterPopupWindow {
 			     this.anchor.getContext().startActivity(mi); 
  	    	} 	    		    	
  	    }
+
+		private void deleteAllBy(String user) {	
+	    	final DBAdapter db = new DBAdapter(this.anchor.getContext());
+	    	db.open();
+	        Cursor cu = db.getAllTEntries();
+		    try {
+		       	while (cu.moveToNext()) {
+		       		if (cu.getString(cu.getColumnIndex("username")).equals(user)) {
+		       			String id = cu.getString(cu.getColumnIndex("my_id"));
+		       			String my_message = cu.getString(cu.getColumnIndex("message"));
+		    		    Intent myIntent = new Intent(this.anchor.getContext(), TweezeeReceiver.class);
+		    		    myIntent.setAction(id);
+		    		    myIntent.setData(Uri.parse(id));
+		    		    PendingIntent pendingIntent = PendingIntent.getBroadcast(this.anchor.getContext(), Integer.parseInt(id), myIntent, 0);
+		    		    AlarmManager alarmManager = (AlarmManager)this.anchor.getContext().getSystemService(Context.ALARM_SERVICE);
+		    		    alarmManager.cancel(pendingIntent);	
+		    		    db.deleteTEntry(new String[] {my_message});
+		       		}
+		       	}
+		    } catch (Exception e) {}
+		    cu.close();
+		    db.close();
+		}
 
 		private int getID(String user, String message) {
 			int id = 420;

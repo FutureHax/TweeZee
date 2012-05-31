@@ -37,7 +37,7 @@ public class EmailActivity extends FragmentActivity {
     ViewPager pager;
     static int p;
     public static Accounts[] accounts;
-    public static int account;    
+    public int account;    
 	private final static int SIGN_IN = 0;
 	public ArrayList<String> entryArray;
 	int place;

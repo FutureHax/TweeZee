@@ -18,6 +18,7 @@ import twitter4j.auth.AccessToken;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
@@ -47,6 +48,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
@@ -95,10 +97,15 @@ public class EntryAdd extends Activity {
 	CheckBox bootCB;
 	SharedPreferences prefs;
 	AccessToken aToken;
-
+	TextView datePre;
+	TextView datePickerTV;
+	CheckBox dateCB;
+	boolean date;
 	static final int ID_TIMEPICKER = 0;
-	private int hour, minute;
-	
+	static final int ID_DATEPICKER = 1;
+	private int hour, minute, month, day, year;
+	String dateValue = "";
+
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.add_entry);
@@ -129,7 +136,19 @@ public class EntryAdd extends Activity {
 		for (int i=0;i<daysOfWeek.length;i++) {
 			selected.add(false);
 		}
-	 
+		datePickerTV = (TextView) findViewById(R.id.dateTv);
+		datePickerTV.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				final Calendar c = Calendar.getInstance();
+				month = c.get(Calendar.MONTH);
+				day = c.get(Calendar.DAY_OF_MONTH);
+				year = c.get(Calendar.YEAR);
+				showDialog(ID_DATEPICKER);
+			}
+		});
+		datePre = (TextView) findViewById(R.id.date_pre);
+		datePre.setVisibility(View.GONE);	 
 		timePicker = (TextView)findViewById(R.id.timePicker);
 		timePicker.setOnClickListener(new OnClickListener() {
 			@Override
@@ -161,6 +180,28 @@ public class EntryAdd extends Activity {
 					timePre.setVisibility(View.GONE);
 					intervalTV.setVisibility(View.VISIBLE);
 					timePre.setText("No time set.");
+				}
+			}			
+		});
+		dateCB = (CheckBox)findViewById(R.id.dateCB);
+		dateCB.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				if (isChecked) {
+					date = true;
+					datePickerTV.setVisibility(View.VISIBLE);
+					datePre.setVisibility(View.VISIBLE);					
+					tV.setVisibility(View.GONE);
+					dPreview.setVisibility(View.GONE);
+					datePre.setText(dateValue);
+				} else {
+					date = false;
+					tV.setVisibility(View.VISIBLE);
+					dPreview.setVisibility(View.VISIBLE);
+					datePickerTV.setVisibility(View.GONE);
+					datePre.setVisibility(View.GONE);
+					datePre.setText("No date set.");
 				}
 			}			
 		});
@@ -272,6 +313,13 @@ public class EntryAdd extends Activity {
         	if (dPre.toString().length()>6) {
         		dPreview.setText(dPre.toString());
         	}
+			date = extras.getString("date") != null;
+			if (date) {
+				dateValue = extras.getString("date");
+			} else {
+				datePre.setVisibility(View.GONE);
+			}
+			dateCB.setChecked(date);
         } else {
     	    selectedDaysOfWeek = new boolean[] {
     	            false,
@@ -450,37 +498,73 @@ public class EntryAdd extends Activity {
 			if (users == null) {
 				users = mPreview.getText().toString();
 			}
-			if (totalC<140) {
-				if (et1.getText().toString().length() != 0 && et3.getText().toString().length() != 0 && !time) {
-				   final DBAdapter db = new DBAdapter(this);
-		       	   db.open();
-		           if (!extras.getBoolean("editing", false)) {
-		        	    int my_id = getReqID();
-			       		db.insertTEntry(TwitterActivity.users[p].getName(), et1.getText().toString(), et3.getText().toString(), myDaysBooleans, users, "", Boolean.toString(startBoot), my_id);
-					    setupIntervalTweet(p,this,usern,et1.getText().toString(),et3.getText().toString(),myDaysBooleans,users, false, null, my_id);	        	
-		           } else {
-		        	   db.updateTEntry(TwitterActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et3.getText().toString(), myDaysBooleans, "", Boolean.toString(startBoot));
-				       setupIntervalTweet(p,this,usern,et1.getText().toString(),et3.getText().toString(),myDaysBooleans,users, true, extras.getString("message"), 420);	        	
-		           }
-			       db.close();
-		           finish();
-				} else {
-					if (time && timeValue != "" && timeValue != null) {
-						   final DBAdapter db = new DBAdapter(this);
-				       	   db.open();
-				           if (!extras.getBoolean("editing", false)) {
-				        	    int my_id = getReqID();
-					       		db.insertTEntry(TwitterActivity.users[p].getName(), et1.getText().toString(), et3.getText().toString(), myDaysBooleans, users, timeValue, Boolean.toString(startBoot), my_id);
-							    setupTimedTweet(p,this,usern,et1.getText().toString(),myDaysBooleans,users, timeValue, false, null, my_id);	        	
-				           } else {
-				        	   db.updateTEntry(TwitterActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et3.getText().toString(), myDaysBooleans, timeValue, Boolean.toString(startBoot));
-						       setupTimedTweet(p,this,usern,et1.getText().toString(),myDaysBooleans,users, timeValue, true, extras.getString("message"), 420);	        	
-				           }
-				       	   db.close();
-				           finish();
-					} else {
-						Toast.makeText(this, "Do not leave any fields blank.", Toast.LENGTH_LONG).show();
+			final DBAdapter db = new DBAdapter(this);
+	       	db.open();
+    	    int my_id = getReqID();
+			if (totalC<140) {		       	
+				if (et1.getText().toString().length() != 0) {
+					if (time) {
+						if (timeValue == null || timeValue.equals("")) {
+							Toast.makeText(this, "Do not leave any fields blank.", Toast.LENGTH_LONG).show();
+						} else {
+							if (date) {
+								if (dateValue == null || dateValue.equals("")) {
+									Toast.makeText(this, "Do not leave any fields blank. dateValue", Toast.LENGTH_LONG).show();								
+								} else{
+									if (!extras.getBoolean("editing", false)) {
+							       		db.insertTEntry(TwitterActivity.users[p].getName(), et1.getText().toString(), et3.getText().toString(), "false,false,false,false,false,false,false,", users, timeValue, Boolean.toString(startBoot), my_id, dateValue);
+							       		setupTimedTweet(this,usern,et1.getText().toString(),myDaysBooleans,users, timeValue, false, my_id, dateValue);	        	
+									    finish();
+								    } else {
+								    	db.updateTEntry(TwitterActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et3.getText().toString(), myDaysBooleans, timeValue, Boolean.toString(startBoot), dateValue);
+									    setupTimedTweet(this,usern,et1.getText().toString(),myDaysBooleans,users, timeValue, true, 420, dateValue);	        	
+									    finish();
+								    }
+								}
+							} else {
+								if (!extras.getBoolean("editing", false)) {
+						       		db.insertTEntry(TwitterActivity.users[p].getName(), et1.getText().toString(), et3.getText().toString(), "false,false,false,false,false,false,false,", users, timeValue, Boolean.toString(startBoot), my_id, "");
+								    setupTimedTweet(this,usern,et1.getText().toString(),myDaysBooleans,users, timeValue, false, my_id, null);	        	
+								    finish();
+								} else {
+							    	db.updateTEntry(TwitterActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et3.getText().toString(), myDaysBooleans, timeValue, Boolean.toString(startBoot), "");
+								    setupTimedTweet(this,usern,et1.getText().toString(),myDaysBooleans,users, timeValue, true, 420, null);	        	
+								    finish();
+					           }	
+							}
+						}
+					} else {	
+						if (et3.getText().toString().length() == 0) {
+							Toast.makeText(this, "Do not leave any fields blank.", Toast.LENGTH_LONG).show();
+						} else {
+							if (date) {
+								if (dateValue == null || dateValue.equals("")) {
+									Toast.makeText(this, "Do not leave any fields blank.", Toast.LENGTH_LONG).show();
+								}
+								if (!extras.getBoolean("editing", false)) {
+						       		db.insertTEntry(TwitterActivity.users[p].getName(), et1.getText().toString(), et3.getText().toString(), myDaysBooleans, users, "", Boolean.toString(startBoot), my_id, dateValue);
+ 								    setupIntervalTweet(this,usern,et1.getText().toString(),et3.getText().toString(),myDaysBooleans,users, false, my_id, dateValue);	        	
+									finish();
+								} else {
+ 					        	    db.updateTEntry(TwitterActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et3.getText().toString(), myDaysBooleans, "", Boolean.toString(startBoot), dateValue);
+ 								    setupIntervalTweet(this,usern,et1.getText().toString(),et3.getText().toString(),myDaysBooleans,users, true, 420, dateValue);	        	
+						        	finish();
+					           }
+							} else {
+								if (!extras.getBoolean("editing", false)) {
+						       		db.insertTEntry(TwitterActivity.users[p].getName(), et1.getText().toString(), et3.getText().toString(), myDaysBooleans, users, "", Boolean.toString(startBoot), my_id, "");
+ 								    setupIntervalTweet(this,usern,et1.getText().toString(),et3.getText().toString(),myDaysBooleans,users, false, my_id, null);	        	
+						        	finish();
+								} else {
+ 					        	    db.updateTEntry(TwitterActivity.users[p].getName(), et1.getText().toString(), users, extras.getString("message"), et3.getText().toString(), myDaysBooleans, "", Boolean.toString(startBoot), "");
+ 								    setupIntervalTweet(this,usern,et1.getText().toString(),et3.getText().toString(),myDaysBooleans,users, true, 420, null);	        	
+							      	finish();
+						        }	
+							}
+						}
 					}
+				} else {
+					Toast.makeText(this, "Do not leave any fields blank.", Toast.LENGTH_LONG).show();
 				}
 			} else {
 				new AlertDialog.Builder(this)
@@ -503,7 +587,7 @@ public class EntryAdd extends Activity {
 		return false;
 	}
 
-	private void setupIntervalTweet(int position, Context c, String username, String message, String wait, String day, String mentions, boolean updating, String og, int id) {
+	private void setupIntervalTweet(Context c, String username, String message, String wait, String day, String mentions, boolean updating, int id, String date) {
     	Toast.makeText(c, "New tweet saved, "+message, Toast.LENGTH_LONG).show();
        	final DBAdapter db = new DBAdapter(this);
     	db.open();
@@ -520,14 +604,16 @@ public class EntryAdd extends Activity {
         	} catch (Exception e) {}
 	    	cu.close();
     	}
-    	db.close();
     	Intent myIntent = new Intent(c, TweezeeReceiver.class);
     	myIntent.putExtra("type", "tweet");
     	myIntent.putExtra("username", username);
     	myIntent.putExtra("message", message);
     	myIntent.putExtra("mentions", mentions);
     	myIntent.putExtra("day", day);
-        myIntent.setAction(Integer.toString(id));
+    	if (date != null) {
+    		myIntent.putExtra("dated", true);
+    	}
+    	myIntent.setAction(Integer.toString(id));
         myIntent.setData(Uri.parse(Integer.toString(id)));   
         PendingIntent pendingIntent;
         if (updating) {
@@ -537,11 +623,22 @@ public class EntryAdd extends Activity {
         }        
         AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
         Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getDefault());
         calendar.setTimeInMillis(System.currentTimeMillis());
+        if (date != null) {
+        	calendar.set(Calendar.MONTH, Integer.parseInt(date.split("-")[0])-1);
+        	calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.split("-")[1]));
+        	calendar.set(Calendar.HOUR, 0);
+        	calendar.set(Calendar.MINUTE, 0);        	
+        	calendar.set(Calendar.SECOND, 0);
+        	calendar.set(Calendar.MILLISECOND, 0);
+        } 
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Integer.parseInt(wait)*60000, pendingIntent);					
+        db.updateActiveT(username, message, true);
+    	db.close();
 	}
 
-	private void setupTimedTweet(int position, Context c, String username, String message, String day, String mentions, String timeValue, boolean updating, String og, int id) {
+	private void setupTimedTweet(Context c, String username, String message, String day, String mentions, String timeValue, boolean updating, int id, String date) {
     	Toast.makeText(c, "New tweet saved, "+message, Toast.LENGTH_LONG).show();
        	final DBAdapter db = new DBAdapter(this);
     	db.open();
@@ -558,7 +655,6 @@ public class EntryAdd extends Activity {
         	} catch (Exception e) {}
 	    	cu.close();
     	}  	
-    	db.close();
         Intent myIntent = new Intent(c, TweezeeReceiver.class);        
         myIntent.setAction(Integer.toString(id));
         myIntent.setData(Uri.parse(Integer.toString(id)));   
@@ -567,6 +663,9 @@ public class EntryAdd extends Activity {
     	myIntent.putExtra("message", message);
     	myIntent.putExtra("mentions", mentions);
     	myIntent.putExtra("day", day);        
+    	if (date != null) {
+    		myIntent.putExtra("dated", true);
+    	}
     	PendingIntent pendingIntent;
         if (updating) {
         	pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -579,7 +678,15 @@ public class EntryAdd extends Activity {
         calendar.setTimeZone(TimeZone.getDefault());
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeValue.split(":")[0]));
         calendar.set(Calendar.MINUTE, Integer.parseInt(timeValue.split(":")[1]));
+    	calendar.set(Calendar.SECOND, 0);
+    	calendar.set(Calendar.MILLISECOND, 0);
+    	if (date != null) {
+        	calendar.set(Calendar.MONTH, Integer.parseInt(date.split("-")[0])-1);
+        	calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.split("-")[1]));
+        } 
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);					
+        db.updateActiveT(username, message, true);
+    	db.close();
 	}
 	
 	private int getReqID() {
@@ -593,10 +700,25 @@ public class EntryAdd extends Activity {
 		switch(id){
 	    case ID_TIMEPICKER:
 	    	return new TimePickerDialog(this, timeSetListener, hour, minute, false); 
+	    case ID_DATEPICKER:	    	
+	    	return new DatePickerDialog(this, dateSetListener, year, month, day);
 	    default:
-	    	return null;
+	    	return null;	    	
 	    }
 	}
+	
+	private DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
+		@Override
+		public void onDateSet(DatePicker view, int Year, int Month,
+				int Day) {
+			StringBuilder sB = new StringBuilder();
+			sB.append(Month+1).append("-");
+			sB.append(Day).append("-");
+			sB.append(Year);
+			dateValue = sB.toString();
+			datePre.setText(dateValue);			
+		}
+	};
 	  
 	private TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener(){	  
 		  @Override

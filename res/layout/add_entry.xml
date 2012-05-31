@@ -79,7 +79,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/message"
-        android:hint="Hello World from TweeZee!" >
+        android:hint="Hello World from Ultimate Scheduler!" >
     </EditText>
 
 
@@ -126,17 +126,34 @@
         android:scaleType="fitXY"
         android:src="@drawable/test" />
 
-    <TextView
+    <CheckBox
+        android:id="@+id/dateCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/div4"
+        android:text="Send on specific date" />    
+
+   <ImageView
+        android:id="@+id/div98"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/dateCB"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />
+   
+   <TextView
         android:id="@+id/dayTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/div4"
+        android:layout_below="@+id/div98"
         android:paddingLeft="10dp"
         android:paddingTop="3dp"
         android:text="Day Picker"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-    
+      
 	<TextView
         android:id="@+id/day_pre"
         android:layout_width="wrap_content"
@@ -150,11 +167,46 @@
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <ImageView
-        android:id="@+id/div2"
+        android:id="@+id/div96"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/day_pre"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />
+    	
+   <TextView
+        android:id="@+id/dateTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/day_pre"
+        android:paddingLeft="10dp"
+        android:paddingTop="3dp"
+        android:text="Date Picker"
+        android:visibility="gone"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+       
+	<TextView
+        android:id="@+id/date_pre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/dateTv"
+        android:paddingLeft="10dp"
+        android:paddingTop="3dp"
+        android:text="No date selected"
+        android:textColor="@color/ics"
+        android:visibility="gone"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <ImageView
+        android:id="@+id/div2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/date_pre"
         android:paddingTop="3dp"
         android:scaleType="fitXY"
         android:src="@drawable/test" />

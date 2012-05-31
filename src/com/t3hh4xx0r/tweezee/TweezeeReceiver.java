@@ -3,6 +3,10 @@ package com.t3hh4xx0r.tweezee;
 import java.util.Calendar;
 import java.util.Random;
 
+import javax.mail.AuthenticationFailedException;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
@@ -39,6 +43,8 @@ public class TweezeeReceiver extends BroadcastReceiver {
     private String recipient;
     private String pass;
     private String subject;
+    private boolean date;
+    private boolean sendError = false;
     Twitter t;
     
     SharedPreferences prefs;
@@ -58,7 +64,9 @@ public class TweezeeReceiver extends BroadcastReceiver {
 
 		message = i.getStringExtra("message");
 		day = i.getStringExtra("day");
-		
+		date = i.getBooleanExtra("dated", false);
+
+		Log.d("ULTIMATE SCHEDULER", "RECEIVED "+type+":"+message+". "+Boolean.toString(date)+ " : "+day);
 		if (type.equals("tweet")) {
 			username = i.getStringExtra("username");
 			mentions = i.getStringExtra("mentions").replaceAll(",", "");
@@ -82,38 +90,47 @@ public class TweezeeReceiver extends BroadcastReceiver {
 	}
 
     private void sendEmail() {
-      	 try {
-    	     if (day.split(",")[getcDay()-1].equals("true")) {
-    	         try {   
-    	             GmailSender sender = new GmailSender(username, pass);
-    	             sender.sendMail(subject,   
-    	                     message,   
-    	                     username,   
-    	                     recipient);   
-    	         } catch (Exception e) {   
-    	         	e.printStackTrace();
-    	         }			        			       			          
-    	       	 if (prefs.getBoolean("notify", true)) {
-        			 if (!prefs.getBoolean("notifyIntrusive", true)) {
-        				 mHandler.post(new Runnable() {
-        					 @Override
-        					 public void run() {
-        						 Toast.makeText(ctx, message, Toast.LENGTH_LONG).show();
-        					 }
-        				 });
-        			 } else{
-    	    			 alertE(message, ctx);
-        			 }
-    	       	 }
-    	     }
-    	 } catch (Exception e) {
-    		 e.printStackTrace();
-    	 }
+      	 if (day.split(",")[getcDay()-1].equals("true") || date) {
+		     GmailSender sender = new GmailSender(username, pass);
+		     try {
+				sender.sendMail(subject,   
+					         message,   
+					         username,   
+					         recipient);
+			} catch (AddressException e) {
+				sendError = true;
+			} catch (AuthenticationFailedException e) {
+				sendError = true;
+			} catch (MessagingException e) {
+				sendError = true;
+			}  
+		     if (!sendError) {
+		       	 if (prefs.getBoolean("notify", true)) {
+					 if (!prefs.getBoolean("notifyIntrusive", true)) {
+						 mHandler.post(new Runnable() {
+							 @Override
+							 public void run() {
+								 Toast.makeText(ctx, message, Toast.LENGTH_LONG).show();
+							 }
+						 });
+					 } else{
+		    			 alertE(message, ctx);
+					 }
+		       	 }        	    	 
+		     } else {
+				 mHandler.post(new Runnable() {
+					 @Override
+					 public void run() {
+						 Toast.makeText(ctx, "Error while sending, "+message, Toast.LENGTH_LONG).show();
+					 }
+				 });
+		     } 		        			       			          
+		 }
 	}
 
 	private void sendSMS() {
    	 try {
-	     if (day.split(",")[getcDay()-1].equals("true")) {
+	     if (day.split(",")[getcDay()-1].equals("true") || date) {
 		     Intent i = new Intent(ctx, TweezeeReceiver.class);
              i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		     PendingIntent pi = PendingIntent.getActivity(ctx, 0, i, 0);  
@@ -147,7 +164,7 @@ public class TweezeeReceiver extends BroadcastReceiver {
 	     }
 	     t.setOAuthAccessToken(aToken);
 		    	 try {
-				     if (day.split(",")[getcDay()-1].equals("true")) {
+				     if (day.split(",")[getcDay()-1].equals("true") || date) {
 				    	 if (prefs.getBoolean("direct", false)) {
 				    		 t.updateStatus(mentions+" "+message+" "+mentions+" "+getRandom());
 				    	 } else {	

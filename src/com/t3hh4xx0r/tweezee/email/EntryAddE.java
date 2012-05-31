@@ -10,6 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
@@ -24,6 +25,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,6 +34,7 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
@@ -56,17 +59,22 @@ public class EntryAddE extends Activity {
 	Bundle extras;
 	TextView dayPre;
 	TextView dayPickerTV;
+	TextView datePre;
+	TextView datePickerTV;
 	String[] daysOfWeek;
 	ArrayList<Boolean> selected;
 	StringBuilder selectedDays;
 	String myDaysBooleans;
 	boolean[] selectedDaysOfWeek;
 	TextView timePre;
+	boolean date;
 	static final int ID_TIMEPICKER = 0;
-	private int hour, minute;
+	static final int ID_DATEPICKER = 1;
+	private int hour, minute, month, day, year;
 	String timeValue = "";
 	TextView timePicker;
 	CheckBox timeCB;
+	CheckBox dateCB;
 	boolean time = false;
 	TextView countTV;
 	EditText messageET;
@@ -75,6 +83,7 @@ public class EntryAddE extends Activity {
 	CheckBox bootCB;
 	boolean startBoot;
 	String pass;
+	String dateValue;
 	
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -89,6 +98,21 @@ public class EntryAddE extends Activity {
 		usernE = Encryption.encryptString(usern, Encryption.KEY);
 		pass = EmailActivity.accounts[p].getPassword();
 
+		datePickerTV = (TextView) findViewById(R.id.dateTv);
+		datePickerTV.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				final Calendar c = Calendar.getInstance();
+				month = c.get(Calendar.MONTH);
+				day = c.get(Calendar.DAY_OF_MONTH);
+				year = c.get(Calendar.YEAR);
+				showDialog(ID_DATEPICKER);
+			}
+		});
+		datePre = (TextView) findViewById(R.id.date_pre);
+		datePre.setVisibility(View.GONE);
+
+		
 		countTV = (TextView) findViewById(R.id.countTV);
 		messageET = (EditText) findViewById(R.id.messageET);
 		
@@ -96,6 +120,9 @@ public class EntryAddE extends Activity {
 		timePre.setVisibility(View.GONE);
 		dayPre = (TextView)findViewById(R.id.day_pre);
 
+		datePickerTV = (TextView) findViewById(R.id.dateTv);
+		datePre = (TextView) findViewById(R.id.date_pre);
+		datePre.setVisibility(View.GONE);
 		subjectTV = (TextView) findViewById(R.id.subject);
 		subjectET = (EditText) findViewById(R.id.editSubject);
 		
@@ -127,6 +154,16 @@ public class EntryAddE extends Activity {
 			       showDialog(ID_TIMEPICKER);
 			}
 		});
+		datePickerTV.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+			    final Calendar c = Calendar.getInstance();
+			       month = c.get(Calendar.MONTH);
+			       day = c.get(Calendar.DAY_OF_MONTH);
+			       year = c.get(Calendar.YEAR);
+			       showDialog(ID_DATEPICKER);
+			}
+		});
 		
 		timeCB = (CheckBox)findViewById(R.id.timeCB);
 		timeCB.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -151,6 +188,29 @@ public class EntryAddE extends Activity {
 				}
 			}			
 		});
+		dateCB = (CheckBox)findViewById(R.id.dateCB);
+		dateCB.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				if (isChecked) {
+					date = true;
+					datePickerTV.setVisibility(View.VISIBLE);
+					datePre.setVisibility(View.VISIBLE);					
+					dayPickerTV.setVisibility(View.GONE);
+					dayPre.setVisibility(View.GONE);
+					datePre.setText(dateValue);
+				} else {
+					date = false;
+					dayPickerTV.setVisibility(View.VISIBLE);
+					dayPre.setVisibility(View.VISIBLE);
+					datePickerTV.setVisibility(View.GONE);
+					datePre.setVisibility(View.GONE);
+					datePre.setText("No date set.");
+				}
+			}			
+		});
+		
 		bootCB = (CheckBox)findViewById(R.id.bootCB);
 		bootCB.setChecked(startBoot);
 		bootCB.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -208,20 +268,28 @@ public class EntryAddE extends Activity {
 
 	private void checkExtras() {
 	       if (extras.getBoolean("editing", false)) {
+	    	    
 	        	startBoot = Boolean.parseBoolean(extras.getString("boot"));
 	        	bootCB.setChecked(startBoot);
 	        	recipientsMACTV.setText(extras.getString("recipient"));
 				messageET.setText(extras.getString("message"));
 				subjectET.setText(extras.getString("subject"));
 				time = extras.getString("time") != null;
+				date = extras.getString("date") != null;
 				intervalET.setText(extras.getString("interval"));
+				if (date) {
+					dateValue = extras.getString("date");
+				} else {
+					datePre.setVisibility(View.GONE);
+				}
+				dateCB.setChecked(date);
 				if (time) {
 					timeValue = extras.getString("time");
 				} else {
 					timePre.setVisibility(View.GONE);
 				}
 				timeCB.setChecked(time);
-	        	String[] days = extras.getString("days").split(",");
+				String[] days = extras.getString("days").split(",");
 	        	selectedDaysOfWeek = new boolean[] {
 	        			Boolean.parseBoolean(days[0]),
 	        			Boolean.parseBoolean(days[1]),
@@ -272,8 +340,10 @@ public class EntryAddE extends Activity {
 		switch(id){
 	    case ID_TIMEPICKER:
 	    	return new TimePickerDialog(this, timeSetListener, hour, minute, false); 
+	    case ID_DATEPICKER:	    	
+	    	return new DatePickerDialog(this, dateSetListener, year, month, day);
 	    default:
-	    	return null;
+	    	return null;	    	
 	    }
 	}
 
@@ -283,6 +353,18 @@ public class EntryAddE extends Activity {
 		return Integer.parseInt(my_id);
 	}
 	
+	private DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {		
+		@Override
+		public void onDateSet(DatePicker view, int Year, int Month,
+				int Day) {
+			StringBuilder sB = new StringBuilder();
+			sB.append(Month+1).append("-");
+			sB.append(Day).append("-");
+			sB.append(Year);
+			dateValue = sB.toString();
+			datePre.setText(dateValue);			
+		}
+	};
 	private TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener(){	  
 		  @Override
 		  public void onTimeSet(android.widget.TimePicker arg0, int hour, int min) {			  
@@ -306,6 +388,7 @@ public class EntryAddE extends Activity {
             startActivity(intent);
             return true;
         case R.id.save:
+     	    int my_id = getReqID();
 			if (selectedDays != null) {
 				myDaysBooleans = selectedDays.toString();
 			} else {
@@ -315,37 +398,73 @@ public class EntryAddE extends Activity {
 					myDaysBooleans = "false,false,false,false,false,false,false,";
 				}
 			}
-			if (subjectET.getText().toString().length() !=0 && messageET.getText().toString().length() != 0 && recipientsMACTV.getText().toString().length() != 0 && !time) {
-			   final DBAdapter db = new DBAdapter(this);
-	       	   db.open();
-	           if (!extras.getBoolean("editing", false)) {
-	        	   int my_id = getReqID();
-	        	   db.insertEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), "", Boolean.toString(startBoot), my_id);
-				   setupIntervalEmail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), false, null, my_id);	        	
-	           } else {
-	        	   db.updateEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), extras.getString("message"), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), "", Boolean.toString(startBoot));
-				   setupIntervalEmail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), true, extras.getString("message"), 420);	        	
-	           }
-		       db.close();
-	           finish();
-			} else {
-				if (time && timeValue != "" && timeValue != null) {
-				   final DBAdapter db = new DBAdapter(this);
-		       	   db.open();
-		           if (!extras.getBoolean("editing", false)) {
-		        	   int my_id = getReqID();
-			      	   db.insertEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, Boolean.toString(startBoot), my_id);
-			      	   setupTimedSMS(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(),myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, false, null, my_id);	        	
-				   } else {
-				       db.updateEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), extras.getString("message"), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, Boolean.toString(startBoot));
-					   setupTimedSMS(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(), myDaysBooleans,recipientsMACTV.getText().toString(), timeValue, true, extras.getString("message"), 420);	        	
-				   }
-				   db.close();
-				   finish();
-				} else {
-					Toast.makeText(this, "Do not leave any fields blank.", Toast.LENGTH_LONG).show();
+			final DBAdapter db = new DBAdapter(this);
+	       	db.open();
+			if (subjectET.getText().toString().length() !=0 && messageET.getText().toString().length() != 0 && recipientsMACTV.getText().toString().length() != 0) {
+				if (time) {
+					if (timeValue == null || timeValue.equals("")) {
+						Toast.makeText(this, "Do not leave any fields blank.", Toast.LENGTH_LONG).show();
+					} else {
+						if (date) {
+							if (dateValue == null || dateValue.equals("")) {
+								Toast.makeText(this, "Do not leave any fields blank.", Toast.LENGTH_LONG).show();								
+							} else{
+								if (!extras.getBoolean("editing", false)) {
+								   db.insertEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), "false,false,false,false,false,false,false,", recipientsMACTV.getText().toString(), timeValue, dateValue, Boolean.toString(startBoot), my_id);
+								   setupTimedEMail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(),myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, false, my_id, dateValue);	        	
+						      	   finish();
+								} else {
+					        	   db.updateEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), extras.getString("message"), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, Boolean.toString(startBoot), dateValue);
+						      	   setupTimedEMail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(),myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, true, 420, dateValue);	        	
+						      	   finish();
+					           }
+							}
+						} else {
+							if (!extras.getBoolean("editing", false)) {
+					        	   db.insertEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans,recipientsMACTV.getText().toString(), timeValue, "", Boolean.toString(startBoot), my_id);
+						      	   setupTimedEMail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(),myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, false, my_id, null);	        	
+						      	   finish();
+								} else {
+					        	   db.updateEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), extras.getString("message"), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, Boolean.toString(startBoot), "");
+						      	   setupTimedEMail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(),myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, true, 420, null);	        	
+						      	   finish();
+					           }	
+						}
+					}
+				} else {	
+					if (intervalET.getText().toString().equals("")) {
+						Toast.makeText(this, "Do not leave any fields blank.", Toast.LENGTH_LONG).show();
+					} else {
+						if (date) {
+							if (dateValue == null || dateValue.equals("")) {
+								Toast.makeText(this, "Do not leave any fields blank.", Toast.LENGTH_LONG).show();
+							}
+							if (!extras.getBoolean("editing", false)) {
+				        	   db.insertEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), "false,false,false,false,false,false,false,",recipientsMACTV.getText().toString(), "", dateValue, Boolean.toString(startBoot), my_id);
+							   setupIntervalEmail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), false, my_id, dateValue);	        	
+					      	   finish();
+							} else {
+				        	   db.updateEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), extras.getString("message"), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), "", Boolean.toString(startBoot), dateValue);
+							   setupIntervalEmail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), true, 420, dateValue);	        	
+					      	   finish();
+				           }
+						} else {
+							if (!extras.getBoolean("editing", false)) {
+					        	   db.insertEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans,recipientsMACTV.getText().toString(), "",  "", Boolean.toString(startBoot), my_id);
+								   setupIntervalEmail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), false, my_id, null);	        	
+						      	   finish();
+								} else {
+					        	   db.updateEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), extras.getString("message"), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), "", Boolean.toString(startBoot), "");
+								   setupIntervalEmail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), true, 420, null);	        	
+						      	   finish();
+					           }	
+						}
+					}
 				}
+			} else {
+				Toast.makeText(this, "Do not leave any fields blank.", Toast.LENGTH_LONG).show();
 			}
+			db.close();
 			break;
         	default:
 	            return super.onOptionsItemSelected(item);
@@ -353,7 +472,7 @@ public class EntryAddE extends Activity {
 		return false;
 	}
 	
-	private void setupIntervalEmail(Context c, String username, String pass, String subject, String message, String wait, String day, String recipients, boolean updating, String og, int id) {
+	private void setupIntervalEmail(Context c, String username, String pass, String subject, String message, String wait, String day, String recipients, boolean updating, int id, String date) {
     	Toast.makeText(c, "New email saved, "+message, Toast.LENGTH_LONG).show();
        	final DBAdapter db = new DBAdapter(this);
     	db.open();
@@ -377,6 +496,9 @@ public class EntryAddE extends Activity {
     	myIntent.putExtra("day", day);
     	myIntent.putExtra("pass", pass);
     	myIntent.putExtra("subject", subject);
+    	if (date != null) {
+    		myIntent.putExtra("dated", true);
+    	}
         myIntent.setAction(Integer.toString(id));
         myIntent.setData(Uri.parse(Integer.toString(id)));   
         PendingIntent pendingIntent;
@@ -387,13 +509,22 @@ public class EntryAddE extends Activity {
         }        
         AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
         Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getDefault());
         calendar.setTimeInMillis(System.currentTimeMillis());
+        if (date != null) {
+        	calendar.set(Calendar.MONTH, Integer.parseInt(date.split("-")[0])-1);
+        	calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.split("-")[1]));
+        	calendar.set(Calendar.HOUR, 0);
+        	calendar.set(Calendar.MINUTE, 0);  
+        	calendar.set(Calendar.SECOND, 0);
+        	calendar.set(Calendar.MILLISECOND, 0);
+        }        
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Integer.parseInt(wait)*60000, pendingIntent);					
         db.updateActiveE(username, message, true);
         db.close();
 	}
 	
-	private void setupTimedSMS(Context c, String username, String pass, String subject, String message, String day, String recipients, String timeValue, boolean updating, String og, int id) {
+	private void setupTimedEMail(Context c, String username, String pass, String subject, String message, String day, String recipients, String timeValue, boolean updating, int id, String date) {
     	Toast.makeText(c, "New email saved, "+message, Toast.LENGTH_LONG).show();
        	final DBAdapter db = new DBAdapter(this);
     	db.open();
@@ -419,6 +550,9 @@ public class EntryAddE extends Activity {
     	myIntent.putExtra("day", day);
     	myIntent.putExtra("pass", pass);
     	myIntent.putExtra("subject", subject);      
+    	if (date != null) {
+    		myIntent.putExtra("dated", true);
+    	}
     	PendingIntent pendingIntent;
         if (updating) {
         	pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -431,6 +565,12 @@ public class EntryAddE extends Activity {
         calendar.setTimeZone(TimeZone.getDefault());
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeValue.split(":")[0]));
         calendar.set(Calendar.MINUTE, Integer.parseInt(timeValue.split(":")[1]));
+    	calendar.set(Calendar.SECOND, 0);
+    	calendar.set(Calendar.MILLISECOND, 0);
+    	if (date != null) {
+        	calendar.set(Calendar.MONTH, Integer.parseInt(date.split("-")[0])-1);
+        	calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.split("-")[1]));
+        }
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);					
         db.updateActiveE(username, message, true);
         db.close();

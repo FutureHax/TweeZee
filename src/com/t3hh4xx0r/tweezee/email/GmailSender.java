@@ -2,10 +2,13 @@ package com.t3hh4xx0r.tweezee.email;
 
 import javax.activation.DataHandler;   
 import javax.activation.DataSource;   
+import javax.mail.AuthenticationFailedException;
 import javax.mail.Message;   
+import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;   
 import javax.mail.Session;   
 import javax.mail.Transport;   
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;   
 import javax.mail.internet.MimeMessage;   
 
@@ -50,8 +53,7 @@ public class GmailSender extends javax.mail.Authenticator {
         return new PasswordAuthentication(user, password);   
     }   
 
-    public synchronized void sendMail(String subject, String body, String sender, String recipients) throws Exception {   
-    	try{
+    public synchronized void sendMail(String subject, String body, String sender, String recipients) throws AddressException, MessagingException, AuthenticationFailedException {   
         	MimeMessage message = new MimeMessage(session);   
         	DataHandler handler = new DataHandler(new ByteArrayDataSource(body.getBytes(), "text/plain"));   
         	message.setSender(new InternetAddress(sender));   
@@ -62,10 +64,7 @@ public class GmailSender extends javax.mail.Authenticator {
         	} else {  
         		message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipients));   
         	}
-        	Transport.send(message);   
-        } catch (Exception e){
-        	e.printStackTrace();
-        }
+        	Transport.send(message); 
     }   
 
     public class ByteArrayDataSource implements DataSource {   

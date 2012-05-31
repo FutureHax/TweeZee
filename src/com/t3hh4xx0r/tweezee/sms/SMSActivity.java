@@ -78,11 +78,13 @@ public class SMSActivity extends ListActivity {
 		ArrayList<String> mDays = new ArrayList<String>();
 		ArrayList<String> mTimes = new ArrayList<String>();
 		ArrayList<String> mBoots = new ArrayList<String>();
+		ArrayList<String> mDates = new ArrayList<String>();
 		String m = null;
 		String r = null;
 		String i = null;
 		String d = null;
 		String t = null;
+		String date = null;
 		String boot = null;
 		DBAdapter db = new DBAdapter(v.getContext());
 	    db.open();
@@ -95,6 +97,7 @@ public class SMSActivity extends ListActivity {
 	       			mDays.add(c.getString(c.getColumnIndex("send_day")));
 	       			mTimes.add(c.getString(c.getColumnIndex("send_time")));
 	       			mBoots.add(c.getString(c.getColumnIndex("start_boot")));
+       				mDates.add(c.getString(c.getColumnIndex("send_date")));
 	       		}
 	       	 } catch (Exception e1) {}
 	    c.close();
@@ -103,6 +106,7 @@ public class SMSActivity extends ListActivity {
 	    m = mMessages.get(p);
 	    i = mIntervals.get(p);
 	    d = mDays.get(p);
+	    date = mDates.get(p);
 	    t = mTimes.get(p);
 	    boot = mBoots.get(p);
         Bundle b = new Bundle();
@@ -117,6 +121,9 @@ public class SMSActivity extends ListActivity {
         	b.putString("time", t);
         } else {
         	b.putString("time", null);
+        }
+        if (date.length()>1) {
+        	b.putString("date", date);
         }
         Intent mi = new Intent(v.getContext(), EntryAddS.class);
         mi.putExtras(b);

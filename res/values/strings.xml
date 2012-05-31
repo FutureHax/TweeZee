@@ -10,5 +10,5 @@
 	<string name="cancel_auth">Cancel signing in</string>
 	<string name="dont_cancel_auth">Don\'t cancel</string>
 	<string name="auth_network_error">Could not contact Twitter. Please try again.</string>
-	<string name="updates">Enable eMail scheduling. Fix issue with multiple twitter accounts not displaying tweets for correct accounts.</string>
+	<string name="updates">Add \"active\" indicator to show whether saved message is running or stopped by user. \n-Add send on date option as requested by users. \n-When deleting a twitter or email account, US now removes and stops all corresponding messages.</string>
 </resources>
