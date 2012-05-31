@@ -7,7 +7,6 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -16,38 +15,35 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
+import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.Encryption;
 import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
 import com.t3hh4xx0r.tweezee.TweezeeReceiver;
 
-public class EntryAddE extends Activity {
+public class EntryAddE extends SherlockActivity {
 	MultiAutoCompleteTextView recipientsMACTV;
 	public ArrayList<String> contacts = new ArrayList<String>();
 	TextView name;
@@ -381,14 +377,13 @@ public class EntryAddE extends Activity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-        case android.R.id.home:
+		if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             return true;
-        case R.id.save:
-     	    int my_id = getReqID();
+		} else if (item.getItemId() == R.id.save) {
+			int my_id = getReqID();
 			if (selectedDays != null) {
 				myDaysBooleans = selectedDays.toString();
 			} else {
@@ -465,9 +460,7 @@ public class EntryAddE extends Activity {
 				Toast.makeText(this, "Do not leave any fields blank.", Toast.LENGTH_LONG).show();
 			}
 			db.close();
-			break;
-        	default:
-	            return super.onOptionsItemSelected(item);
+			return true;
 	    }
 		return false;
 	}

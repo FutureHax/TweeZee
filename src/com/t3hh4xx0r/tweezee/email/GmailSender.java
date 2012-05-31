@@ -1,25 +1,23 @@
 package com.t3hh4xx0r.tweezee.email;
 
-import javax.activation.DataHandler;   
-import javax.activation.DataSource;   
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.Security;
+import java.util.Properties;
+
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.mail.AuthenticationFailedException;
-import javax.mail.Message;   
+import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;   
-import javax.mail.Session;   
-import javax.mail.Transport;   
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;   
-import javax.mail.internet.MimeMessage;   
-
-import android.util.Log;
-
-import java.io.ByteArrayInputStream;   
-import java.io.IOException;   
-import java.io.InputStream;   
-import java.io.OutputStream;   
-import java.security.Security;   
-import java.util.Properties;   
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 public class GmailSender extends javax.mail.Authenticator {   
     private String mailhost = "smtp.gmail.com";   

@@ -1,20 +1,17 @@
 package com.t3hh4xx0r.tweezee.email;
 
-import com.t3hh4xx0r.tweezee.DBAdapter;
-import com.t3hh4xx0r.tweezee.Encryption;
-import com.t3hh4xx0r.tweezee.R;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+
+import com.t3hh4xx0r.tweezee.DBAdapter;
+import com.t3hh4xx0r.tweezee.Encryption;
+import com.t3hh4xx0r.tweezee.R;
 
 public class EmailLogin extends Activity {
 	EditText userET;

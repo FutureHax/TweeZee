@@ -16,9 +16,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -36,8 +34,6 @@ import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.Encryption;
 import com.t3hh4xx0r.tweezee.R;
 import com.t3hh4xx0r.tweezee.TweezeeReceiver;
-import com.t3hh4xx0r.tweezee.twitter.AccountManager;
-import com.t3hh4xx0r.tweezee.twitter.TwitterActivity;
 
 /**
  * This class does most of the work of wrapping the {@link PopupWindow} so it's simpler to use.

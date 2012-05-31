@@ -7,7 +7,6 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -25,27 +24,28 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.DatePicker;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
 import com.t3hh4xx0r.tweezee.TweezeeReceiver;
 
-public class EntryAddS extends Activity {
+public class EntryAddS extends SherlockActivity {
 
 	public ArrayList<String> contacts = new ArrayList<String>();
 	AutoCompleteTextView txtPhoneNo;
@@ -364,13 +364,12 @@ public class EntryAddS extends Activity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-        case android.R.id.home:
+		if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             return true;
-        case R.id.save:
+		} else if (item.getItemId() == R.id.save) {
       	    int my_id = getReqID();
 			if (selectedDays != null) {
 				myDaysBooleans = selectedDays.toString();
@@ -462,9 +461,7 @@ public class EntryAddS extends Activity {
                 .setCancelable(false)
                 .create().show();					
 			}
-			break;
-        	default:
-	            return super.onOptionsItemSelected(item);
+	       	return true;
 	    }
 		return false;
 	}

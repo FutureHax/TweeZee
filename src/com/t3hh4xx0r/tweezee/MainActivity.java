@@ -2,6 +2,10 @@ package com.t3hh4xx0r.tweezee;
 
 import java.io.IOException;
 
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.pontiflex.mobile.webview.sdk.AdManagerFactory;
 import com.pontiflex.mobile.webview.sdk.IAdManager;
 
@@ -11,13 +15,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
-public class MainActivity extends PreferenceActivity {
+public class MainActivity extends SherlockPreferenceActivity {
 	public static SharedPreferences prefs;
 	
 	/** Called when the activity is first created. */
@@ -81,8 +81,7 @@ public class MainActivity extends PreferenceActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	    	case R.id.feedback:
+	    if (item.getItemId() == R.id.feedback) {
 	    		Intent sendIntent = new Intent(Intent.ACTION_VIEW);
 	    		sendIntent.setClassName("com.google.android.gm", "com.google.android.gm.ComposeActivityGmail");
 	    		sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { "r2doesinc@gmail.com" });
@@ -90,21 +89,22 @@ public class MainActivity extends PreferenceActivity {
 	    		sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Ultimate Scheduler Feedback");
 	    		sendIntent.setType("plain/text");
 	    		startActivity(sendIntent);
-	    	break;
-	        case R.id.settings:
+	            return true;
+	    } else if (item.getItemId() == R.id.settings) {
 	            Intent s = new Intent(this, SettingsMenu.class);
 	            s.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(s);
-	        break;
-	        case R.id.apps:
-				Intent marketApp = new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=r2doesinc&c=apps"));
+	            return true;
+	    } else if (item.getItemId() == R.id.apps) {
+	    		Intent marketApp = new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=r2doesinc&c=apps"));
 				marketApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 		 		try{
 					startActivity(marketApp);
 				}catch(Exception e){
 					e.printStackTrace();
 				}  
-	        case R.id.twitter:
+	            return true;
+	    } else if (item.getItemId() == R.id.twitter) {
 	        	Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.twitter.com/r2doesinc"));
         		Intent.createChooser(i, "Select...");
 	        	try{
@@ -112,9 +112,7 @@ public class MainActivity extends PreferenceActivity {
 	        	}catch(Exception e){
 					e.printStackTrace();
 				}  	
-	        break;	        
-	        default:
-	            return super.onOptionsItemSelected(item);
+	            return true;
 	    }
 		return false;
 	}		        

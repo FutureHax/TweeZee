@@ -12,30 +12,23 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.view.MenuItem;
 import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.Encryption;
 import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
-import com.t3hh4xx0r.tweezee.sms.EntriesAdapter;
-import com.t3hh4xx0r.tweezee.sms.SMSActivity;
-import com.t3hh4xx0r.tweezee.twitter.BetterPopupWindow;
-import com.t3hh4xx0r.tweezee.twitter.EntryAdd;
-import com.t3hh4xx0r.tweezee.twitter.TwitterActivity;
 
-public class EmailFragment extends ListFragment {
+public class EmailFragment extends SherlockListFragment {
 	  Context ctx;
 	  View v;
 	  Button mAddEntry;

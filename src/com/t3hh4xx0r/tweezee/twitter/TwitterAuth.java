@@ -1,10 +1,5 @@
 package com.t3hh4xx0r.tweezee.twitter;
 
-import com.t3hh4xx0r.tweezee.ActivityTask;
-import com.t3hh4xx0r.tweezee.DBAdapter;
-import com.t3hh4xx0r.tweezee.MainActivity;
-import com.t3hh4xx0r.tweezee.R;
-
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
@@ -14,7 +9,6 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 import oauth.signpost.http.HttpParameters;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -27,13 +21,19 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class TwitterAuth extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
+import com.t3hh4xx0r.tweezee.ActivityTask;
+import com.t3hh4xx0r.tweezee.DBAdapter;
+import com.t3hh4xx0r.tweezee.MainActivity;
+import com.t3hh4xx0r.tweezee.R;
+
+public class TwitterAuth extends SherlockActivity {
 
         	public static final String PREFS = "TwitterOAUTH";
         	static SharedPreferences prefs;

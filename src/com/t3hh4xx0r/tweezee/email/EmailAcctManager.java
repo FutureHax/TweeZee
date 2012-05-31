@@ -2,13 +2,12 @@ package com.t3hh4xx0r.tweezee.email;
 
 import java.util.ArrayList;
 
+import com.actionbarsherlock.app.SherlockListActivity;
 import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.Encryption;
 import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
-import com.t3hh4xx0r.tweezee.twitter.BetterPopupWindow;
 
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,14 +16,15 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
-import android.view.MenuItem;
+
+import com.actionbarsherlock.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-public class EmailAcctManager extends ListActivity{
+public class EmailAcctManager extends SherlockListActivity{
 	Button mAddEntry;
 	ArrayList<String> data;
 	

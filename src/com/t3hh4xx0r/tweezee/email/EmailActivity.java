@@ -2,38 +2,28 @@ package com.t3hh4xx0r.tweezee.email;
 
 import java.util.ArrayList;
 
-import com.t3hh4xx0r.tweezee.DBAdapter;
-import com.t3hh4xx0r.tweezee.Encryption;
-import com.t3hh4xx0r.tweezee.MainActivity;
-import com.t3hh4xx0r.tweezee.R;
-import com.t3hh4xx0r.tweezee.sms.SMSActivity;
-import com.t3hh4xx0r.tweezee.twitter.AccountManager;
-import com.t3hh4xx0r.tweezee.twitter.TwitterActivity;
-import com.t3hh4xx0r.tweezee.twitter.TwitterAuth;
-import com.t3hh4xx0r.tweezee.twitter.TwitterSplash;
-import com.t3hh4xx0r.tweezee.twitter.User;
-import com.t3hh4xx0r.tweezee.twitter.UserFragment;
-import com.t3hh4xx0r.tweezee.twitter.TwitterActivity.ExamplePagerAdapter;
-import com.viewpagerindicator.TitlePageIndicator;
-import com.viewpagerindicator.TitleProvider;
-
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
-public class EmailActivity extends FragmentActivity {
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.t3hh4xx0r.tweezee.DBAdapter;
+import com.t3hh4xx0r.tweezee.Encryption;
+import com.t3hh4xx0r.tweezee.MainActivity;
+import com.t3hh4xx0r.tweezee.R;
+import com.viewpagerindicator.TitlePageIndicator;
+import com.viewpagerindicator.TitleProvider;
+
+public class EmailActivity extends SherlockFragmentActivity {
     ViewPager pager;
     static int p;
     public static Accounts[] accounts;
@@ -144,24 +134,21 @@ public class EmailActivity extends FragmentActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	        case R.id.sign_in:
+	    if (item.getItemId() == R.id.sign_in) {
 		        Intent si = new Intent(this, EmailLogin.class);
 		        si.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		        startActivityForResult(si, SIGN_IN);
-	        break;
-	        case R.id.manage_acct:
+	            return true;
+	    } else if (item.getItemId() == R.id.manage_acct) {
 	            Intent mi = new Intent(this, EmailAcctManager.class);
 	            mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(mi);
-	        break;	           
-	        case android.R.id.home:
+	            return true;
+	    } else if (item.getItemId() == android.R.id.home) {
 	            Intent hi = new Intent(this, MainActivity.class);
 	            hi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(hi);
 	            return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
 	    }
 		return false;
 	}	

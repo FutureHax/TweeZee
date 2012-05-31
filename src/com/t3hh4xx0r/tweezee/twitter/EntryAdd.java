@@ -15,7 +15,6 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -39,9 +38,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -55,13 +51,17 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.google.common.primitives.Longs;
 import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
 import com.t3hh4xx0r.tweezee.TweezeeReceiver;
 
-public class EntryAdd extends Activity {
+public class EntryAdd extends SherlockActivity {
 
 	EditText et1;
 	EditText et3;
@@ -479,13 +479,12 @@ public class EntryAdd extends Activity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-        case android.R.id.home:
+		if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             return true;
-        case R.id.save:
+		} else if (item.getItemId() == R.id.save) {
 			if (selectedDays != null) {
 				myDaysBooleans = selectedDays.toString();
 			} else {
@@ -580,9 +579,7 @@ public class EntryAdd extends Activity {
                 .setCancelable(false)
                 .create().show();					
 			}
-			break;
-        	default:
-	            return super.onOptionsItemSelected(item);
+			return true;
 	    }
 		return false;
 	}

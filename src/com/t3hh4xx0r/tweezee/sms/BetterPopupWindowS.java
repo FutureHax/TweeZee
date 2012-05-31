@@ -13,8 +13,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -32,7 +30,6 @@ import android.widget.Toast;
 import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.R;
 import com.t3hh4xx0r.tweezee.TweezeeReceiver;
-import com.t3hh4xx0r.tweezee.email.EmailActivity;
 
 /**
  * This class does most of the work of wrapping the {@link PopupWindow} so it's simpler to use.

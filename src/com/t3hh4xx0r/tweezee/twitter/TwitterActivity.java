@@ -16,22 +16,22 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
 import com.viewpagerindicator.TitlePageIndicator;
 import com.viewpagerindicator.TitleProvider;
 
-public class TwitterActivity extends FragmentActivity {
+public class TwitterActivity extends SherlockFragmentActivity {
 	
     public static User[] users;
     public static int user;
@@ -153,27 +153,23 @@ public class TwitterActivity extends FragmentActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	        case R.id.sign_in:
+	    if (item.getItemId() == R.id.sign_in) {
 		        Intent si = new Intent(this, TwitterAuth.class);
 		        si.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		        startActivityForResult(si, SIGN_IN);
-	        break;
-	        case R.id.manage_acct:
+		        return true;
+	    } else if (item.getItemId() == R.id.manage_acct) {
 	            Intent mi = new Intent(this, AccountManager.class);
 	            mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(mi);
-	        break;	        
-	        case R.id.limit:
+	    } else if (item.getItemId() == R.id.limit) {
 	        	apiCheck();
-	        break;	   
-	        case android.R.id.home:
+	        	return true;
+	    } else if (item.getItemId() == android.R.id.home) {
 	            Intent hi = new Intent(this, MainActivity.class);
 	            hi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(hi);
 	            return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
 	    }
 		return false;
 	}	

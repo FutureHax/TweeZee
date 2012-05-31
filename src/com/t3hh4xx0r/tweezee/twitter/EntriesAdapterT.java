@@ -7,7 +7,6 @@ import com.t3hh4xx0r.tweezee.R;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

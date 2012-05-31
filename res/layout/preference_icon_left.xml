@@ -5,7 +5,7 @@
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:gravity="center_vertical" 
     android:paddingRight="?android:attr/scrollbarSize">
-    <ImageView android:id="@+id/icon" 
+    <ImageView android:id="@+id/pref_icon" 
     android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
         android:layout_marginLeft="6dip"

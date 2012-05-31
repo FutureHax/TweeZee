@@ -9,7 +9,7 @@
   		    <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
             android:key="twitter"
     		android:title="Twitter Status Update"
-    		settings:icon="@drawable/twitter" 
+    		settings:pref_icon="@drawable/twitter" 
     		android:enabled="true" >
        			<intent
             	android:action="android.intent.action.MAIN"
@@ -21,7 +21,7 @@
             android:key="sms"
             android:id="@+id/sms"
        		android:title="SMS Message"
-    		settings:icon="@drawable/sms">
+    		settings:pref_icon="@drawable/sms">
        			<intent
             	android:action="android.intent.action.MAIN"
             	android:targetPackage="com.t3hh4xx0r.tweezee"
@@ -32,7 +32,7 @@
             android:key="email"
             android:id="@+id/email"
        		android:title="Email Message"
-    		settings:icon="@drawable/email">
+    		settings:pref_icon="@drawable/email">
        			<intent
             	android:action="android.intent.action.MAIN"
             	android:targetPackage="com.t3hh4xx0r.tweezee"

@@ -6,12 +6,13 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.view.MenuItem;
 
-public class SettingsMenu extends PreferenceActivity{
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.actionbarsherlock.view.MenuItem;
+
+public class SettingsMenu extends SherlockPreferenceActivity{
     private CheckBoxPreference mNotifyIntrusive;
     private CheckBoxPreference mNotify;
     private CheckBoxPreference mDirect;
