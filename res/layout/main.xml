@@ -37,6 +37,17 @@
             	android:action="android.intent.action.MAIN"
             	android:targetPackage="com.t3hh4xx0r.tweezee"
             	android:targetClass="com.t3hh4xx0r.tweezee.email.EmailActivity" />
-			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>											
+			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>	
+
+            <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
+            android:key="facebook"
+            android:id="@+id/facebook"
+       		android:title="Facebook Wall Post"
+    		settings:pref_icon="@drawable/facebook">
+       			<intent
+            	android:action="android.intent.action.MAIN"
+            	android:targetPackage="com.t3hh4xx0r.tweezee"
+            	android:targetClass="com.t3hh4xx0r.tweezee.facebook.FacebookActivity" />
+			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>	            													
 			</PreferenceCategory>
 </PreferenceScreen>

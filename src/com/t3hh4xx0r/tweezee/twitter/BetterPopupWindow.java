@@ -306,6 +306,7 @@ public class BetterPopupWindow {
 			     String mentions = "";
 			     String interval = "";
 			     String days = "";
+			     String date = "";
 			     
 			     DBAdapter db = new DBAdapter(this.anchor.getContext());
 			     db.open();
@@ -317,6 +318,7 @@ public class BetterPopupWindow {
 			       				mentions = c.getString(c.getColumnIndex("mentions"));
 			       				interval = c.getString(c.getColumnIndex("send_wait"));
 			       				days = c.getString(c.getColumnIndex("send_day"));
+			       				date = c.getString(c.getColumnIndex("send_date"));
 					       	 }
 			       		}
 			       	} catch (Exception e1) {
@@ -327,9 +329,9 @@ public class BetterPopupWindow {
 			     db.close();		       	 
 		       	 
 		       	 if (time.length() < 2) {
-		       		 setupIntervalTweet(this.anchor.getContext(), user, message, interval, days, mentions, getID(user, message));
+		       		 setupIntervalTweet(this.anchor.getContext(), user, message, interval, days, mentions, getID(user, message), date);
 		       	 } else {
-		       		 setupTimedTweet(this.anchor.getContext(), user, message, days, mentions, time, getID(user, message));
+		       		 setupTimedTweet(this.anchor.getContext(), user, message, days, mentions, time, getID(user, message), date);
 		       	 }
 		       	 this.dismiss();
 		       	 
@@ -412,36 +414,58 @@ public class BetterPopupWindow {
 	        alarmManager.cancel(pendingIntent);		
 		}
 		
-		private void setupTimedTweet(Context c, String username, String message, String day, String mentions, String timeValue, int id) {
+		private void setupTimedTweet(Context c, String username, String message, String day, String mentions, String timeValue, int id, String date) {
 	        Intent myIntent = new Intent(c, TweezeeReceiver.class);
 	    	myIntent.putExtra("username", username);
 	    	myIntent.putExtra("message", message);
 	    	myIntent.putExtra("mentions", mentions);
 	    	myIntent.putExtra("day", day); 
-	        myIntent.setAction(Integer.toString(id));
+	    	myIntent.putExtra("type", "tweet"); 
+	    	if(date.length()>4) {
+		    	myIntent.putExtra("dated", true);
+	    	}
+	    	myIntent.setAction(Integer.toString(id));
 	        myIntent.setData(Uri.parse(Integer.toString(id)));  
-	        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, 0);
+	        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 	        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
 	        Calendar calendar = Calendar.getInstance();
 	        calendar.setTimeInMillis(System.currentTimeMillis());
 	        calendar.setTimeZone(TimeZone.getDefault());
 	        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeValue.split(":")[0]));
 	        calendar.set(Calendar.MINUTE, Integer.parseInt(timeValue.split(":")[1]));
+	        calendar.set(Calendar.SECOND, 0);
+	        calendar.set(Calendar.MILLISECOND, 0);
+	        if(date.length()>4) {
+	            calendar.setTimeZone(TimeZone.getDefault());
+	        	calendar.set(Calendar.MONTH, Integer.parseInt(date.split("-")[0]));
+	        	calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.split("-")[1]));	        	
+	        }
 	        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);					
 		}
 		
-		private void setupIntervalTweet(Context c, String username, String message, String wait, String day, String mentions, int id) {
+		private void setupIntervalTweet(Context c, String username, String message, String wait, String day, String mentions, int id, String date) {
 	        Intent myIntent = new Intent(c, TweezeeReceiver.class);
 		    myIntent.putExtra("username", username);
 		    myIntent.putExtra("message", message);
 		    myIntent.putExtra("mentions", mentions);
 		    myIntent.putExtra("day", day); 
-	        myIntent.setAction(Integer.toString(id));
+	    	myIntent.putExtra("type", "tweet"); 
+	    	if(date.length()>4) {
+		    	myIntent.putExtra("dated", true);
+	    	}
+	    	myIntent.setAction(Integer.toString(id));
 	        myIntent.setData(Uri.parse(Integer.toString(id)));  
-	        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, 0);
+	        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 	        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
 	        Calendar calendar = Calendar.getInstance();
 	        calendar.setTimeInMillis(System.currentTimeMillis());
+	        if(date.length()>4) {
+	            calendar.setTimeZone(TimeZone.getDefault());
+	        	calendar.set(Calendar.MONTH, Integer.parseInt(date.split("-")[0]));
+	        	calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.split("-")[1]));
+		        calendar.set(Calendar.SECOND, 0);
+		        calendar.set(Calendar.MILLISECOND, 0);
+		    } 
 	        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Integer.parseInt(wait)*60000, pendingIntent);					
 		}		
 	}

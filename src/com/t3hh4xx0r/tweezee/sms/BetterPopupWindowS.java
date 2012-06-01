@@ -276,6 +276,7 @@ public class BetterPopupWindowS {
 			     String interval = "";
 			     String days = "";
 			     String id = "";
+			     String date = "";
 			     
 			     DBAdapter db = new DBAdapter(this.anchor.getContext());
 			     db.open();
@@ -285,6 +286,7 @@ public class BetterPopupWindowS {
 			       	 time = c.getString(c.getColumnIndex("send_time"));
 			       	 interval = c.getString(c.getColumnIndex("send_wait"));
 			       	 days = c.getString(c.getColumnIndex("send_day"));			       		
+			       	 date = c.getString(c.getColumnIndex("send_date"));			       		
 			       	 id = c.getString(c.getColumnIndex("my_id"));			       		
 			     } catch (Exception e1) {
 			         e1.printStackTrace();
@@ -294,9 +296,9 @@ public class BetterPopupWindowS {
 			     db.close();		       	 
 		       	 
 		       	 if (time.length() < 2) {
-		       		 setupIntervalSMS(this.anchor.getContext(), message, interval, days, recipient, getID(recipient, message));
+		       		 setupIntervalSMS(this.anchor.getContext(), message, interval, days, recipient, getID(recipient, message), date);
 		       	 } else {
-		       		 setupTimedSMS(this.anchor.getContext(), message, days, recipient, time, getID(recipient, message));
+		       		 setupTimedSMS(this.anchor.getContext(), message, days, recipient, time, getID(recipient, message), date);
 		       	 }
 		       	 this.dismiss();
 	        }
@@ -342,23 +344,33 @@ public class BetterPopupWindowS {
 	        alarmManager.cancel(pendingIntent);		
 		}
 
-		private void setupIntervalSMS(Context c, String message, String wait, String day, String recipient, int id) {
+		private void setupIntervalSMS(Context c, String message, String wait, String day, String recipient, int id, String date) {
 	    	Toast.makeText(c, "New sms saved, "+message, Toast.LENGTH_LONG).show();
 	    	Intent myIntent = new Intent(c, TweezeeReceiver.class);
 	    	myIntent.putExtra("type", "sms");
 	    	myIntent.putExtra("message", message);
 	    	myIntent.putExtra("day", day);
 	    	myIntent.putExtra("recipient", recipient);
-	        myIntent.setAction(Integer.toString(id));
+	    	if(date.length()>4) {
+		    	myIntent.putExtra("dated", true);
+	    	}
+	    	myIntent.setAction(Integer.toString(id));
 	        myIntent.setData(Uri.parse(Integer.toString(id)));  
-	        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, 0);
+	        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 	        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
 	        Calendar calendar = Calendar.getInstance();
 	        calendar.setTimeInMillis(System.currentTimeMillis());
+	        if(date.length()>4) {
+	            calendar.setTimeZone(TimeZone.getDefault());
+	        	calendar.set(Calendar.MONTH, Integer.parseInt(date.split("-")[0]));
+	        	calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.split("-")[1]));
+		        calendar.set(Calendar.SECOND, 0);
+		        calendar.set(Calendar.MILLISECOND, 0);
+		    }
 	        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Integer.parseInt(wait)*60000, pendingIntent);					
 		}
 
-		private void setupTimedSMS(Context c, String message, String day, String recipient, String timeValue, int id) {
+		private void setupTimedSMS(Context c, String message, String day, String recipient, String timeValue, int id, String date) {
 	    	Toast.makeText(c, "New sms saved, "+message, Toast.LENGTH_LONG).show();
 	        Intent myIntent = new Intent(c, TweezeeReceiver.class);
 	        myIntent.setAction(Integer.toString(id));
@@ -367,14 +379,23 @@ public class BetterPopupWindowS {
 	    	myIntent.putExtra("message", message);
 	    	myIntent.putExtra("recipient", recipient);
 	    	myIntent.putExtra("day", day);        
-	    	PendingIntent pendingIntent;
-	        pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, 0);
+	    	if(date.length()>4) {
+		    	myIntent.putExtra("dated", true);
+	    	}
+	    	PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 	        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
 	        Calendar calendar = Calendar.getInstance();
 	        calendar.setTimeInMillis(System.currentTimeMillis());
 	        calendar.setTimeZone(TimeZone.getDefault());
 	        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeValue.split(":")[0]));
 	        calendar.set(Calendar.MINUTE, Integer.parseInt(timeValue.split(":")[1]));
+	        calendar.set(Calendar.SECOND, 0);
+	        calendar.set(Calendar.MILLISECOND, 0);
+	        if(date.length()>4) {
+	            calendar.setTimeZone(TimeZone.getDefault());
+	        	calendar.set(Calendar.MONTH, Integer.parseInt(date.split("-")[0]));
+	        	calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.split("-")[1]));	        	
+	        }
 	        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);					
 		}		
 	}

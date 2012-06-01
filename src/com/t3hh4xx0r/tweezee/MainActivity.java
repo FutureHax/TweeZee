@@ -29,6 +29,7 @@ public class MainActivity extends SherlockPreferenceActivity {
 	    SharedPreferences.Editor editor = prefs.edit();
 		IconPreferenceScreenLeft mSMS = (IconPreferenceScreenLeft) findPreference("sms");
 		IconPreferenceScreenLeft mEmail = (IconPreferenceScreenLeft) findPreference("email");
+		IconPreferenceScreenLeft mFacebook = (IconPreferenceScreenLeft) findPreference("facebook");
 
 	    if (!prefs.getBoolean("lReg", false) && prefs.getBoolean("isReg", false)) {
 	        editor.putBoolean("lReg", true);
@@ -64,7 +65,12 @@ public class MainActivity extends SherlockPreferenceActivity {
 		   mSMS.setSummary("Upgrade to Premium today to unlock this feature");
 		   mEmail.setEnabled(false);	
 		   mEmail.setSummary("Upgrade to Premium today to unlock this feature");
+		   mFacebook.setEnabled(false);	
+		   mFacebook.setSummary("Upgrade to Premium today to unlock this feature");
 		}
+	    //TEMPORARY
+//	    mFacebook.setEnabled(false);	
+//		mFacebook.setSummary("COMING SOON!");	    
 		   
    		try {
 			new SimpleEula(this).show();

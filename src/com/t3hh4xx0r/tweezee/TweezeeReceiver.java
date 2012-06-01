@@ -57,6 +57,7 @@ public class TweezeeReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context c, Intent i) {
+		
 		type = i.getStringExtra("type");
 		prefs = PreferenceManager.getDefaultSharedPreferences(c);
 		ctx = c;
