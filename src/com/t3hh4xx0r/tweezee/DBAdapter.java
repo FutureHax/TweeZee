@@ -34,8 +34,9 @@ public class DBAdapter {
     private static final String S_ENTRY_TABLE = "sms_entries";
     private static final String E_USER_TABLE = "email_users";
     private static final String E_ENTRY_TABLE = "email_entries";
+    private static final String F_ENTRY_TABLE = "facebook_entries";
 
-    private static final int DATABASE_VERSION = 28;
+    private static final int DATABASE_VERSION = 29;
 
     private static final String CREATE_E_USERS =
             "create table email_users (_id integer primary key autoincrement, "
@@ -63,6 +64,12 @@ public class DBAdapter {
                     + "message text not null, send_to text not null, "
             		+" send_wait text not null, send_day text not null, send_time text not null, "
                     +" start_boot text not null, my_id text not null, active text not null, send_date text not null);";
+
+    private static final String CREATE_F_ENTRIES =
+            "create table facebook_entries (_id integer primary key autoincrement, "
+                    + "message text not null, "
+            		+" send_wait text not null, send_day text not null, send_time text not null, "
+                    +" start_boot text not null, my_id text not null, active text not null, send_date text not null);";    
     
     private final Context context; 
     
@@ -90,6 +97,7 @@ public class DBAdapter {
             db.execSQL(CREATE_T_USERS);
             db.execSQL(CREATE_T_ENTRIES);
             db.execSQL(CREATE_S_ENTRIES);
+            db.execSQL(CREATE_F_ENTRIES);
         }
 
         @Override
@@ -101,6 +109,7 @@ public class DBAdapter {
             db.execSQL("DROP TABLE IF EXISTS sms_entries");
             db.execSQL("DROP TABLE IF EXISTS email_users");
             db.execSQL("DROP TABLE IF EXISTS email_entries");
+            db.execSQL("DROP TABLE IF EXISTS facebook_entries");
             onCreate(db);
         }
     }    
@@ -142,6 +151,21 @@ public class DBAdapter {
         db.insert(S_ENTRY_TABLE, null, initialValues);
     }    
 
+    public void insertFEntry(String message, String wait, String day, String time, String boot, int id, String date) 
+    {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(KEY_MESSAGE, message);
+        initialValues.put(KEY_WAIT, wait);
+        initialValues.put(KEY_DAY, day);
+        initialValues.put(KEY_TIME, time);
+        initialValues.put(KEY_DATE, date);
+        initialValues.put(BOOT, boot);
+        initialValues.put(KEY_ACTIVE, "true");
+        initialValues.put(ID, Integer.toString(id));
+        
+        db.insert(F_ENTRY_TABLE, null, initialValues);
+    }   
+    
     public void insertEEntry(String username, String subject, String message, String wait, String day, String send_to, String time, String date, String boot, int id) 
     {
         ContentValues initialValues = new ContentValues();
@@ -232,6 +256,26 @@ public class DBAdapter {
                 KEY_WAIT,
                 KEY_DAY,
                 KEY_SEND_TO,
+                KEY_TIME,
+                BOOT,
+                KEY_ACTIVE,
+                KEY_DATE,
+                ID}, 
+                null,
+                null, 
+                null, 
+                null, 
+                null);
+	
+		return mCursor;
+    }
+
+    public Cursor getAllFEntries() 
+    {
+    	Cursor mCursor = db.query(F_ENTRY_TABLE, new String[] {
+                KEY_MESSAGE,
+                KEY_WAIT,
+                KEY_DAY,
                 KEY_TIME,
                 BOOT,
                 KEY_ACTIVE,
@@ -410,6 +454,16 @@ public class DBAdapter {
 	    args.put(KEY_DATE, date);
 	    this.db.update(E_ENTRY_TABLE, args, ("message = ? AND send_to = ?"), new String[] {og, send_to});
 	}
+	public void updateFEntry(String message, String og, String wait, String days, String time, String boot, String date) {
+		ContentValues args = new ContentValues();
+	    args.put(KEY_MESSAGE, message);
+	    args.put(KEY_WAIT, wait);
+	    args.put(KEY_DAY, days);
+	    args.put(KEY_TIME, time);
+	    args.put(BOOT, boot);
+	    args.put(KEY_DATE, date);
+	    this.db.update(E_ENTRY_TABLE, args, ("message = ?"), new String[] {og});
+	}
 	
 	public void updateTEntry(String user, String message, String mentions, String og, String wait, String days, String time, String boot, String date) {
 		ContentValues args = new ContentValues();
@@ -439,6 +493,12 @@ public class DBAdapter {
 		ContentValues args = new ContentValues();
 	    args.put(KEY_ACTIVE, Boolean.toString(active));
 	    this.db.update(S_ENTRY_TABLE, args, ("my_id = ?"), new String[] {id});
+	}
+
+	public void updateActiveF(String id, boolean active) {
+		ContentValues args = new ContentValues();
+	    args.put(KEY_ACTIVE, Boolean.toString(active));
+	    this.db.update(F_ENTRY_TABLE, args, ("my_id = ?"), new String[] {id});
 	}
 	
 	public boolean isLoggedInT() {

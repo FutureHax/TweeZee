@@ -1,5 +1,7 @@
 package com.t3hh4xx0r.tweezee.twitter;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
@@ -31,10 +33,12 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -435,23 +439,34 @@ public class EntryAdd extends SherlockActivity {
  			 return null; 
  		 }
 	}
-	public Drawable setProfilePic(String name){
-		Drawable d;
-		try {
-           Twitter twitter = new TwitterFactory().getInstance();
-           ProfileImage image = twitter.getProfileImage(name, ProfileImage.BIGGER);
-           URL src = new URL(image.getURL());
-
-           Bitmap bm = BitmapFactory.decodeStream(src.openConnection().getInputStream());
-           bm = Bitmap.createScaledBitmap(bm, 150, 150, true); 
-           d = new BitmapDrawable(bm);
-		} catch (Exception e) {
-			e.printStackTrace();
-			d = res.getDrawable(R.drawable.acct_sel);
-		}
-        return d;
-
-	}
+	  public Drawable setProfilePic(String name){
+			Resources r = getResources();
+			File file = new File(Environment.getExternalStorageDirectory() + "/t3hh4xx0r/ultimate_scheduler/profileimages/twitter_"+ name + "_image_small.jpg");
+			File dir = new File(Environment.getExternalStorageDirectory() + "/t3hh4xx0r/ultimate_scheduler/profileimages/");
+			Drawable d;
+			if (!file.exists()) {
+				if (!dir.exists()) {
+					dir.mkdirs();
+				}	
+				try {
+		           Twitter twitter = new TwitterFactory().getInstance();
+		           ProfileImage image = twitter.getProfileImage(name, ProfileImage.BIGGER);
+		           URL src = new URL(image.getURL());
+	
+		           Bitmap bm = BitmapFactory.decodeStream(src.openConnection().getInputStream());
+		           bm = Bitmap.createScaledBitmap(bm, 150, 150, true); 
+		           bm.compress(CompressFormat.JPEG, 100, new FileOutputStream(file));
+		           d = new BitmapDrawable(bm);
+				} catch (Exception e) {
+					e.printStackTrace();
+					d = r.getDrawable(R.drawable.acct_sel);
+				}
+			} else {
+				Bitmap bitmap = BitmapFactory.decodeFile(file.toString());
+				d = new BitmapDrawable(bitmap);
+			}
+			return d;
+	}	 
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

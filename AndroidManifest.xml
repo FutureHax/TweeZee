@@ -13,7 +13,9 @@
 	<uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.WRITE_SMS" />
-    	
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        	
     <permission 
      android:label="Recieve registration broadcasts" 
      android:name="com.t3hh4xx0r.tweezee.REGISTER" 
@@ -167,7 +169,14 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
        </activity> 
-             
+       <activity android:screenOrientation="portrait"
+            android:label="Facebook"
+            android:name=".facebook.EntryAddF" >
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+       </activity> 
+                    
 <!-- Receivers -->    
        <receiver android:name=".Receiver" />        
         <receiver android:name=".BootReceiver">

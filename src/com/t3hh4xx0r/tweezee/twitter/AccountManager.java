@@ -1,5 +1,7 @@
 package com.t3hh4xx0r.tweezee.twitter;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +18,11 @@ import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -30,6 +34,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.MenuItem;
@@ -167,20 +172,31 @@ public class AccountManager extends SherlockListActivity {
 	  
 	  public Drawable setProfilePic(String name){
 			Resources r = getResources();
+			File file = new File(Environment.getExternalStorageDirectory() + "/t3hh4xx0r/ultimate_scheduler/profileimages/twitter_"+ name + "_image_large.jpg");
+			File dir = new File(Environment.getExternalStorageDirectory() + "/t3hh4xx0r/ultimate_scheduler/profileimages/");
 			Drawable d;
-			try {
-	           Twitter twitter = new TwitterFactory().getInstance();
-	           ProfileImage image = twitter.getProfileImage(name, ProfileImage.BIGGER);
-	           URL src = new URL(image.getURL());
-
-	           Bitmap bm = BitmapFactory.decodeStream(src.openConnection().getInputStream());
-	           bm = Bitmap.createScaledBitmap(bm, 300, 300, true); 
-	           d = new BitmapDrawable(bm);
-			} catch (Exception e) {
-				e.printStackTrace();
-				d = r.getDrawable(R.drawable.acct_sel);
+			if (!file.exists()) {
+				if (!dir.exists()) {
+					dir.mkdirs();
+				}	
+				try {
+		           Twitter twitter = new TwitterFactory().getInstance();
+		           ProfileImage image = twitter.getProfileImage(name, ProfileImage.BIGGER);
+		           URL src = new URL(image.getURL());
+	
+		           Bitmap bm = BitmapFactory.decodeStream(src.openConnection().getInputStream());
+		           bm = Bitmap.createScaledBitmap(bm, 300, 300, true); 
+		           bm.compress(CompressFormat.JPEG, 100, new FileOutputStream(file));
+		           d = new BitmapDrawable(bm);
+				} catch (Exception e) {
+					e.printStackTrace();
+					d = r.getDrawable(R.drawable.acct_sel);
+				}
+			} else {
+				Bitmap bitmap = BitmapFactory.decodeFile(file.toString());
+				d = new BitmapDrawable(bitmap);
 			}
-	        return d;
+			return d;
 	}	 
 	  
 		@Override

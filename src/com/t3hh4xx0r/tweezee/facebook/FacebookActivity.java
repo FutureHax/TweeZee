@@ -1,5 +1,7 @@
 package com.t3hh4xx0r.tweezee.facebook;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,14 +13,18 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -26,9 +32,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockListActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
+import com.facebook.android.FacebookError;
 import com.facebook.android.Util;
+import com.t3hh4xx0r.tweezee.DBAdapter;
 import com.t3hh4xx0r.tweezee.MainActivity;
 import com.t3hh4xx0r.tweezee.R;
 import com.t3hh4xx0r.tweezee.sms.EntriesAdapter;
@@ -36,7 +47,7 @@ import com.t3hh4xx0r.tweezee.sms.EntriesAdapter;
 public class FacebookActivity extends SherlockListActivity {
 	ListView lv1;
 	Button mAddEntry;
-	static EntriesAdapter a;
+	static EntriesAdapterF a;
 	static ArrayList<String> mEntries;
 	TextView userTV;
 	String userID;
@@ -83,15 +94,15 @@ public class FacebookActivity extends SherlockListActivity {
 //        });
         
         mAddEntry = (Button) findViewById(R.id.entry_b);
-//        mAddEntry.setOnClickListener(new OnClickListener() {
-//        	@Override
-//        	public void onClick(View v) {
-//        		Intent i = new Intent(SMSActivity.this, EntryAddS.class);
-//        		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        		i.putExtra("editing", false);
-//        		startActivity(i);
-//        	}
-//        });	   
+        mAddEntry.setOnClickListener(new OnClickListener() {
+        	@Override
+        	public void onClick(View v) {
+        		Intent i = new Intent(FacebookActivity.this, EntryAddF.class);
+        		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        		i.putExtra("editing", false);
+        		startActivity(i);
+        	}
+        });	   
 	}
 
 	private void checkLogin() {
@@ -103,44 +114,55 @@ public class FacebookActivity extends SherlockListActivity {
 	}
 
 	private void getUserInfo() {
-		try {
-			String userReq = facebookConnector.getFacebook().request("me");
-			JSONObject o = Util.parseJson(userReq);
-			userN = o.optString("name", "Error retrieving username");
-			userID = o.optString("id");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}		
-		userTV.setText(userN);
-		Thread thread = new Thread() {
+		Thread thread2 = new Thread() {
 			Drawable p;
 		    @Override
 		    public void run() {
-		    	 p = getPic(userID);		    			    
-		         runOnUiThread(new Runnable() {
+				try {
+					String userReq = facebookConnector.getFacebook().request("me");
+					JSONObject o = Util.parseJson(userReq);
+					userN = o.optString("name", "Error retrieving username");
+					userID = o.optString("id");				
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+		    	p = getPic(userID);		    			    
+				runOnUiThread(new Runnable() {
 		               @Override
 		               public void run() {
-		            	   userPic.setImageDrawable(p);
+		           		userTV.setText(userN);
+	            	   userPic.setImageDrawable(p);
 		               }
 		         });		    			    		    	
 		    }
 		};
-		thread.start();
+		thread2.start();		
 	}
 
 	private Drawable getPic(String id) {
-		Drawable d = null;
 		Resources res = getResources();
-		try {
-			URL imgUrl = new URL("http://graph.facebook.com/"+id+"/picture?type=large");
-			Bitmap imgB = BitmapFactory.decodeStream(imgUrl.openConnection().getInputStream());
-			d = new BitmapDrawable(imgB);
-		} catch (MalformedURLException e) {
-			d = res.getDrawable(R.drawable.acct_sel);
-			e.printStackTrace();
-		} catch (IOException e) {
-			d = res.getDrawable(R.drawable.acct_sel);
-			e.printStackTrace();
+		File file = new File(Environment.getExternalStorageDirectory() + "/t3hh4xx0r/ultimate_scheduler/profileimages/facebook_"+ userN + "_image.jpg");
+		File dir = new File(Environment.getExternalStorageDirectory() + "/t3hh4xx0r/ultimate_scheduler/profileimages/");
+		Drawable d;
+		if (!file.exists()) {
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}		
+			try {
+				URL imgUrl = new URL("http://graph.facebook.com/"+id+"/picture?type=large");
+				Bitmap imgB = BitmapFactory.decodeStream(imgUrl.openConnection().getInputStream());
+		        imgB.compress(CompressFormat.JPEG, 100, new FileOutputStream(file));
+				d = new BitmapDrawable(imgB);
+			} catch (MalformedURLException e) {
+				d = res.getDrawable(R.drawable.acct_sel);
+				e.printStackTrace();
+			} catch (IOException e) {
+				d = res.getDrawable(R.drawable.acct_sel);
+				e.printStackTrace();
+			}
+		} else {
+			Bitmap bitmap = BitmapFactory.decodeFile(file.toString());
+			d = new BitmapDrawable(bitmap);
 		}
 		return d;
 	}
@@ -217,29 +239,27 @@ public class FacebookActivity extends SherlockListActivity {
 	}
 	
 	void populateList(Context ctx) {
-//		mEntries = new ArrayList<String>();
-//		if (mEntries.size() != 0) {
-//			mEntries.clear();
-//		}
-//		a = new EntriesAdapter(SMSActivity.this, mEntries);
-//	    lv1.setAdapter(a);
-//
-//		DBAdapter db = new DBAdapter(ctx);
-//	    db.open();
-//	    Cursor cu = db.getAllSEntries();
-//	    	try {
-//	       		while (cu.moveToNext()) {
-//	       			StringBuilder sB = new StringBuilder();
-//	       			sB.append(cu.getString(cu.getColumnIndex("message")));
-//	       			sB.append(":");
-//	       			sB.append(cu.getString(cu.getColumnIndex("send_to")));
-//	       			mEntries.add(sB.toString());
-//	       		}
-//	       	 } catch (Exception e1) {}
-//	   cu.close();
-//	   db.close();
-//	   
-//	   a.notifyDataSetChanged();
+		mEntries = new ArrayList<String>();
+		if (mEntries.size() != 0) {
+			mEntries.clear();
+		}
+		a = new EntriesAdapterF(FacebookActivity.this, mEntries);
+	    lv1.setAdapter(a);
+
+		DBAdapter db = new DBAdapter(ctx);
+	    db.open();
+	    Cursor cu = db.getAllFEntries();
+	    	try {
+	       		while (cu.moveToNext()) {
+	       			StringBuilder sB = new StringBuilder();
+	       			sB.append(cu.getString(cu.getColumnIndex("message")));
+	       			mEntries.add(sB.toString());
+	       		}
+	       	 } catch (Exception e1) {}
+	   cu.close();
+	   db.close();
+	   
+	   a.notifyDataSetChanged();
 	   
 	}
 	
@@ -253,6 +273,12 @@ public class FacebookActivity extends SherlockListActivity {
 		}
 	};
 
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater menuinflate = new MenuInflater(this);
+		menuinflate.inflate(R.menu.facebook_menu, menu);
+		return true;
+	}	
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {	   
@@ -261,6 +287,31 @@ public class FacebookActivity extends SherlockListActivity {
 	            hi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(hi);
 	            return true;
+	        case R.id.share:
+	        	Bundle parameters = new Bundle();
+	        	parameters.putString( "message", "Check out this awesome new app!" );
+	        	facebookConnector.getFacebook().dialog(this, "apprequests", parameters,
+	        	  new Facebook.DialogListener() {
+					@Override
+					public void onComplete(Bundle values) {
+						// TODO Auto-generated method stub						
+					}
+					@Override
+					public void onFacebookError(FacebookError e) {
+						// TODO Auto-generated method stub						
+					}
+					@Override
+					public void onError(DialogError e) {
+						// TODO Auto-generated method stub						
+					}
+					@Override
+					public void onCancel() {
+						// TODO Auto-generated method stub						
+					}
+	        	  }
+	        	);
+	        	
+	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }

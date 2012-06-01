@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+	<TextView
+	    android:id="@+id/textView2"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="Message"
+        android:paddingLeft="10dp"
+        android:paddingTop="3dp"	    
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+	<EditText
+	    android:id="@+id/messageET"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" 
+        android:paddingLeft="10dp"
+        android:layout_below="@+id/textView2"        
+		android:hint="Message to send"
+        android:paddingTop="3dp">
+	</EditText>
+	
+    <ImageView
+        android:id="@+id/div2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/messageET"
+        android:layout_alignParentLeft="true"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />	
+
+    <CheckBox
+        android:id="@+id/dateCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/div2"
+        android:text="Send on specific date" />    
+
+   <ImageView
+        android:id="@+id/div98"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/dateCB"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />
+   
+   <TextView
+        android:id="@+id/dayTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/div98"
+        android:paddingLeft="10dp"
+        android:paddingTop="3dp"
+        android:text="Day Picker"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+      
+	<TextView
+        android:id="@+id/day_pre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/dayTv"
+        android:paddingLeft="10dp"
+        android:paddingTop="3dp"
+        android:text="No days selected"
+        android:textColor="@color/ics"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <ImageView
+        android:id="@+id/div96"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/day_pre"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />
+    	
+   <TextView
+        android:id="@+id/dateTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/day_pre"
+        android:paddingLeft="10dp"
+        android:paddingTop="3dp"
+        android:text="Date Picker"
+        android:visibility="gone"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+       
+	<TextView
+        android:id="@+id/date_pre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/dateTv"
+        android:paddingLeft="10dp"
+        android:paddingTop="3dp"
+        android:text="No date selected"
+        android:textColor="@color/ics"
+        android:visibility="gone"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <ImageView
+        android:id="@+id/div4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/date_pre"
+        android:layout_alignParentLeft="true"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />
+
+    <CheckBox
+        android:id="@+id/timeCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/div4"
+        android:text="Send at specific time" />
+         
+    <ImageView
+        android:id="@+id/div5"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/timeCB"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />
+
+	<TextView
+        android:id="@+id/interval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/div5"
+        android:paddingLeft="10dp"
+        android:paddingTop="3dp"
+        android:text="Interval"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+    
+    <EditText
+        android:id="@+id/editInterval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/interval"
+        android:hint="Interval (in minutes) between sends."
+        android:inputType="number"
+        android:paddingTop="3dp"/>
+    
+    <ImageView
+        android:id="@+id/div6"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editInterval"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />    
+
+	<TextView
+        android:id="@+id/timePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/div6"
+        android:paddingLeft="10dp"
+        android:paddingTop="3dp"
+        android:text="Set Time"
+        android:visibility="gone"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+	
+	<TextView
+        android:id="@+id/time_pre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/timePicker"
+        android:paddingLeft="10dp"
+        android:paddingTop="3dp"
+        android:text="No time set."
+        android:textColor="@color/ics"
+        android:textAppearance="?android:attr/textAppearanceSmall" />	
+        
+    <ImageView
+        android:id="@+id/div7"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/time_pre"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />   
+        
+    <CheckBox
+        android:id="@+id/bootCB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/div7"
+        android:text="Start tweet at boot"/>
+        
+    <ImageView
+        android:id="@+id/div8"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/bootCB"
+        android:paddingTop="3dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/test" />         
+</RelativeLayout>
