@@ -7,9 +7,12 @@ import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.json.JSONObject;
+
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -18,14 +21,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.facebook.android.Util;
 import com.t3hh4xx0r.tweezee.email.EmailActivity;
 import com.t3hh4xx0r.tweezee.email.GmailSender;
+import com.t3hh4xx0r.tweezee.facebook.FacebookActivity;
+import com.t3hh4xx0r.tweezee.facebook.FacebookConnector;
 import com.t3hh4xx0r.tweezee.sms.SMSActivity;
 import com.t3hh4xx0r.tweezee.twitter.OAUTH;
 import com.t3hh4xx0r.tweezee.twitter.TwitterActivity;
@@ -54,10 +61,9 @@ public class TweezeeReceiver extends BroadcastReceiver {
     Handler mHandler;
     
     AccessToken aToken;
-
+	
 	@Override
 	public void onReceive(Context c, Intent i) {
-		
 		type = i.getStringExtra("type");
 		prefs = PreferenceManager.getDefaultSharedPreferences(c);
 		ctx = c;
@@ -85,12 +91,38 @@ public class TweezeeReceiver extends BroadcastReceiver {
 			pass = i.getStringExtra("pass");
 			subject = i.getStringExtra("subject");
 			sendEmail();
+		} else if (type.equals("facebook")) {
+			postFacebook();
 		}
 
 		
 	}
 
-    private void sendEmail() {
+    private void postFacebook() {
+     	 if (day.split(",")[getcDay()-1].equals("true") || date) {
+     		Thread thread2 = new Thread() {
+    		    @Override
+    		    public void run() {
+    	     		 FacebookActivity.facebookConnector.postMessageOnWall(message);
+    		    }
+    		};
+    		thread2.start();
+	       	 if (prefs.getBoolean("notify", true)) {
+    			 if (!prefs.getBoolean("notifyIntrusive", true)) {
+    				 mHandler.post(new Runnable() {
+    					 @Override
+    					 public void run() {
+    						 Toast.makeText(ctx, message, Toast.LENGTH_LONG).show();
+    					 }
+    				 });
+    			 } else{
+	    			 alertF(message, ctx);
+    			 }
+	       	 }
+     	 }
+	}
+
+	private void sendEmail() {
       	 if (day.split(",")[getcDay()-1].equals("true") || date) {
 		     GmailSender sender = new GmailSender(username, pass);
 		     try {
@@ -227,7 +259,7 @@ public class TweezeeReceiver extends BroadcastReceiver {
 			 int icon = R.drawable.ic_launcher;
 			 CharSequence tickerText = "Status Update!";
 			 long when = System.currentTimeMillis();
-			 CharSequence contentTitle = "UltimateScheduler updated your status."; 
+			 CharSequence contentTitle = "UltimateScheduler updated your Twitter status."; 
 			 CharSequence contentText = message; 
 			 
 			 Intent notificationIntent = new Intent(c, TwitterActivity.class);
@@ -288,5 +320,26 @@ public class TweezeeReceiver extends BroadcastReceiver {
 	                Context.NOTIFICATION_SERVICE);	
 		 mNotificationManager.notify(HELLO_ID, notification);			
 	} 
-	
+
+	private void alertF(String message, Context c) {
+		 int icon = R.drawable.ic_launcher;
+		 CharSequence tickerText = "Facebook Status Updated!";
+		 long when = System.currentTimeMillis();
+		 CharSequence contentTitle = "UltimateScheduler posted to your wall."; 
+		 CharSequence contentText = message; 
+		 
+		 Intent notificationIntent = new Intent(c, FacebookActivity.class);
+
+		 PendingIntent contentIntent = PendingIntent.getActivity(c, 0, notificationIntent, 0);
+
+		 Notification notification = new Notification(icon, tickerText, when);
+	     notification.defaults = Notification.DEFAULT_VIBRATE;
+	     notification.flags = Notification.FLAG_AUTO_CANCEL;
+		 notification.setLatestEventInfo(c, contentTitle, contentText, contentIntent);
+		 final int HELLO_ID = 1;
+		 
+		 NotificationManager mNotificationManager = (NotificationManager) c.getSystemService(
+	                Context.NOTIFICATION_SERVICE);	
+		 mNotificationManager.notify(HELLO_ID, notification);			
+	} 
 }

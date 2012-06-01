@@ -67,6 +67,8 @@ public class EntriesAdapterT extends BaseAdapter {
        } catch (Exception e) {
     	   e.printStackTrace();
        }
+       c.close();
+       db.close();
        if (active) {
 		  holder.status_ic.setImageResource(R.drawable.status_active);
 	   } else {

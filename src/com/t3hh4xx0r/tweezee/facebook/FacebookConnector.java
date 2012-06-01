@@ -12,6 +12,7 @@ import com.t3hh4xx0r.tweezee.facebook.SessionEvents.LogoutListener;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -110,6 +111,10 @@ public class FacebookConnector {
         
         public void onLogoutFinish() {
             SessionStore.clear(context);
+            Intent i = new Intent(context, FacebookActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            context.startActivity(i);
         }
     }
 

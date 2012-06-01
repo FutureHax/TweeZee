@@ -67,10 +67,7 @@ public class MainActivity extends SherlockPreferenceActivity {
 		   mEmail.setSummary("Upgrade to Premium today to unlock this feature");
 		   mFacebook.setEnabled(false);	
 		   mFacebook.setSummary("Upgrade to Premium today to unlock this feature");
-		}
-	    //TEMPORARY
-//	    mFacebook.setEnabled(false);	
-//		mFacebook.setSummary("COMING SOON!");	    
+		} 
 		   
    		try {
 			new SimpleEula(this).show();

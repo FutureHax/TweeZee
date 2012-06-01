@@ -10,5 +10,5 @@
 	<string name="cancel_auth">Cancel signing in</string>
 	<string name="dont_cancel_auth">Don\'t cancel</string>
 	<string name="auth_network_error">Could not contact Twitter. Please try again.</string>
-	<string name="updates">Fix a few issues with the date option.\n-Fix possible FCs when restarting messages.\n-Add ability to move app to SD.\n-Add hardware acceleration for supported devices.\n-App now uses ActionBarSherlock, a compatibility library that allows for seamless ICS style actionbar behavior on 2.x devices!\n-Begin Facebook integration.\n-Starting messages on boot is not currently working, but I am working on getting it fixed.</string>
+	<string name="updates">-Cache profile pics to speed up load times.\n-Finalize Facebook support!\n-Add ability to invite Facebook friends to use the app.\n-Few backend cleanups for optimization.</string>
 </resources>

@@ -23,11 +23,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,45 +57,44 @@ public class FacebookActivity extends SherlockListActivity {
 	String userID;
 	String userN;
 	ImageView userPic;
+	ProgressBar pB;
 
 	private static final String FACEBOOK_APPID = "405018012875515";
 	private static final String FACEBOOK_PERMISSION = "publish_stream";
-	private FacebookConnector facebookConnector;
+	public static FacebookConnector facebookConnector;
 
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-        this.facebookConnector = new FacebookConnector(FACEBOOK_APPID, this, getApplicationContext(), new String[] {FACEBOOK_PERMISSION});
+        FacebookActivity.facebookConnector = new FacebookConnector(FACEBOOK_APPID, this, getApplicationContext(), new String[] {FACEBOOK_PERMISSION});
 		setContentView(R.layout.facebook_main);
 	    lv1 = (ListView) findViewById(android.R.id.list);   
 	    userTV = (TextView) findViewById(R.id.user);
 	    userPic = (ImageView) findViewById(R.id.userPic);
+	    pB = (ProgressBar) findViewById(R.id.pB);
 		checkLogin();
-//        lv1.setOnItemLongClickListener(new OnItemLongClickListener() {
-//        	@Override
-//        	public boolean onItemLongClick(AdapterView<?> a, View v, int position, long id) {           	
-//    			ArrayList<String> mMessages = new ArrayList<String>();
-//    			ArrayList<String> mRecipients = new ArrayList<String>();
-//    			DBAdapter db = new DBAdapter(v.getContext());
-//    		    db.open();
-//    		    Cursor c = db.getAllSEntries();
-//    		    	try {
-//    		       		while (c.moveToNext()) {
-//    		       			mMessages.add(c.getString(c.getColumnIndex("message")));
-//    		       			mRecipients.add(c.getString(c.getColumnIndex("send_to")));
-//    		       		}
-//    		       	 } catch (Exception e1) {}
-//    		   c.close();
-//    		   db.close();
-//    		   
-//    		   final Vibrator vibe = (Vibrator) v.getContext().getSystemService(Context.VIBRATOR_SERVICE) ;
-//        	   vibe.vibrate(50);
-//               String message = mMessages.get(position); 
-//               String recipient = mRecipients.get(position); 
-//               BetterPopupWindowS dw = new BetterPopupWindowS.DemoPopupWindow(v, message, recipient, position);
-//               dw.showLikeQuickAction(0, 30);
-//               return false;
-//        	}
-//        });
+        lv1.setOnItemLongClickListener(new OnItemLongClickListener() {
+        	@Override
+        	public boolean onItemLongClick(AdapterView<?> a, View v, int position, long id) {           	
+    			ArrayList<String> mMessages = new ArrayList<String>();
+    			DBAdapter db = new DBAdapter(v.getContext());
+    		    db.open();
+    		    Cursor c = db.getAllFEntries();
+    		    	try {
+    		       		while (c.moveToNext()) {
+    		       			mMessages.add(c.getString(c.getColumnIndex("message")));
+    		       		}
+    		       	 } catch (Exception e1) {}
+    		   c.close();
+    		   db.close();
+    		   
+    		   final Vibrator vibe = (Vibrator) v.getContext().getSystemService(Context.VIBRATOR_SERVICE) ;
+        	   vibe.vibrate(50);
+               String message = mMessages.get(position); 
+               BetterPopupWindowF dw = new BetterPopupWindowF.DemoPopupWindow(v, message, position);
+               dw.showLikeQuickAction(0, 30);
+               return false;
+        	}
+        });
         
         mAddEntry = (Button) findViewById(R.id.entry_b);
         mAddEntry.setOnClickListener(new OnClickListener() {
@@ -130,8 +133,8 @@ public class FacebookActivity extends SherlockListActivity {
 				runOnUiThread(new Runnable() {
 		               @Override
 		               public void run() {
-		           		userTV.setText(userN);
-	            	   userPic.setImageDrawable(p);
+		            	   userTV.setText(userN);
+		            	   userPic.setImageDrawable(p);
 		               }
 		         });		    			    		    	
 		    }
@@ -168,62 +171,57 @@ public class FacebookActivity extends SherlockListActivity {
 	}
 
 	public void onListItemClick(ListView lv, View v, int p, long id) {	
-//		ArrayList<String> mMessages = new ArrayList<String>();
-//		ArrayList<String> mRecipients = new ArrayList<String>();
-//		ArrayList<String> mIntervals = new ArrayList<String>();
-//		ArrayList<String> mDays = new ArrayList<String>();
-//		ArrayList<String> mTimes = new ArrayList<String>();
-//		ArrayList<String> mBoots = new ArrayList<String>();
-//		ArrayList<String> mDates = new ArrayList<String>();
-//		String m = null;
-//		String r = null;
-//		String i = null;
-//		String d = null;
-//		String t = null;
-//		String date = null;
-//		String boot = null;
-//		DBAdapter db = new DBAdapter(v.getContext());
-//	    db.open();
-//	    Cursor c = db.getAllSEntries();
-//	    	try {
-//	       		while (c.moveToNext()) {
-//	       			mMessages.add(c.getString(c.getColumnIndex("message")));
-//	       			mRecipients.add(c.getString(c.getColumnIndex("send_to")));
-//	       			mIntervals.add(c.getString(c.getColumnIndex("send_wait")));
-//	       			mDays.add(c.getString(c.getColumnIndex("send_day")));
-//	       			mTimes.add(c.getString(c.getColumnIndex("send_time")));
-//	       			mBoots.add(c.getString(c.getColumnIndex("start_boot")));
-//       				mDates.add(c.getString(c.getColumnIndex("send_date")));
-//	       		}
-//	       	 } catch (Exception e1) {}
-//	    c.close();
-//	    db.close();		
-//	    r = mRecipients.get(p);
-//	    m = mMessages.get(p);
-//	    i = mIntervals.get(p);
-//	    d = mDays.get(p);
-//	    date = mDates.get(p);
-//	    t = mTimes.get(p);
-//	    boot = mBoots.get(p);
-//        Bundle b = new Bundle();
-//        b.putBoolean("editing", true);
-//        b.putInt("pos", p);
-//        b.putString("message", m);
-//        b.putString("interval", i);
-//        b.putString("recipient", r);
-//        b.putString("days", d);
-//        b.putString("boot", boot);
-//        if (t.length()>1) {
-//        	b.putString("time", t);
-//        } else {
-//        	b.putString("time", null);
-//        }
-//        if (date.length()>1) {
-//        	b.putString("date", date);
-//        }
-//        Intent mi = new Intent(v.getContext(), EntryAddS.class);
-//        mi.putExtras(b);
-//        startActivity(mi);	
+		ArrayList<String> mMessages = new ArrayList<String>();
+		ArrayList<String> mIntervals = new ArrayList<String>();
+		ArrayList<String> mDays = new ArrayList<String>();
+		ArrayList<String> mTimes = new ArrayList<String>();
+		ArrayList<String> mBoots = new ArrayList<String>();
+		ArrayList<String> mDates = new ArrayList<String>();
+		String m = null;
+		String i = null;
+		String d = null;
+		String t = null;
+		String date = null;
+		String boot = null;
+		DBAdapter db = new DBAdapter(v.getContext());
+	    db.open();
+	    Cursor c = db.getAllFEntries();
+	    	try {
+	       		while (c.moveToNext()) {
+	       			mMessages.add(c.getString(c.getColumnIndex("message")));
+	       			mIntervals.add(c.getString(c.getColumnIndex("send_wait")));
+	       			mDays.add(c.getString(c.getColumnIndex("send_day")));
+	       			mTimes.add(c.getString(c.getColumnIndex("send_time")));
+	       			mBoots.add(c.getString(c.getColumnIndex("start_boot")));
+       				mDates.add(c.getString(c.getColumnIndex("send_date")));
+	       		}
+	       	 } catch (Exception e1) {}
+	    c.close();
+	    db.close();		
+	    m = mMessages.get(p);
+	    i = mIntervals.get(p);
+	    d = mDays.get(p);
+	    date = mDates.get(p);
+	    t = mTimes.get(p);
+	    boot = mBoots.get(p);
+        Bundle b = new Bundle();
+        b.putBoolean("editing", true);
+        b.putInt("pos", p);
+        b.putString("message", m);
+        b.putString("interval", i);
+        b.putString("days", d);
+        b.putString("boot", boot);
+        if (t.length()>1) {
+        	b.putString("time", t);
+        } else {
+        	b.putString("time", null);
+        }
+        if (date.length()>1) {
+        	b.putString("date", date);
+        }
+        Intent mi = new Intent(v.getContext(), EntryAddF.class);
+        mi.putExtras(b);
+        startActivity(mi);	
 	}
 	
 	@Override
@@ -309,9 +307,12 @@ public class FacebookActivity extends SherlockListActivity {
 						// TODO Auto-generated method stub						
 					}
 	        	  }
-	        	);
-	        	
+	        	);	        	
 	        	return true;
+	        case R.id.sign_out:
+	        	facebookConnector.logout();
+	        	pB.setVisibility(View.VISIBLE);
+	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }

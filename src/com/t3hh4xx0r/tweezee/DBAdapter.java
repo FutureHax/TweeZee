@@ -349,6 +349,26 @@ public class DBAdapter {
         		"=" + mCursor.getString(0), null) > 0;        		
     }	
 
+    public boolean deleteFEntry(String message) {
+    	
+        Cursor mCursor = db.query(true, F_ENTRY_TABLE, new String[] {
+        		KEY_ROWID
+        		}, 
+        		"message=?", 
+        		new String[] {message},
+        		null, 
+        		null, 
+        		null, 
+        		null);
+
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+                
+        return db.delete(F_ENTRY_TABLE, KEY_ROWID + 
+        		"=" + mCursor.getString(0), null) > 0;        		
+    }	
+    
     public boolean deleteSEntry(String message, String recipient) {
     	
         Cursor mCursor = db.query(true, S_ENTRY_TABLE, new String[] {
