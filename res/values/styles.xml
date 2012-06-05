@@ -22,4 +22,12 @@
         <item name="textSize">30dp</item>
 		<item name="selectedColor">@color/ics</item>
     </style>
+    
+    <style parent="Widget.TabPageIndicator" name="Widget.MyTabpageIndicator" >
+        <item name="android:background">@drawable/vpi__tab_indicator</item>
+        <item name="footerColor">@color/ics</item>
+        <item name="textSize">30dp</item>
+		<item name="selectedColor">@color/ics</item>
+    </style>
+    
 </resources>

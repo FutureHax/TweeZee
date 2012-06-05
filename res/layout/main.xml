@@ -49,5 +49,21 @@
             	android:targetPackage="com.t3hh4xx0r.tweezee"
             	android:targetClass="com.t3hh4xx0r.tweezee.facebook.FacebookActivity" />
 			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>	            													
-			</PreferenceCategory>
+	</PreferenceCategory>
+
+    <PreferenceCategory
+    android:title="Misc" >		
+    
+            <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
+            android:key="log"
+            android:id="@+id/log"
+       		android:title="View Logged Messages"
+    		settings:pref_icon="@drawable/log">
+       			<intent
+            	android:action="android.intent.action.MAIN"
+            	android:targetPackage="com.t3hh4xx0r.tweezee"
+            	android:targetClass="com.t3hh4xx0r.tweezee.log.LogActivity" />
+			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>	            													
+	</PreferenceCategory>        	
+    
 </PreferenceScreen>

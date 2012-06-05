@@ -1,7 +1,12 @@
 package com.t3hh4xx0r.tweezee;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Random;
+import java.util.TimeZone;
 
 import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
@@ -22,6 +27,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
@@ -45,7 +51,6 @@ public class TweezeeReceiver extends BroadcastReceiver {
     private String day; 
     private String token; 
     private String secret; 
-    private String tokenE;
     private String type;
     private String recipient;
     private String pass;
@@ -103,23 +108,47 @@ public class TweezeeReceiver extends BroadcastReceiver {
      		Thread thread2 = new Thread() {
     		    @Override
     		    public void run() {
-    	     		 FacebookActivity.facebookConnector.postMessageOnWall(message);
+    		    	 try {
+    		    		 FacebookActivity.facebookConnector.postMessageOnWall(message);
+    		    	     logSend("Facebook", getFormattedTime(), message, "--", true);
+    		    	 } catch (Exception e) {
+    					 e.printStackTrace();
+    		    	     sendError = true;
+    		    	 }
     		    }
     		};
     		thread2.start();
-	       	 if (prefs.getBoolean("notify", true)) {
-    			 if (!prefs.getBoolean("notifyIntrusive", true)) {
-    				 mHandler.post(new Runnable() {
-    					 @Override
-    					 public void run() {
-    						 Toast.makeText(ctx, message, Toast.LENGTH_LONG).show();
-    					 }
-    				 });
-    			 } else{
-	    			 alertF(message, ctx);
-    			 }
-	       	 }
-     	 }
+    		if (!sendError) {
+    			if (prefs.getBoolean("notify", true)) {
+    				if (!prefs.getBoolean("notifyIntrusive", true)) {
+    					mHandler.post(new Runnable() {
+    						@Override
+    						public void run() {
+    							Toast.makeText(ctx, message, Toast.LENGTH_LONG).show();
+    						}
+    					});
+    				} else{
+    					alertF(message, ctx);
+    				}	
+	       	 	}
+    		} else {
+	    	     logSend("Facebook", getFormattedTime(), message, "--", false);
+				 mHandler.post(new Runnable() {
+					 @Override
+					 public void run() {
+						 Toast.makeText(ctx, "Error while sending, "+message, Toast.LENGTH_LONG).show();
+					 }
+				 });
+		     } 		        
+    		}
+	}
+
+	protected String getFormattedTime() {
+	      Calendar calendar = Calendar.getInstance();
+	      calendar.setTimeInMillis(System.currentTimeMillis());
+	      calendar.setTimeZone(TimeZone.getDefault());
+	      SimpleDateFormat d = new SimpleDateFormat("hh:mm");
+	      return d.format(calendar.getTime());
 	}
 
 	private void sendEmail() {
@@ -130,11 +159,15 @@ public class TweezeeReceiver extends BroadcastReceiver {
 					         message,   
 					         username,   
 					         recipient);
+	    	     logSend("Email", getFormattedTime(), message, recipient, true);
 			} catch (AddressException e) {
+				e.printStackTrace();
 				sendError = true;
 			} catch (AuthenticationFailedException e) {
+				e.printStackTrace();
 				sendError = true;
 			} catch (MessagingException e) {
+				e.printStackTrace();
 				sendError = true;
 			}  
 		     if (!sendError) {
@@ -151,6 +184,7 @@ public class TweezeeReceiver extends BroadcastReceiver {
 					 }
 		       	 }        	    	 
 		     } else {
+	    	     logSend("Email", getFormattedTime(), message, recipient, false);
 				 mHandler.post(new Runnable() {
 					 @Override
 					 public void run() {
@@ -162,63 +196,101 @@ public class TweezeeReceiver extends BroadcastReceiver {
 	}
 
 	private void sendSMS() {
-   	 try {
-	     if (day.split(",")[getcDay()-1].equals("true") || date) {
-		     Intent i = new Intent(ctx, TweezeeReceiver.class);
-             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		     PendingIntent pi = PendingIntent.getActivity(ctx, 0, i, 0);  
-		     SmsManager sms = SmsManager.getDefault();
-		     sms.sendTextMessage(recipient.replaceAll("-", ""), null, message, pi, null);			        			       			          
-	       	 if (prefs.getBoolean("notify", true)) {
-    			 if (!prefs.getBoolean("notifyIntrusive", true)) {
-    				 mHandler.post(new Runnable() {
-    					 @Override
-    					 public void run() {
-    						 Toast.makeText(ctx, message, Toast.LENGTH_LONG).show();
-    					 }
-    				 });
-    			 } else{
-	    			 alertS(message, ctx);
-    			 }
-	       	 }
+     if (day.split(",")[getcDay()-1].equals("true") || date) {
+	     Intent i = new Intent(ctx, TweezeeReceiver.class);
+         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	     PendingIntent pi = PendingIntent.getActivity(ctx, 0, i, 0);  
+	     SmsManager sms = SmsManager.getDefault();
+	     try {
+    	     logSend("SMS", getFormattedTime(), message, recipient, true);
+	    	 sms.sendTextMessage(recipient.replaceAll("-", ""), null, message, pi, null);			        			       			          
+	     } catch (Exception e) {
+	    	 sendError = true;
+			 e.printStackTrace();
 	     }
-	 } catch (Exception e) {
-		 e.printStackTrace();
-	 }
+	     if (!sendError) {
+	       	 if (prefs.getBoolean("notify", true)) {
+	   			 if (!prefs.getBoolean("notifyIntrusive", true)) {
+	   				 mHandler.post(new Runnable() {
+	   					 @Override
+	   					 public void run() {
+	   						 Toast.makeText(ctx, message, Toast.LENGTH_LONG).show();
+	   					 }
+	   				 });
+	   			 } else{
+	    			 alertS(message, ctx);
+	   			 }
+	      	}
+	     } else {
+    	     logSend("SMS", getFormattedTime(), message, recipient, false);
+			 mHandler.post(new Runnable() {
+				 @Override
+				 public void run() {
+					 Toast.makeText(ctx, "Error while sending, "+message, Toast.LENGTH_LONG).show();
+				 }
+			 });
+	     }
+      }
 	}
-
+     
 	private void sendTweet () {	    	 
 	     t = new TwitterFactory().getInstance();
 	     t.setOAuthConsumer(OAUTH.CONSUMER_KEY, OAUTH.CONSUMER_SECRET);
 	     if (getToken() == null) {
-	    	 Toast.makeText(ctx, "Error while sending tweet, "+message+"\n"+tokenE, Toast.LENGTH_LONG).show();
+	    	 sendError = true;
 	     } else {
 	    	 aToken = getToken();
 	     }
 	     t.setOAuthAccessToken(aToken);
-		    	 try {
-				     if (day.split(",")[getcDay()-1].equals("true") || date) {
-				    	 if (prefs.getBoolean("direct", false)) {
-				    		 t.updateStatus(mentions+" "+message+" "+mentions+" "+getRandom());
-				    	 } else {	
-		    				 t.updateStatus(getRandom()+" "+message+" "+mentions);					    		 
-				    	 }
-				       	 if (prefs.getBoolean("notify", true)) {
-			    			 if (!prefs.getBoolean("notifyIntrusive", true)) {
-			    				 mHandler.post(new Runnable() {
-			    					 @Override
-			    					 public void run() {
-			    						 Toast.makeText(ctx, message, Toast.LENGTH_LONG).show();
-			    					 }
-			    				 });
-			    			 } else{
-				    			 alertT(message, ctx);
-			    			 }
-				       	 }
-				     }
-		    	 } catch (Exception e) {
-		    		 e.printStackTrace();
-		    	 }
+		 if (day.split(",")[getcDay()-1].equals("true") || date) {
+			 if (prefs.getBoolean("direct", false)) {
+				 try {
+					 t.updateStatus(mentions+" "+message+" "+mentions+" "+getRandom());
+					 if (mentions.length() < 2 || mentions == null) {
+						 logSend("Twitter", getFormattedTime(), message, "--", true);
+					 } else{
+						 logSend("Twitter", getFormattedTime(), message, mentions, true);						 
+					 }
+				 } catch (Exception e) {
+					 sendError = true;
+ 					 e.printStackTrace();
+				 }
+			 } else {	
+		    	try {
+		    		t.updateStatus(getRandom()+" "+message+" "+mentions);					    		 
+					 if (mentions.length() < 2 || mentions == null) {
+						 logSend("Twitter", getFormattedTime(), message, "--", true);
+					 } else{
+						 logSend("Twitter", getFormattedTime(), message, mentions, true);						 
+					 }
+		    	} catch (Exception e) {
+		    		sendError = true;
+					e.printStackTrace();
+		    	}
+			 }
+			 if (!sendError) {
+		       	 if (prefs.getBoolean("notify", true)) {
+	    			 if (!prefs.getBoolean("notifyIntrusive", true)) {
+	    				 mHandler.post(new Runnable() {
+	    					 @Override
+	    					 public void run() {
+	    						 Toast.makeText(ctx, message, Toast.LENGTH_LONG).show();
+	    					 }
+	    				 });
+	    			 } else{
+		    			 alertT(message, ctx);
+	    			 }
+		       	 }
+		     } else {
+	    	     logSend("Twitter", getFormattedTime(), message, mentions, false);
+				 mHandler.post(new Runnable() {
+					 @Override
+					 public void run() {
+						 Toast.makeText(ctx, "Error while sending, "+message, Toast.LENGTH_LONG).show();
+					 }
+				 });
+		     }
+		 }
    }
     
 	private AccessToken getToken() {
@@ -241,7 +313,6 @@ public class TweezeeReceiver extends BroadcastReceiver {
   		 try {
   			 return new AccessToken(token, secret);
   		 } catch (Exception e) {
-  			 tokenE = e.toString();
   			 return null; 
   		 }
 	}
@@ -342,4 +413,27 @@ public class TweezeeReceiver extends BroadcastReceiver {
 	                Context.NOTIFICATION_SERVICE);	
 		 mNotificationManager.notify(HELLO_ID, notification);			
 	} 
+	
+	private void logSend(final String type, final String time, String message, final String to, final boolean success) {
+		 if (type.equals("Email")) {
+			 message = new String(message.replace("\n\n\nSent via UltimateScheduler", ""));
+		 }
+		 FileWriter fW = null;
+		 BufferedWriter bW = null;
+		 try {
+			fW = new FileWriter(Environment.getExternalStorageDirectory()+"/t3hh4xx0r/ultimate_scheduler/log.txt", true);
+		 } catch (IOException e) {
+			e.printStackTrace();
+		 }
+		 bW = new BufferedWriter(fW);
+		 try {
+			bW.append("///"+type + "//"+time+"//"+message+"//"+to+"//"+Boolean.toString(success));
+			bW.newLine();
+			bW.newLine();
+			bW.flush();
+			bW.close();
+		 } catch (IOException e) {
+			e.printStackTrace();
+		 }			
+	}
 }

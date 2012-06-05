@@ -427,8 +427,8 @@ public class BetterPopupWindowE {
 		       		}
 	        	} catch (Exception e) {}
 		    	cu.close();
-		    	db.close();
 		    }
+	    	db.close();
 	    	Intent myIntent = new Intent(c, TweezeeReceiver.class);
 	    	myIntent.putExtra("type", "email");
 	    	myIntent.putExtra("username", username);

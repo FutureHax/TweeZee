@@ -4,6 +4,7 @@
           android:icon="@drawable/share"
           android:showAsAction="ifRoom" />             
     <item android:id="@+id/sign_out"
+          android:icon="@drawable/sign_out"
           android:title="Sign Out"
           android:showAsAction="ifRoom" /> 
 </menu>
