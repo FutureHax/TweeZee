@@ -88,7 +88,7 @@ public class TweezeeReceiver extends BroadcastReceiver {
 		} else if (type.equals("email")) {
 			recipient = i.getStringExtra("recipient");
 			username = Encryption.decryptString(i.getStringExtra("username"), Encryption.KEY);
-			pass = i.getStringExtra("pass");
+			pass = Encryption.decryptString(i.getStringExtra("pass"), Encryption.KEY);
 			subject = i.getStringExtra("subject");
 			sendEmail();
 		} else if (type.equals("facebook")) {

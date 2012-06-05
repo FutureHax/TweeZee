@@ -78,7 +78,8 @@ public class EntryAddE extends SherlockActivity {
 	EditText intervalET;
 	CheckBox bootCB;
 	boolean startBoot;
-	String pass;
+	private String pass;
+	private String passE;
 	String dateValue;
 	
 	public void onCreate(Bundle icicle) {
@@ -93,6 +94,7 @@ public class EntryAddE extends SherlockActivity {
 		usern = EmailActivity.accounts[p].getName(); 
 		usernE = Encryption.encryptString(usern, Encryption.KEY);
 		pass = EmailActivity.accounts[p].getPassword();
+		passE = Encryption.encryptString(EmailActivity.accounts[p].getPassword(), Encryption.KEY);
 
 		datePickerTV = (TextView) findViewById(R.id.dateTv);
 		datePickerTV.setOnClickListener(new OnClickListener() {
@@ -406,22 +408,22 @@ public class EntryAddE extends SherlockActivity {
 							} else{
 								if (!extras.getBoolean("editing", false)) {
 								   db.insertEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), "false,false,false,false,false,false,false,", recipientsMACTV.getText().toString(), timeValue, dateValue, Boolean.toString(startBoot), my_id);
-								   setupTimedEMail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(),myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, false, my_id, dateValue);	        	
+								   setupTimedEMail(this, usernE, passE, subjectET.getText().toString(), messageET.getText().toString(),myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, false, my_id, dateValue);	        	
 						      	   finish();
 								} else {
 					        	   db.updateEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), extras.getString("message"), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, Boolean.toString(startBoot), dateValue);
-						      	   setupTimedEMail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(),myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, true, 420, dateValue);	        	
+						      	   setupTimedEMail(this, usernE, passE, subjectET.getText().toString(), messageET.getText().toString(),myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, true, 420, dateValue);	        	
 						      	   finish();
 					           }
 							}
 						} else {
 							if (!extras.getBoolean("editing", false)) {
 					        	   db.insertEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans,recipientsMACTV.getText().toString(), timeValue, "", Boolean.toString(startBoot), my_id);
-						      	   setupTimedEMail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(),myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, false, my_id, null);	        	
+						      	   setupTimedEMail(this, usernE, passE, subjectET.getText().toString(), messageET.getText().toString(),myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, false, my_id, null);	        	
 						      	   finish();
 								} else {
 					        	   db.updateEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), extras.getString("message"), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, Boolean.toString(startBoot), "");
-						      	   setupTimedEMail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(),myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, true, 420, null);	        	
+						      	   setupTimedEMail(this, usernE, passE, subjectET.getText().toString(), messageET.getText().toString(),myDaysBooleans, recipientsMACTV.getText().toString(), timeValue, true, 420, null);	        	
 						      	   finish();
 					           }	
 						}
@@ -436,21 +438,21 @@ public class EntryAddE extends SherlockActivity {
 							}
 							if (!extras.getBoolean("editing", false)) {
 				        	   db.insertEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), "false,false,false,false,false,false,false,",recipientsMACTV.getText().toString(), "", dateValue, Boolean.toString(startBoot), my_id);
-							   setupIntervalEmail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), false, my_id, dateValue);	        	
+							   setupIntervalEmail(this, usernE, passE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), false, my_id, dateValue);	        	
 					      	   finish();
 							} else {
 				        	   db.updateEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), extras.getString("message"), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), "", Boolean.toString(startBoot), dateValue);
-							   setupIntervalEmail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), true, 420, dateValue);	        	
+							   setupIntervalEmail(this, usernE, passE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), true, 420, dateValue);	        	
 					      	   finish();
 				           }
 						} else {
 							if (!extras.getBoolean("editing", false)) {
 					        	   db.insertEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans,recipientsMACTV.getText().toString(), "",  "", Boolean.toString(startBoot), my_id);
-								   setupIntervalEmail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), false, my_id, null);	        	
+								   setupIntervalEmail(this, usernE, passE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), false, my_id, null);	        	
 						      	   finish();
 								} else {
 					        	   db.updateEEntry(usernE, subjectET.getText().toString(), messageET.getText().toString(), extras.getString("message"), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), "", Boolean.toString(startBoot), "");
-								   setupIntervalEmail(this, usernE, pass, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), true, 420, null);	        	
+								   setupIntervalEmail(this, usernE, passE, subjectET.getText().toString(), messageET.getText().toString(), intervalET.getText().toString(), myDaysBooleans, recipientsMACTV.getText().toString(), true, 420, null);	        	
 						      	   finish();
 					           }	
 						}
