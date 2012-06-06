@@ -7,4 +7,8 @@
           android:icon="@drawable/sign_out"
           android:title="Sign Out"
           android:showAsAction="ifRoom" /> 
+    <item android:id="@+id/backup"
+          android:icon="@drawable/save_sd"
+          android:title="Backup"
+          android:showAsAction="ifRoom" />
 </menu>

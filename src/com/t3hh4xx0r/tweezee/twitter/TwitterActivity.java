@@ -1,5 +1,9 @@
 package com.t3hh4xx0r.tweezee.twitter;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import twitter4j.Twitter;
@@ -13,6 +17,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -48,7 +53,9 @@ public class TwitterActivity extends SherlockFragmentActivity {
 	
 	boolean showAd = true;
 
-    
+	File dir = new File(Environment.getExternalStorageDirectory()+"/t3hh4xx0r/ultimate_scheduler/backups");
+	File backup = new File(dir+"/twitter.txt");
+	
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.twitter);
@@ -170,8 +177,11 @@ public class TwitterActivity extends SherlockFragmentActivity {
 	            hi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(hi);
 	            return true;
+	    } else if (item.getItemId() == R.id.backup) {
+	    	prepareBackupEntries(this);
+            return true;
 	    }
-		return false;
+	    return false;
 	}	
 	
 	@Override
@@ -251,4 +261,121 @@ public class TwitterActivity extends SherlockFragmentActivity {
 			}
 			
 	    }
+	   
+		private void prepareBackupEntries(final Context c) {
+			DBAdapter db = new DBAdapter(c);
+		    db.open();
+		    Cursor cu = db.getAllTEntries();
+		    int count = cu.getCount();
+		    cu.close();
+		    db.close();
+		    
+		    if (count < 1) {
+	           	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	      		builder.setTitle("Whoopsie");
+	      		builder.setMessage("You've got no entires to backup!")
+	      		   .setCancelable(false)
+	      		   .setPositiveButton("Oh ya! My bad.", new DialogInterface.OnClickListener() {
+	      		       public void onClick(DialogInterface dialog, int id) {
+	      		    	   dialog.dismiss();
+	      		 		}
+	      		   });
+	      		AlertDialog alert = builder.create();
+	      		alert.show();
+		    } else {
+		    	if (backup.exists()) {
+			    	AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
+		      		builder2.setTitle("Warning");
+		      		builder2.setMessage("This will overwrite your current backup. Continue?")
+		      		   .setCancelable(false)
+		      		   .setPositiveButton("Yup.", new DialogInterface.OnClickListener() {
+		      		       public void onClick(DialogInterface dialog, int id) {
+		      		    	   backup.delete();
+		      		    	   backupEntries(c);
+		      		       }
+		      		   })
+		      		   .setNegativeButton("Nah.", new DialogInterface.OnClickListener() {
+		      		       public void onClick(DialogInterface dialog, int id) {
+		      		    	   dialog.dismiss();
+		      		 		}
+		      		   });
+		      		AlertDialog alert2 = builder2.create();
+		      		alert2.show();	    	    	
+		    	} else {
+		    	   backupEntries(c);
+		    	}
+		    }	    
+		}
+
+		protected void backupEntries(Context c) {
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}
+			
+			FileWriter fW = null;
+			BufferedWriter bW = null;
+			try {
+				fW = new FileWriter(backup, true);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			bW = new BufferedWriter(fW);
+			
+			DBAdapter db = new DBAdapter(c);
+		    db.open();
+		    Cursor cu = db.getAllTEntries();
+		    int count = cu.getCount();
+	    	try {
+	       		while (cu.moveToNext()) {	       				                        
+	       			StringBuilder sB = new StringBuilder();
+	       			String username = cu.getString(cu.getColumnIndex("username"));
+	       			String message = cu.getString(cu.getColumnIndex("message"));
+	       			String mentions = cu.getString(cu.getColumnIndex("mentions"));
+	       			String send_wait = cu.getString(cu.getColumnIndex("send_wait"));
+	       			String send_day = cu.getString(cu.getColumnIndex("send_day"));
+	       			String send_time = cu.getString(cu.getColumnIndex("send_time"));
+	       			String start_boot = cu.getString(cu.getColumnIndex("start_boot"));
+	       			String my_id = cu.getString(cu.getColumnIndex("my_id"));
+	       			String send_date = cu.getString(cu.getColumnIndex("send_date"));
+	       			sB.append("///");
+	       			sB.append(username+"//");
+	       			if (send_date.length()>0) {
+	           			sB.append(send_date+"//");
+	       			} else {
+	       				sB.append("--//");
+	       			}
+	       			sB.append(message+"//");
+	       			if (mentions.length()>0) {
+	           			sB.append(mentions+"//");
+	       			} else {
+	       				sB.append("--//");
+	       			}
+	       			if (send_wait.length()>0) {
+	           			sB.append(send_wait+"//");
+	       			} else {
+	       				sB.append("--//");
+	       			}
+           			sB.append(send_day+"//");
+	       			if (send_time.length()>0) {
+	           			sB.append(send_time+"//");
+	       			} else {
+	       				sB.append("--//");
+	       			}
+	           		sB.append(start_boot+"//");
+	           		sB.append(my_id+"//");
+
+	       			bW.append(sB.toString());  
+	       			bW.newLine();
+	       			bW.newLine();
+	       			if (cu.getPosition() == count-1) {
+	       				bW.flush();
+	       				bW.close();
+	       			}
+	       		}
+	       	 } catch (Exception e1) {
+	       		 e1.printStackTrace();
+	       	 }	 
+	    	cu.close();
+	    	db.close();
+		}	   
 }

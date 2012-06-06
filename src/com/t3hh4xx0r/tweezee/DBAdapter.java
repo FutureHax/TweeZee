@@ -552,4 +552,8 @@ public class DBAdapter {
 			return false;
 		}			
 	}
+	
+	public void deleteTable(String table) {
+		db.delete(table, null, null);
+	}
 }

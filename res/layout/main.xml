@@ -63,7 +63,18 @@
             	android:action="android.intent.action.MAIN"
             	android:targetPackage="com.t3hh4xx0r.tweezee"
             	android:targetClass="com.t3hh4xx0r.tweezee.log.LogActivity" />
-			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>	            													
+			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>	 
+			           													
+            <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
+            android:key="restore"
+            android:id="@+id/restore"
+       		android:title="Restore a Backup"
+    		settings:pref_icon="@drawable/restore">
+       			<intent
+            	android:action="android.intent.action.MAIN"
+            	android:targetPackage="com.t3hh4xx0r.tweezee"
+            	android:targetClass="com.t3hh4xx0r.tweezee.RestoreActivity" />
+			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>	     
 	</PreferenceCategory>        	
     
 </PreferenceScreen>

@@ -8,4 +8,8 @@
           android:icon="@drawable/manage_acct"
           android:title="Manage Accounts"
           android:showAsAction="ifRoom" />  
+    <item android:id="@+id/backup"
+          android:icon="@drawable/save_sd"
+          android:title="Backup"
+          android:showAsAction="ifRoom" />
 </menu>

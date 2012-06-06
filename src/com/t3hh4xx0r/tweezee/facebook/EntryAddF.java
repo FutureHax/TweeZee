@@ -401,6 +401,7 @@ public class EntryAddF extends SherlockActivity {
 			} else {
 				Toast.makeText(this, "Do not leave any fields blank.", Toast.LENGTH_LONG).show();
 			}
+			db.close();
 	       	return true;
 	    }
 		return false;

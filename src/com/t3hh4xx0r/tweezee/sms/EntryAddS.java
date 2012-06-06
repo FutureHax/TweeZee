@@ -461,6 +461,7 @@ public class EntryAddS extends SherlockActivity {
                 .setCancelable(false)
                 .create().show();					
 			}
+	       	db.close();
 	       	return true;
 	    }
 		return false;
