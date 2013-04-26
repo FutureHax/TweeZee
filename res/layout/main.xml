@@ -1,80 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-     xmlns:android="http://schemas.android.com/apk/res/android"
-     xmlns:settings="http://schemas.android.com/apk/res/com.t3hh4xx0r.tweezee" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:settings="http://schemas.android.com/apk/res/com.t3hh4xx0r.tweezee" >
 
-    <PreferenceCategory
-    android:title="Sending Method" >
-    
-  		    <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
+    <PreferenceCategory android:title="Sending Method" >
+
+        <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
+            android:enabled="true"
             android:key="twitter"
-    		android:title="Twitter Status Update"
-    		settings:pref_icon="@drawable/twitter" 
-    		android:enabled="true" >
-       			<intent
-            	android:action="android.intent.action.MAIN"
-            	android:targetPackage="com.t3hh4xx0r.tweezee"
-            	android:targetClass="com.t3hh4xx0r.tweezee.twitter.TwitterActivity" />        
-			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>
-       			
-            <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
-            android:key="sms"
+            android:title="Twitter Status Update"
+            settings:pref_icon="@drawable/twitter" >
+
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetClass="com.t3hh4xx0r.tweezee.twitter.TwitterActivity"
+                android:targetPackage="com.t3hh4xx0r.tweezee" />
+        </com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>
+
+        <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
             android:id="@+id/sms"
-       		android:title="SMS Message"
-    		settings:pref_icon="@drawable/sms">
-       			<intent
-            	android:action="android.intent.action.MAIN"
-            	android:targetPackage="com.t3hh4xx0r.tweezee"
-            	android:targetClass="com.t3hh4xx0r.tweezee.sms.SMSActivity" />
-			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>
-      			
-            <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
-            android:key="email"
+            android:key="sms"
+            android:title="SMS Message"
+            settings:pref_icon="@drawable/sms" >
+
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetClass="com.t3hh4xx0r.tweezee.sms.SMSActivity"
+                android:targetPackage="com.t3hh4xx0r.tweezee" />
+        </com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>
+
+        <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
             android:id="@+id/email"
-       		android:title="Email Message"
-    		settings:pref_icon="@drawable/email">
-       			<intent
-            	android:action="android.intent.action.MAIN"
-            	android:targetPackage="com.t3hh4xx0r.tweezee"
-            	android:targetClass="com.t3hh4xx0r.tweezee.email.EmailActivity" />
-			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>	
+            android:key="email"
+            android:title="Email Message"
+            settings:pref_icon="@drawable/email" >
 
-            <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
-            android:key="facebook"
-            android:id="@+id/facebook"
-       		android:title="Facebook Wall Post"
-    		settings:pref_icon="@drawable/facebook">
-       			<intent
-            	android:action="android.intent.action.MAIN"
-            	android:targetPackage="com.t3hh4xx0r.tweezee"
-            	android:targetClass="com.t3hh4xx0r.tweezee.facebook.FacebookActivity" />
-			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>	            													
-	</PreferenceCategory>
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetClass="com.t3hh4xx0r.tweezee.email.EmailActivity"
+                android:targetPackage="com.t3hh4xx0r.tweezee" />
+        </com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>
+    </PreferenceCategory>
 
-    <PreferenceCategory
-    android:title="Misc" >		
-    
-            <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
-            android:key="log"
+    <PreferenceCategory android:title="Misc" >
+
+        <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
             android:id="@+id/log"
-       		android:title="View Logged Messages"
-    		settings:pref_icon="@drawable/log">
-       			<intent
-            	android:action="android.intent.action.MAIN"
-            	android:targetPackage="com.t3hh4xx0r.tweezee"
-            	android:targetClass="com.t3hh4xx0r.tweezee.log.LogActivity" />
-			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>	 
-			           													
-            <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
-            android:key="restore"
+            android:key="log"
+            android:title="View Logged Messages"
+            settings:pref_icon="@drawable/log" >
+
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetClass="com.t3hh4xx0r.tweezee.log.LogActivity"
+                android:targetPackage="com.t3hh4xx0r.tweezee" />
+        </com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>
+
+        <com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft
             android:id="@+id/restore"
-       		android:title="Restore a Backup"
-    		settings:pref_icon="@drawable/restore">
-       			<intent
-            	android:action="android.intent.action.MAIN"
-            	android:targetPackage="com.t3hh4xx0r.tweezee"
-            	android:targetClass="com.t3hh4xx0r.tweezee.RestoreActivity" />
-			</com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>	     
-	</PreferenceCategory>        	
-    
+            android:key="restore"
+            android:title="Restore a Backup"
+            settings:pref_icon="@drawable/restore" >
+
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetClass="com.t3hh4xx0r.tweezee.RestoreActivity"
+                android:targetPackage="com.t3hh4xx0r.tweezee" />
+        </com.t3hh4xx0r.tweezee.IconPreferenceScreenLeft>
+    </PreferenceCategory>
+
 </PreferenceScreen>

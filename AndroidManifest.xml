@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.t3hh4xx0r.tweezee"
-    android:versionCode="13"
-    android:versionName="2.4.0" 
+    android:versionCode="16"
+    android:versionName="3.0.1" 
     android:installLocation="auto">
 
     <uses-sdk android:minSdkVersion="8" />
@@ -15,46 +15,23 @@
     <uses-permission android:name="android.permission.WRITE_SMS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-        	
-    <permission 
-     android:label="Recieve registration broadcasts" 
-     android:name="com.t3hh4xx0r.tweezee.REGISTER" 
-     android:protectionLevel="signature" />
-    <uses-permission android:name="com.t3hh4xx0r.tweezee.REGISTER" />
-    <permission 
-     android:label="Send registration broadcasts" 
-     android:name="com.t3hh4xx0r.tweezeepremium.REGISTERED" 
-     android:protectionLevel="signature" />
-    <uses-permission android:name="com.t3hh4xx0r.tweezeepremium.REGISTERED" />
+	<uses-permission android:name="com.android.vending.BILLING" />
     
     <application
 		android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
-        android:theme="@style/Theme.Sherlock.ForceOverflow"       
+        android:theme="@style/Theme.Sherlock"       
         android:label="@string/app_name" >
-        
-<!-- Ads -->
-		<activity	
-			android:name="com.pontiflex.mobile.webview.sdk.activities.MultiOfferActivity"/>	
-		<activity	
-  			android:name="com.pontiflex.mobile.webview.sdk.activities.RegistrationActivity"
-  			android:configChanges="keyboardHidden"/>    
   			
 <!-- Basic App -->    	
       <activity
             android:name="RestoreActivity"
-            android:label="Restore" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
+            android:label="Restore" >           
         </activity>
       <activity
             android:name="SettingsMenu"
             android:label="Settings" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
+      </activity>
        <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
@@ -67,130 +44,65 @@
 <!-- Twitter -->
       <activity android:screenOrientation="portrait"
             android:name=".twitter.TwitterSplash" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>        
-       </activity>        
+      </activity>        
        <activity
             android:name=".twitter.TwitterAuth"
             android:label="Twitter" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
         </activity>
        <activity
             android:name=".twitter.AccountManager"
             android:label="Account Manager" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
         </activity>
        <activity
             android:name=".twitter.EntryAdd"
             android:label="Add An Entry" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
         </activity>
        <activity
             android:name=".twitter.DayPicker"
             android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
         </activity>
 
         <activity android:screenOrientation="portrait"
             android:label="Twitter"
             android:name=".twitter.TwitterActivity" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
        </activity>
        
 <!-- SMS -->
         <activity android:screenOrientation="portrait"
             android:label="SMS"
             android:name=".sms.SMSActivity" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
        </activity>
        <activity android:screenOrientation="portrait"
             android:label="SMS"
             android:name=".sms.EntryAddS" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
        </activity>  
        
 <!-- Email -->
        <activity android:screenOrientation="portrait"
             android:label="Email"
             android:name=".email.EmailActivity" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
        </activity>  
        <activity android:screenOrientation="portrait"
             android:label="Email Accounts"
             android:name=".email.EmailAcctManager" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
        </activity>        
        <activity android:screenOrientation="portrait"
             android:label="Email"
             android:name=".email.EmailSplash" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
        </activity> 
        <activity android:screenOrientation="portrait"
             android:label="Login"
             android:name=".email.EmailLogin" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
        </activity>               
       <activity android:screenOrientation="portrait"
             android:label="Add Entry"
-            android:name=".email.EntryAddE" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
+            android:name=".email.EntryAddE" >            
        </activity>     
-       
-<!-- Facebook -->
-       <activity android:screenOrientation="portrait"
-            android:label="Facebook"
-            android:name=".facebook.FacebookActivity" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-       </activity>             
-       <activity android:screenOrientation="portrait"
-            android:label="Facebook"
-            android:name=".facebook.FacebookSplash" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-       </activity> 
-       <activity android:screenOrientation="portrait"
-            android:label="Facebook"
-            android:name=".facebook.EntryAddF" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-       </activity> 
                    
 <!-- Log -->
        <activity android:screenOrientation="portrait"
             android:label="Log"
             android:name=".log.LogActivity" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
        </activity> 
               
 <!-- Receivers -->    
@@ -199,15 +111,17 @@
 		  <intent-filter android:priority="2147483647"> 
             <action android:name="android.intent.action.BOOT_COMPLETED"/>
   		  </intent-filter> 
-		</receiver>        
-        <receiver android:name=".RegistrationService">
-            <intent-filter>
-                <action android:name="com.t3hh4xx0r.tweezeepremium.REGISTERED" />
-            </intent-filter>
-        </receiver> 
-        <receiver android:name=".TweezeeReceiver"/>
-        <service
-			android:name=".TweezeeService" >
-		</service>   
+		</receiver>      
+		
+		<receiver android:name=".billing.BillingReceiver" >
+			<intent-filter>
+				<action android:name="com.android.vending.billing.IN_APP_NOTIFY" />
+				<action android:name="com.android.vending.billing.RESPONSE_CODE" />
+				<action android:name="com.android.vending.billing.PURCHASE_STATE_CHANGED" />
+			</intent-filter>
+		</receiver>
+        
+		<service android:name=".billing.BillingService" />
+        <service android:name=".TweezeeService" />
 	</application>
 </manifest>

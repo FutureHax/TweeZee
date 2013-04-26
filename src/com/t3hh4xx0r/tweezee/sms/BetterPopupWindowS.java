@@ -32,7 +32,8 @@ import com.t3hh4xx0r.tweezee.R;
 import com.t3hh4xx0r.tweezee.TweezeeReceiver;
 
 /**
- * This class does most of the work of wrapping the {@link PopupWindow} so it's simpler to use.
+ * This class does most of the work of wrapping the {@link PopupWindow} so it's
+ * simpler to use.
  * 
  * @author qberticus
  * 
@@ -47,7 +48,6 @@ public class BetterPopupWindowS {
 	String recipient;
 	int position;
 
-
 	/**
 	 * Create a BetterPopupWindow
 	 * 
@@ -58,13 +58,12 @@ public class BetterPopupWindowS {
 		this.anchor = anchor;
 		this.window = new PopupWindow(anchor.getContext());
 
-
 		// when a touch even happens outside of the window
 		// make the window go away
 		this.window.setTouchInterceptor(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				if(event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+				if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
 					BetterPopupWindowS.this.window.dismiss();
 					return true;
 				}
@@ -72,34 +71,39 @@ public class BetterPopupWindowS {
 			}
 		});
 
-		this.windowManager = (WindowManager) this.anchor.getContext().getSystemService(Context.WINDOW_SERVICE);
+		this.windowManager = (WindowManager) this.anchor.getContext()
+				.getSystemService(Context.WINDOW_SERVICE);
 		onCreate();
 	}
 
 	/**
-	 * Anything you want to have happen when created. Probably should create a view and setup the event listeners on
-	 * child views.
+	 * Anything you want to have happen when created. Probably should create a
+	 * view and setup the event listeners on child views.
 	 */
-	protected void onCreate() {}
+	protected void onCreate() {
+	}
 
 	/**
 	 * In case there is stuff to do right before displaying.
 	 */
-	protected void onShow() {}
+	protected void onShow() {
+	}
 
 	private void preShow() {
-		if(this.root == null) {
-			throw new IllegalStateException("setContentView was not called with a view to display.");
+		if (this.root == null) {
+			throw new IllegalStateException(
+					"setContentView was not called with a view to display.");
 		}
 		onShow();
 
-		if(this.background == null) {
+		if (this.background == null) {
 			this.window.setBackgroundDrawable(new BitmapDrawable());
 		} else {
 			this.window.setBackgroundDrawable(this.background);
 		}
 
-		// if using PopupWindow#setBackgroundDrawable this is the only values of the width and hight that make it work
+		// if using PopupWindow#setBackgroundDrawable this is the only values of
+		// the width and hight that make it work
 		// otherwise you need to set the background of the root viewgroup
 		// and set the popupwindow background to an empty BitmapDrawable
 		this.window.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
@@ -132,8 +136,8 @@ public class BetterPopupWindowS {
 	 * @param layoutResID
 	 */
 	public void setContentView(int layoutResID) {
-		LayoutInflater inflator =
-				(LayoutInflater) this.anchor.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflator = (LayoutInflater) this.anchor.getContext()
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.setContentView(inflator.inflate(layoutResID, null));
 	}
 
@@ -192,9 +196,8 @@ public class BetterPopupWindowS {
 		int[] location = new int[2];
 		this.anchor.getLocationOnScreen(location);
 
-		Rect anchorRect =
-				new Rect(location[0], location[1], location[0] + this.anchor.getWidth(), location[1]
-					+ this.anchor.getHeight());
+		Rect anchorRect = new Rect(location[0], location[1], location[0]
+				+ this.anchor.getWidth(), location[1] + this.anchor.getHeight());
 
 		this.root.measure(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
@@ -207,7 +210,7 @@ public class BetterPopupWindowS {
 		int yPos = anchorRect.top - rootHeight + yOffset;
 
 		// display on bottom
-		if(rootHeight > anchorRect.top) {
+		if (rootHeight > anchorRect.top) {
 			yPos = anchorRect.bottom + yOffset;
 			this.window.setAnimationStyle(R.style.Animations_GrowFromTop);
 		}
@@ -218,185 +221,218 @@ public class BetterPopupWindowS {
 	public void dismiss() {
 		this.window.dismiss();
 	}
-	
-	public static class DemoPopupWindow extends BetterPopupWindowS implements OnClickListener {
+
+	public static class DemoPopupWindow extends BetterPopupWindowS implements
+			OnClickListener {
 		public DemoPopupWindow(View anchor, String mes, String recip, int pos) {
-                  super(anchor);
-                  recipient = recip;
-                  message = mes;
-                  position = pos;
-        }
+			super(anchor);
+			recipient = recip;
+			message = mes;
+			position = pos;
+		}
 
-        @Override
-        protected void onCreate() {
-    		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.anchor.getContext());
+		@Override
+		protected void onCreate() {
+			SharedPreferences prefs = PreferenceManager
+					.getDefaultSharedPreferences(this.anchor.getContext());
 
-                this.anchor.getContext();
-				LayoutInflater inflater =
-                                  (LayoutInflater) this.anchor.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			this.anchor.getContext();
+			LayoutInflater inflater = (LayoutInflater) this.anchor.getContext()
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-                  ViewGroup root = (ViewGroup) inflater.inflate(R.layout.popup, null);
-                  
-                  for(int i = 0, icount = root.getChildCount() ; i < icount ; i++) {
-                          View v = root.getChildAt(i);
+			ViewGroup root = (ViewGroup) inflater.inflate(R.layout.popup, null);
 
-                          if(v instanceof LinearLayout) {
-                          	
-                              LinearLayout lL = (LinearLayout) v;
-                              for(int j = 0, jcount = lL.getChildCount() ; j < jcount ; j++) {
-                              	View item = lL.getChildAt(j);
-                              	if (prefs.getBoolean("account", false)) {
-                              		if(item.getId() == R.id.send) {
-                              			item.setVisibility(View.GONE);                              	
-                              		}
-                              		if(item.getId() == R.id.stop) {
-                              			item.setVisibility(View.GONE);                              	
-                              		}                              	}
-                              	item.setOnClickListener(this);
-                              }
-                          }
-                  }
-                  this.setContentView(root);
-        }
-        
-  		@Override
-  		public void onClick(View v) {
+			for (int i = 0, icount = root.getChildCount(); i < icount; i++) {
+				View v = root.getChildAt(i);
 
-  			if(v.getId() == R.id.delete) {  
-      			killSMS(getID(recipient, message));
-  	   			DBAdapter db = new DBAdapter(v.getContext());
-    		    db.open();
-    		    db.deleteSEntry(message, recipient);
-    		    db.close();
-      			this.dismiss();
-	        } 
-  	    	
-  	    	if(v.getId() == R.id.send) { 
-			     String time = "";
-			     String interval = "";
-			     String days = "";
-			     String id = "";
-			     String date = "";
-			     
-			     DBAdapter db = new DBAdapter(this.anchor.getContext());
-			     db.open();
-			     Cursor c = db.getAllSEntries();
-		 	     try {
-		 	    	 c.moveToPosition(position);
-			       	 time = c.getString(c.getColumnIndex("send_time"));
-			       	 interval = c.getString(c.getColumnIndex("send_wait"));
-			       	 days = c.getString(c.getColumnIndex("send_day"));			       		
-			       	 date = c.getString(c.getColumnIndex("send_date"));			       		
-			       	 id = c.getString(c.getColumnIndex("my_id"));			       		
-			     } catch (Exception e1) {
-			         e1.printStackTrace();
-			     }
-			     c.close();
-			     db.updateActiveS(id, true);
-			     db.close();		       	 
-		       	 
-		       	 if (time.length() < 2) {
-		       		 setupIntervalSMS(this.anchor.getContext(), message, interval, days, recipient, getID(recipient, message), date);
-		       	 } else {
-		       		 setupTimedSMS(this.anchor.getContext(), message, days, recipient, time, getID(recipient, message), date);
-		       	 }
-		       	 this.dismiss();
-	        }
-  	    	
- 	    	if(v.getId() == R.id.stop) {   	    		
-      			killSMS(getID(recipient, message));
-			    DBAdapter db = new DBAdapter(this.anchor.getContext());
-			    db.open();
-      	        db.updateActiveS(Integer.toString(getID(recipient, message)), false);
-      	        db.close();
-      	        this.dismiss();
- 	    	}
+				if (v instanceof LinearLayout) {
 
-	        Intent mi = new Intent(v.getContext(), SMSActivity.class);
-	        mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	        this.anchor.getContext().startActivity(mi);  		
-  		}
+					LinearLayout lL = (LinearLayout) v;
+					for (int j = 0, jcount = lL.getChildCount(); j < jcount; j++) {
+						View item = lL.getChildAt(j);
+						if (prefs.getBoolean("account", false)) {
+							if (item.getId() == R.id.send) {
+								item.setVisibility(View.GONE);
+							}
+							if (item.getId() == R.id.stop) {
+								item.setVisibility(View.GONE);
+							}
+						}
+						item.setOnClickListener(this);
+					}
+				}
+			}
+			this.setContentView(root);
+		}
+
+		@Override
+		public void onClick(View v) {
+
+			if (v.getId() == R.id.delete) {
+				killSMS(getID(recipient, message));
+				DBAdapter db = new DBAdapter(v.getContext());
+				db.open();
+				db.deleteSEntry(message, recipient);
+				db.close();
+				this.dismiss();
+			}
+
+			if (v.getId() == R.id.send) {
+				String time = "";
+				String interval = "";
+				String days = "";
+				String id = "";
+				String date = "";
+
+				DBAdapter db = new DBAdapter(this.anchor.getContext());
+				db.open();
+				Cursor c = db.getAllSEntries();
+				try {
+					c.moveToPosition(position);
+					time = c.getString(c.getColumnIndex("send_time"));
+					interval = c.getString(c.getColumnIndex("send_wait"));
+					days = c.getString(c.getColumnIndex("send_day"));
+					date = c.getString(c.getColumnIndex("send_date"));
+					id = c.getString(c.getColumnIndex("my_id"));
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				c.close();
+				db.updateActiveS(id, true);
+				db.close();
+
+				if (time.length() < 2) {
+					setupIntervalSMS(this.anchor.getContext(), message,
+							interval, days, recipient,
+							getID(recipient, message), date);
+				} else {
+					setupTimedSMS(this.anchor.getContext(), message, days,
+							recipient, time, getID(recipient, message), date);
+				}
+				this.dismiss();
+			}
+
+			if (v.getId() == R.id.stop) {
+				killSMS(getID(recipient, message));
+				DBAdapter db = new DBAdapter(this.anchor.getContext());
+				db.open();
+				db.updateActiveS(Integer.toString(getID(recipient, message)),
+						false);
+				db.close();
+				this.dismiss();
+			}
+
+			Intent mi = new Intent(v.getContext(), SMSActivity.class);
+			mi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			this.anchor.getContext().startActivity(mi);
+		}
 
 		private int getID(String recipient, String message) {
 			int id = 420;
-	    	final DBAdapter db = new DBAdapter(this.anchor.getContext());
-	    	db.open();
-	        Cursor cu = db.getAllSEntries();
-		    try {
-		       	while (cu.moveToNext()) {
-		        	if ((cu.getString(cu.getColumnIndex("message")).equals(message)) && cu.getString(cu.getColumnIndex("send_to")).equals(recipient)) {
-		        		id = Integer.parseInt(cu.getString(cu.getColumnIndex("my_id")));
-		        		break;
-		        	}
-		       	}
-	        } catch (Exception e) {}
-		    cu.close();
-		    db.close();
-		    return id;
+			final DBAdapter db = new DBAdapter(this.anchor.getContext());
+			db.open();
+			Cursor cu = db.getAllSEntries();
+			try {
+				while (cu.moveToNext()) {
+					if ((cu.getString(cu.getColumnIndex("message"))
+							.equals(message))
+							&& cu.getString(cu.getColumnIndex("send_to"))
+									.equals(recipient)) {
+						id = Integer.parseInt(cu.getString(cu
+								.getColumnIndex("my_id")));
+						break;
+					}
+				}
+			} catch (Exception e) {
+			}
+			cu.close();
+			db.close();
+			return id;
 		}
 
 		public void killSMS(int id) {
-	    	Intent myIntent = new Intent(this.anchor.getContext(), TweezeeReceiver.class);
-	        myIntent.setAction(Integer.toString(id));
-	        myIntent.setData(Uri.parse(Integer.toString(id)));
-	        PendingIntent pendingIntent = PendingIntent.getBroadcast(this.anchor.getContext(), id, myIntent, 0);
-	        AlarmManager alarmManager = (AlarmManager)this.anchor.getContext().getSystemService(Context.ALARM_SERVICE);
-	        alarmManager.cancel(pendingIntent);		
+			Intent myIntent = new Intent(this.anchor.getContext(),
+					TweezeeReceiver.class);
+			myIntent.setAction(Integer.toString(id));
+			myIntent.setData(Uri.parse(Integer.toString(id)));
+			PendingIntent pendingIntent = PendingIntent.getBroadcast(
+					this.anchor.getContext(), id, myIntent, 0);
+			AlarmManager alarmManager = (AlarmManager) this.anchor.getContext()
+					.getSystemService(Context.ALARM_SERVICE);
+			alarmManager.cancel(pendingIntent);
 		}
 
-		private void setupIntervalSMS(Context c, String message, String wait, String day, String recipient, int id, String date) {
-	    	Toast.makeText(c, "New sms saved, "+message, Toast.LENGTH_LONG).show();
-	    	Intent myIntent = new Intent(c, TweezeeReceiver.class);
-	    	myIntent.putExtra("type", "sms");
-	    	myIntent.putExtra("message", message);
-	    	myIntent.putExtra("day", day);
-	    	myIntent.putExtra("recipient", recipient);
-	    	if(date.length()>4) {
-		    	myIntent.putExtra("dated", true);
-	    	}
-	    	myIntent.setAction(Integer.toString(id));
-	        myIntent.setData(Uri.parse(Integer.toString(id)));  
-	        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-	        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
-	        Calendar calendar = Calendar.getInstance();
-	        calendar.setTimeInMillis(System.currentTimeMillis());
-	        if(date.length()>4) {
-	            calendar.setTimeZone(TimeZone.getDefault());
-	        	calendar.set(Calendar.MONTH, Integer.parseInt(date.split("-")[0]));
-	        	calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.split("-")[1]));
-		        calendar.set(Calendar.SECOND, 0);
-		        calendar.set(Calendar.MILLISECOND, 0);
-		    }
-	        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), Integer.parseInt(wait)*60000, pendingIntent);					
+		private void setupIntervalSMS(Context c, String message, String wait,
+				String day, String recipient, int id, String date) {
+			Toast.makeText(c, "New sms saved, " + message, Toast.LENGTH_LONG)
+					.show();
+			Intent myIntent = new Intent(c, TweezeeReceiver.class);
+			myIntent.putExtra("type", "sms");
+			myIntent.putExtra("message", message);
+			myIntent.putExtra("day", day);
+			myIntent.putExtra("recipient", recipient);
+			if (date.length() > 4) {
+				myIntent.putExtra("dated", true);
+			}
+			myIntent.setAction(Integer.toString(id));
+			myIntent.setData(Uri.parse(Integer.toString(id)));
+			PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id,
+					myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			AlarmManager alarmManager = (AlarmManager) c
+					.getSystemService(Context.ALARM_SERVICE);
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(System.currentTimeMillis());
+			if (date.length() > 4) {
+				calendar.setTimeZone(TimeZone.getDefault());
+				calendar.set(Calendar.MONTH,
+						Integer.parseInt(date.split("-")[0]));
+				calendar.set(Calendar.DAY_OF_MONTH,
+						Integer.parseInt(date.split("-")[1]));
+				calendar.set(Calendar.SECOND, 0);
+				calendar.set(Calendar.MILLISECOND, 0);
+			}
+			alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+					calendar.getTimeInMillis(), Integer.parseInt(wait) * 60000,
+					pendingIntent);
 		}
 
-		private void setupTimedSMS(Context c, String message, String day, String recipient, String timeValue, int id, String date) {
-	    	Toast.makeText(c, "New sms saved, "+message, Toast.LENGTH_LONG).show();
-	        Intent myIntent = new Intent(c, TweezeeReceiver.class);
-	        myIntent.setAction(Integer.toString(id));
-	        myIntent.setData(Uri.parse(Integer.toString(id)));   
-	    	myIntent.putExtra("type", "sms");
-	    	myIntent.putExtra("message", message);
-	    	myIntent.putExtra("recipient", recipient);
-	    	myIntent.putExtra("day", day);        
-	    	if(date.length()>4) {
-		    	myIntent.putExtra("dated", true);
-	    	}
-	    	PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-	        AlarmManager alarmManager = (AlarmManager)c.getSystemService(Context.ALARM_SERVICE);
-	        Calendar calendar = Calendar.getInstance();
-	        calendar.setTimeInMillis(System.currentTimeMillis());
-	        calendar.setTimeZone(TimeZone.getDefault());
-	        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeValue.split(":")[0]));
-	        calendar.set(Calendar.MINUTE, Integer.parseInt(timeValue.split(":")[1]));
-	        calendar.set(Calendar.SECOND, 0);
-	        calendar.set(Calendar.MILLISECOND, 0);
-	        if(date.length()>4) {
-	            calendar.setTimeZone(TimeZone.getDefault());
-	        	calendar.set(Calendar.MONTH, Integer.parseInt(date.split("-")[0]));
-	        	calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.split("-")[1]));	        	
-	        }
-	        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);					
-		}		
+		private void setupTimedSMS(Context c, String message, String day,
+				String recipient, String timeValue, int id, String date) {
+			Toast.makeText(c, "New sms saved, " + message, Toast.LENGTH_LONG)
+					.show();
+			Intent myIntent = new Intent(c, TweezeeReceiver.class);
+			myIntent.setAction(Integer.toString(id));
+			myIntent.setData(Uri.parse(Integer.toString(id)));
+			myIntent.putExtra("type", "sms");
+			myIntent.putExtra("message", message);
+			myIntent.putExtra("recipient", recipient);
+			myIntent.putExtra("day", day);
+			if (date.length() > 4) {
+				myIntent.putExtra("dated", true);
+			}
+			PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id,
+					myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+			AlarmManager alarmManager = (AlarmManager) c
+					.getSystemService(Context.ALARM_SERVICE);
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(System.currentTimeMillis());
+			calendar.setTimeZone(TimeZone.getDefault());
+			calendar.set(Calendar.HOUR_OF_DAY,
+					Integer.parseInt(timeValue.split(":")[0]));
+			calendar.set(Calendar.MINUTE,
+					Integer.parseInt(timeValue.split(":")[1]));
+			calendar.set(Calendar.SECOND, 0);
+			calendar.set(Calendar.MILLISECOND, 0);
+			if (date.length() > 4) {
+				calendar.setTimeZone(TimeZone.getDefault());
+				calendar.set(Calendar.MONTH,
+						Integer.parseInt(date.split("-")[0]));
+				calendar.set(Calendar.DAY_OF_MONTH,
+						Integer.parseInt(date.split("-")[1]));
+			}
+			alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+					calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY,
+					pendingIntent);
+		}
 	}
 }

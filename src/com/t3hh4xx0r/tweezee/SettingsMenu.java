@@ -12,12 +12,13 @@ import android.preference.PreferenceScreen;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
 
-public class SettingsMenu extends SherlockPreferenceActivity{
-    private CheckBoxPreference mNotifyIntrusive;
-    private CheckBoxPreference mNotify;
-    private CheckBoxPreference mDirect;
-    private CheckBoxPreference mDelete;
-    SharedPreferences prefs;
+public class SettingsMenu extends SherlockPreferenceActivity {
+	private CheckBoxPreference mNotifyIntrusive;
+	private CheckBoxPreference mNotify;
+	private CheckBoxPreference mDirect;
+	private CheckBoxPreference mDelete;
+	SharedPreferences prefs;
+
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		addPreferencesFromResource(R.layout.settings);
@@ -28,37 +29,38 @@ public class SettingsMenu extends SherlockPreferenceActivity{
 		mDirect = (CheckBoxPreference) findPreference("direct");
 		mDelete = (CheckBoxPreference) findPreference("delete");
 	}
-	
-    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-	    boolean value;
-	    Editor e = prefs.edit();
-	    if (preference == mNotifyIntrusive) {
-            value = mNotifyIntrusive.isChecked();
-            e.putBoolean("notifyIntrusive", value); 
-	    } else if (preference == mNotify) {
-            value = mNotify.isChecked();
-        	e.putBoolean("notify", value);
-        } else if (preference == mDirect) {
-            value = mDirect.isChecked();
-        	e.putBoolean("direct", value);
-        } else if (preference == mDelete) {
-            value = mDelete.isChecked();
-        	e.putBoolean("delete", value);
-        }
-        e.commit();
-	return true;
-   }
-	
+
+	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
+			Preference preference) {
+		boolean value;
+		Editor e = prefs.edit();
+		if (preference == mNotifyIntrusive) {
+			value = mNotifyIntrusive.isChecked();
+			e.putBoolean("notifyIntrusive", value);
+		} else if (preference == mNotify) {
+			value = mNotify.isChecked();
+			e.putBoolean("notify", value);
+		} else if (preference == mDirect) {
+			value = mDirect.isChecked();
+			e.putBoolean("direct", value);
+		} else if (preference == mDelete) {
+			value = mDelete.isChecked();
+			e.putBoolean("delete", value);
+		}
+		e.commit();
+		return true;
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-        case android.R.id.home:
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
-            default:
-	            return super.onOptionsItemSelected(item);
-	    }
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			Intent intent = new Intent(this, MainActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 }

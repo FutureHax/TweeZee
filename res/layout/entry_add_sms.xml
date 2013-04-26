@@ -256,7 +256,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/div7"
-        android:text="Start tweet at boot"/>
+        android:text="Start again on boot"/>
         
     <ImageView
         android:id="@+id/div8"

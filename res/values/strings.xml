@@ -10,5 +10,5 @@
 	<string name="cancel_auth">Cancel signing in</string>
 	<string name="dont_cancel_auth">Don\'t cancel</string>
 	<string name="auth_network_error">Could not contact Twitter. Please try again.</string>
-	<string name="updates">-Update to new dope icon.\n-Update Facebook signout icon.\n-Add ability to view log of sent messages.\n-Add ability to backup and restore saved messages.\n-Few small security fixes.\n-Few small bug fixes/optimizations.</string>
+	<string name="updates">Removal of Facebook (no longer possible) and fixed unlocking of content.</string>
 </resources>
